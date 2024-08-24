@@ -1,0 +1,12 @@
+{
+    "name": "Domain Sheet",
+    "version": "1.0.0",
+    "manifest_version": 1,
+    "action": {
+      "title": "Domain Sheet",
+      "icon": "/kingdom.svg",
+      "popover": "/",
+      "height": 600,
+      "width": 400
+    }
+}
