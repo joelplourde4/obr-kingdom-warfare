@@ -1,31 +1,29 @@
 <template>
   <Sheet
     :domain="domain"
-    @update:model-value="save"
+    @update:stats="updateStats"
   />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, toRaw } from 'vue'
 
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
 
 import OBR from "@owlbear-rodeo/sdk";
+import { Stats } from './models/Stats.ts';
 
 const GLOBAL_MESSAGE = "obr.domain.sheet.channel"
 
 export default defineComponent({
     components: { Sheet },
     name: 'App',
-    setup () {
-        const domain = new Domain()
-        const playerId = ""
-
-        return {
-          playerId,
-          domain
-        }
+    data() {
+      return {
+        domain: new Domain(),
+        playerId: ""
+      }
     },
     mounted() {
       const intervalId = window.setInterval(async () => {
@@ -33,24 +31,36 @@ export default defineComponent({
             // Load the Player ID
             this.playerId = await OBR.player.getConnectionId()
 
+            // Load the metadata
+            OBR.room.getMetadata().then(metadata => {
+              const data = metadata["com.obr.domain-sheet/metadata"] as any;
+              this.domain = data.data as Domain;
+            });
+
             // Subscribe to Global Messages
             OBR.broadcast.onMessage(GLOBAL_MESSAGE, (event) => {
-              if (this.playerId !== event.connectionId) {
-                // TODO reload the domain.
-                console.log('Received an event: ', event);
-              }
+              this.domain = event.data as Domain;
             });
             clearInterval(intervalId);
           }
-        }, 1000)
+        }, 200)
     },
     methods: {
-      save() {
-        // TODO save this somewhere, if you aren't the same connection Id.
-        console.log('Saving!');
+      updateStats(stats: Stats) {
+        // Update the stats
+        this.domain.stats = stats;
+
+        const metadata = {
+          "com.obr.domain-sheet/metadata": {
+            data: toRaw(this.domain)
+          }
+        }
+
+        // Set the metadata
+        OBR.room.setMetadata(metadata)
 
         // Broadcast a message to
-        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, this.domain, { destination: "ALL" })
+        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, toRaw(this.domain), { destination: "REMOTE" })
       }
     }
 })

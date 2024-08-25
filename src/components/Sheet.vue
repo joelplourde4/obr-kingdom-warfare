@@ -3,7 +3,7 @@
         <tab name="Stats">
             <Stats
             :stats="domain.stats"
-            @update:model-value="onUpdate"
+            @update:model-value="onStatsUpdate"
             />
         </tab>
         <tab name="Relations">
@@ -37,10 +37,10 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['update:modelValue'],
+    emits: ['update:stats'],
     methods: {
-        onUpdate() {
-            this.$emit('update:modelValue');
+        onStatsUpdate(stats: any) {
+            this.$emit('update:stats', stats);
         }
     }
 })

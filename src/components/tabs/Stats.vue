@@ -75,7 +75,7 @@ export default defineComponent({
     emits: ['update:modelValue'],
     methods: {
         onUpdate() {
-            this.$emit('update:modelValue');
+            this.$emit('update:modelValue', this.stats);
         }
     }
 })
