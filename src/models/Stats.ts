@@ -17,10 +17,10 @@ export class Skills {
     operations: Attributes;
 
     constructor() {
-        this.diplomacy = new Attributes("Diplomacy", "blah 1")
-        this.espionage = new Attributes("Espionage", "blah 2")
-        this.lore = new Attributes("Lore", "blah")
-        this.operations = new Attributes("Operations", "blah")
+        this.diplomacy = new Attributes("Diplomacy", "Forge alliances, Raises Standings; diplomacy is the art of dealing with people sensitively and effectively.")
+        this.espionage = new Attributes("Espionage", "The practice of spying to gather political and military information.")
+        this.lore = new Attributes("Lore", "Ability to research both magical and historical knowledge.")
+        this.operations = new Attributes("Operations", "Ability to muster new units, build fortifications, and perform many of the basic functions of maintaining a domain.")
     }
 }
 
@@ -30,9 +30,9 @@ export class Defenses {
     resources: Attributes;
 
     constructor() {
-        this.communications = new Attributes("Communications", "blah 1")
-        this.resolve = new Attributes("Resolve", "blah 2")
-        this.resources = new Attributes("Resource", "blah")
+        this.communications = new Attributes("Communications", "A measure of how rapidly and accurately information is transmitted between a domain's officer and followers.")
+        this.resolve = new Attributes("Resolve", "Measures the commitment that the followers of a domain have to its cause.")
+        this.resources = new Attributes("Resource", "Includes whatever a domain values and collects, whether gold, knowledge, secrets, or things more esoteric.")
     }
 }
 

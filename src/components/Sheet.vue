@@ -2,8 +2,12 @@
     <tabs class="tabs">
         <tab name="Stats">
             <Stats
+            :title="domain.name"
+            :size="domain.size"
+            :powerDie="domain.powerDie"
             :stats="domain.stats"
-            @update:model-value="onStatsUpdate"
+            @update:attribute-value="onStatsUpdate"
+            @update:title-value="onTitleUpdate"
             />
         </tab>
         <tab name="Relations">
@@ -37,10 +41,13 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['update:stats'],
+    emits: ['update:stats', 'update:title'],
     methods: {
         onStatsUpdate(stats: any) {
             this.$emit('update:stats', stats);
+        },
+        onTitleUpdate(title: string) {
+            this.$emit('update:title', title);
         }
     }
 })

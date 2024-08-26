@@ -50,9 +50,17 @@ export default defineComponent({
         // Update the stats
         this.domain.stats = stats;
 
+        this.saveDomain(this.domain);
+      },
+      updateTitle(title: string) {
+        this.domain.name = title;
+
+        this.saveDomain(this.domain);
+      },
+      saveDomain(domain: Domain) {
         const metadata = {
           "com.obr.domain-sheet/metadata": {
-            data: toRaw(this.domain)
+            data: toRaw(domain)
           }
         }
 
@@ -60,7 +68,7 @@ export default defineComponent({
         OBR.room.setMetadata(metadata)
 
         // Broadcast a message to
-        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, toRaw(this.domain), { destination: "REMOTE" })
+        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, toRaw(domain), { destination: "REMOTE" })
       }
     }
 })

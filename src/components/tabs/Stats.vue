@@ -1,59 +1,67 @@
 <template>
     <div class="content">
+        <input class="title" v-model="title">
+        <select v-model="size">
+            <option>Tiny</option>
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Big</option>
+            <option>Large</option>
+        </select>
+        <select v-model="powerDie">
+            <option>D4</option>
+            <option>D6</option>
+            <option>D8</option>
+            <option>D12</option>
+            <option>D20</option>
+        </select>
         <div class="row">
             <div class="column">
-                <p class="title">Skills</p>
+                <p class="subtitle">Skills</p>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.skills.diplomacy.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.skills.diplomacy.name }}</h3>
-                        <p>{{ stats.skills.diplomacy.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.skills.diplomacy"
+                        @update:model-value="onAttributeUpdate"
+                        />
                 </div>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.skills.espionage.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.skills.espionage.name }}</h3>
-                        <p>{{ stats.skills.espionage.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.skills.espionage"
+                        @update:model-value="onAttributeUpdate"
+                        />
                 </div>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.skills.lore.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.skills.lore.name }}</h3>
-                        <p>{{ stats.skills.lore.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.skills.lore"
+                        @update:model-value="onAttributeUpdate"
+                        />
                 </div>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.skills.operations.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.skills.operations.name }}</h3>
-                        <p>{{ stats.skills.operations.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.skills.operations"
+                        @update:model-value="onAttributeUpdate"
+                    />
                 </div>
             </div>
             <div class="column">
-                <p class="title">Defenses</p>
+                <p class="subtitle">Defenses</p>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.defenses.communications.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.defenses.communications.name }}</h3>
-                        <p>{{ stats.defenses.communications.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.defenses.communications"
+                        @update:model-value="onAttributeUpdate"
+                    />
                 </div>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.defenses.resolve.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.defenses.resolve.name }}</h3>
-                        <p>{{ stats.defenses.resolve.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.defenses.resolve"
+                        @update:model-value="onAttributeUpdate"
+                    />
                 </div>
                 <div class="attributes row">
-                    <input type="number" class="column modifier" v-model="stats.defenses.resources.level" @input="onUpdate"/>
-                    <div class="column text">
-                        <h3>{{ stats.defenses.resources.name }}</h3>
-                        <p>{{ stats.defenses.resources.description }}</p>
-                    </div>
+                    <Attributes
+                        :attribute="stats.defenses.resources"
+                        @update:model-value="onAttributeUpdate"
+                    />
                 </div>
             </div>
         </div>
@@ -63,19 +71,40 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Stats } from '../../models/Stats'
+import { Size, PowerDie } from '../../models/Domain';
+import Attributes from './Attributes.vue';
   
 export default defineComponent({
+    components: { Attributes },
     name: 'Stats',
     props: {
+        title: {
+            type: String,
+            required: true
+        },
+        size: {
+            type: Size,
+            required: true
+        },
+        powerDie: {
+            type: PowerDie,
+            required: true
+        },
         stats: {
             type: Stats,
             required: true
         }
     },
-    emits: ['update:modelValue'],
+    data() {
+        size: null
+    },
+    emits: ['update:attributeValue', 'update:titleValue'],
     methods: {
-        onUpdate() {
-            this.$emit('update:modelValue', this.stats);
+        onTitleUpdate() {
+            this.$emit('update:titleValue', this.title);
+        },
+        onAttributeUpdate() {
+            this.$emit('update:attributeValue', this.stats);
         }
     }
 })
@@ -84,45 +113,19 @@ export default defineComponent({
   
 <style scoped>
 
-.row {
-  display: flex;
-}
-
-.column {
-  flex: 50%;
-}
-
 .title {
     font-size: 1.5rem;
-    margin: 0;
+    width: 95%;
+    text-align: center;
 }
 
-.modifier {
-    margin: auto;
-    padding-left: 0.125rem;
-    height: 40px;
-    max-width: 40px;
+.subtitle {
+    font-size: 1.25rem;
+    margin: 0;
 }
 
 .attributes {
     padding: 0.5rem;
-}
-
-.text {
-    display: grid;
-    margin-left: 0.5rem;
-
-    h3 {
-        display: flex;
-        float: left;
-        margin: 0;
-    }  
-
-    p {
-        display: flex;
-        float: left;
-        margin: 0;
-    }
 }
 
 </style>
