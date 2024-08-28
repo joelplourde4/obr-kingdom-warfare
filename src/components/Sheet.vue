@@ -2,12 +2,9 @@
     <tabs class="tabs">
         <tab name="Stats">
             <Stats
-            :title="domain.name"
-            :size="domain.size"
-            :powerDie="domain.powerDie"
-            :stats="domain.stats"
-            @update:attribute-value="onStatsUpdate"
-            @update:title-value="onTitleUpdate"
+            :domain="domain"
+            :isGM="isGM"
+            @update:model-value="onUpdate"
             />
         </tab>
         <tab name="Relations">
@@ -36,18 +33,19 @@ export default defineComponent({
     components: { Stats, Relations, Features, Military },
     name: 'Sheet',
     props: {
+        isGM: {
+            type: Boolean,
+            required: true
+        },
         domain: {
             type: Domain,
             required: true
         }
     },
-    emits: ['update:stats', 'update:title'],
+    emits: ['update:domain'],
     methods: {
-        onStatsUpdate(stats: any) {
-            this.$emit('update:stats', stats);
-        },
-        onTitleUpdate(title: string) {
-            this.$emit('update:title', title);
+        onUpdate(domain: Domain) {
+            this.$emit('update:domain', domain);
         }
     }
 })

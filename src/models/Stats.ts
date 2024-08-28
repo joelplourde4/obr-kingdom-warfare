@@ -2,11 +2,13 @@ export class Attributes {
     name: string;
     description: string;
     level: number;
+    skills: string;
 
-    constructor(name: string, description: string) {
+    constructor(name: string, description: string, skills: string = "") {
         this.name = name;
         this.description = description;
         this.level = 10;
+        this.skills = skills;
     }
 }
 
@@ -17,10 +19,26 @@ export class Skills {
     operations: Attributes;
 
     constructor() {
-        this.diplomacy = new Attributes("Diplomacy", "Forge alliances, Raises Standings; diplomacy is the art of dealing with people sensitively and effectively.")
-        this.espionage = new Attributes("Espionage", "The practice of spying to gather political and military information.")
-        this.lore = new Attributes("Lore", "Ability to research both magical and historical knowledge.")
-        this.operations = new Attributes("Operations", "Ability to muster new units, build fortifications, and perform many of the basic functions of maintaining a domain.")
+        this.diplomacy = new Attributes(
+            "Diplomacy",
+            "Forge alliances, Raises Standings; diplomacy is the art of dealing with people sensitively and effectively.",
+            "Insight/Persuasion"
+        )
+        this.espionage = new Attributes(
+            "Espionage",
+            "The practice of spying to gather political and military information.",
+            "Investigation/Stealth"
+        )
+        this.lore = new Attributes(
+            "Lore",
+            "Ability to research both magical and historical knowledge.",
+            "History/Arcana/Religion"
+        )
+        this.operations = new Attributes(
+            "Operations",
+            "Ability to muster new units, build fortifications, and perform many of the basic functions of maintaining a domain.",
+            "Athletics/Insight/Persuasion"
+        )
     }
 }
 

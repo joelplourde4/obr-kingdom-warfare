@@ -7,17 +7,31 @@
   </template>
   
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { Relation } from '../../models/Relation'
+import { defineComponent, toRaw } from 'vue'
+
+import { Domain } from '../../models/Domain'
     
 export default defineComponent({
     name: 'Relation',
     props: {
-        relation: Array<Relation>
+        isGM: {
+            type: Boolean,
+            required: true
+        },
+        domain: {
+            type: Domain,
+            required: true
+        }
     },
-    setup () {
-        console.log('Setup Relation!');
-    },
+    emits: ['update:modelValue'],
+    methods: {
+        onAddRelation() {
+            this.$emit('update:modelValue', toRaw(this.domain));
+        },
+        onUpdate() {
+            this.$emit('update:modelValue', toRaw(this.domain));
+        }
+    }
 })
     
 </script>

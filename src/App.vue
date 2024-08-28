@@ -1,7 +1,8 @@
 <template>
   <Sheet
     :domain="domain"
-    @update:stats="updateStats"
+    :isGM="isGM"
+    @update:domain="updateDomain"
   />
 </template>
 
@@ -12,7 +13,6 @@ import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
 
 import OBR from "@owlbear-rodeo/sdk";
-import { Stats } from './models/Stats.ts';
 
 const GLOBAL_MESSAGE = "obr.domain.sheet.channel"
 
@@ -21,6 +21,7 @@ export default defineComponent({
     name: 'App',
     data() {
       return {
+        isGM: false,
         domain: new Domain(),
         playerId: ""
       }
@@ -31,10 +32,12 @@ export default defineComponent({
             // Load the Player ID
             this.playerId = await OBR.player.getConnectionId()
 
+            this.isGM = false;//await OBR.player.hasPermission("MAP_CREATE");
+
             // Load the metadata
             OBR.room.getMetadata().then(metadata => {
               const data = metadata["com.obr.domain-sheet/metadata"] as any;
-              this.domain = data.data as Domain;
+              this.domain = new Domain()//data.data as Domain;
             });
 
             // Subscribe to Global Messages
@@ -46,18 +49,11 @@ export default defineComponent({
         }, 200)
     },
     methods: {
-      updateStats(stats: Stats) {
+      updateDomain(domain: Domain) {
+        console.log('Saving: ', domain);
         // Update the stats
-        this.domain.stats = stats;
+        // this.domain = domain;
 
-        this.saveDomain(this.domain);
-      },
-      updateTitle(title: string) {
-        this.domain.name = title;
-
-        this.saveDomain(this.domain);
-      },
-      saveDomain(domain: Domain) {
         const metadata = {
           "com.obr.domain-sheet/metadata": {
             data: toRaw(domain)

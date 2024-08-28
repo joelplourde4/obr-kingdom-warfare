@@ -1,45 +1,57 @@
 <template>
     <div class="content">
-        <input class="title" v-model="title">
-        <select v-model="size">
-            <option>Tiny</option>
-            <option>Small</option>
-            <option>Medium</option>
-            <option>Big</option>
-            <option>Large</option>
-        </select>
-        <select v-model="powerDie">
-            <option>D4</option>
-            <option>D6</option>
-            <option>D8</option>
-            <option>D12</option>
-            <option>D20</option>
-        </select>
+            <input class="title" v-model="domain.name" @input="onUpdate" :disabled="isDisabled">
+            <div class="row">
+                    <div class="column row">
+                        <p class="descriptor">Domain Size</p>
+                        <select class="dropdown" v-model="domain.size" @input="onUpdate" :disabled="isDisabled">
+                            <option>Tiny</option>
+                            <option>Small</option>
+                            <option>Medium</option>
+                            <option>Big</option>
+                            <option>Large</option>
+                        </select>
+                    </div>
+                    <div class="column row">
+                        <p class="descriptor">Power Die</p>
+                        <select class="dropdown" v-model="domain.powerDie" @input="onUpdate" :disabled="isDisabled">
+                            <option>D4</option>
+                            <option>D6</option>
+                            <option>D8</option>
+                            <option>D12</option>
+                            <option>D20</option>
+                        </select>
+                    </div>
+            </div>
         <div class="row">
             <div class="column">
                 <p class="subtitle">Skills</p>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.skills.diplomacy"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.skills.diplomacy"
+                        @update:model-value="onUpdate"
                         />
                 </div>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.skills.espionage"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.skills.espionage"
+                        @update:model-value="onUpdate"
                         />
                 </div>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.skills.lore"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.skills.lore"
+                        @update:model-value="onUpdate"
                         />
                 </div>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.skills.operations"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.skills.operations"
+                        @update:model-value="onUpdate"
                     />
                 </div>
             </div>
@@ -47,20 +59,23 @@
                 <p class="subtitle">Defenses</p>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.defenses.communications"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.defenses.communications"
+                        @update:model-value="onUpdate"
                     />
                 </div>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.defenses.resolve"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.defenses.resolve"
+                        @update:model-value="onUpdate"
                     />
                 </div>
                 <div class="attributes row">
                     <Attributes
-                        :attribute="stats.defenses.resources"
-                        @update:model-value="onAttributeUpdate"
+                        :isGM="isGM"
+                        :attribute="domain.stats.defenses.resources"
+                        @update:model-value="onUpdate"
                     />
                 </div>
             </div>
@@ -69,42 +84,35 @@
 </template>
   
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { Stats } from '../../models/Stats'
-import { Size, PowerDie } from '../../models/Domain';
+import { defineComponent, toRaw } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
+
+import { Domain } from '../../models/Domain'
 import Attributes from './Attributes.vue';
-  
+
 export default defineComponent({
     components: { Attributes },
     name: 'Stats',
     props: {
-        title: {
-            type: String,
+        isGM: {
+            type: Boolean,
             required: true
         },
-        size: {
-            type: Size,
-            required: true
-        },
-        powerDie: {
-            type: PowerDie,
-            required: true
-        },
-        stats: {
-            type: Stats,
+        domain: {
+            type: Domain,
             required: true
         }
     },
-    data() {
-        size: null
+    emits: ['update:modelValue'],
+    computed: {
+        isDisabled() {
+            console.log('is GM: ', this.isGM);
+            return !this.isGM
+        }
     },
-    emits: ['update:attributeValue', 'update:titleValue'],
     methods: {
-        onTitleUpdate() {
-            this.$emit('update:titleValue', this.title);
-        },
-        onAttributeUpdate() {
-            this.$emit('update:attributeValue', this.stats);
+        onUpdate() {
+            this.$emit('update:modelValue', toRaw(this.domain));
         }
     }
 })
@@ -125,7 +133,17 @@ export default defineComponent({
 }
 
 .attributes {
-    padding: 0.5rem;
+    padding: 0.5rem 0rem 0.5rem 0rem;
+}
+
+.descriptor {
+    margin-left: 1.25rem;
+    font-size: 0.875rem;
+}
+
+.dropdown {
+    float: right;
+    margin: auto;
 }
 
 </style>
