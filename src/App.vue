@@ -32,7 +32,7 @@ export default defineComponent({
             // Load the Player ID
             this.playerId = await OBR.player.getConnectionId()
 
-            this.isGM = false;//await OBR.player.hasPermission("MAP_CREATE");
+            this.isGM = await OBR.player.hasPermission("MAP_CREATE");
 
             // Load the metadata
             OBR.room.getMetadata().then(metadata => {
@@ -51,8 +51,6 @@ export default defineComponent({
     methods: {
       updateDomain(domain: Domain) {
         console.log('Saving: ', domain);
-        // Update the stats
-        // this.domain = domain;
 
         const metadata = {
           "com.obr.domain-sheet/metadata": {

@@ -5,21 +5,17 @@
                     <div class="column row">
                         <p class="descriptor">Domain Size</p>
                         <select class="dropdown" v-model="domain.size" @input="onUpdate" :disabled="isDisabled">
-                            <option>Tiny</option>
-                            <option>Small</option>
-                            <option>Medium</option>
-                            <option>Big</option>
-                            <option>Large</option>
+                            <option v-for="size in Size" :value="size">
+                                {{ size }}
+                            </option>
                         </select>
                     </div>
                     <div class="column row">
                         <p class="descriptor">Power Die</p>
                         <select class="dropdown" v-model="domain.powerDie" @input="onUpdate" :disabled="isDisabled">
-                            <option>D4</option>
-                            <option>D6</option>
-                            <option>D8</option>
-                            <option>D12</option>
-                            <option>D20</option>
+                            <option v-for="powerDie in PowerDie" :value="powerDie">
+                                {{ powerDie }}
+                            </option>
                         </select>
                     </div>
             </div>
@@ -87,7 +83,7 @@
 import { defineComponent, toRaw } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
-import { Domain } from '../../models/Domain'
+import { Domain, Size, PowerDie } from '../../models/Domain'
 import Attributes from './Attributes.vue';
 
 export default defineComponent({
@@ -103,10 +99,15 @@ export default defineComponent({
             required: true
         }
     },
+    data() {
+        return {
+            Size,
+            PowerDie
+        }
+    },
     emits: ['update:modelValue'],
     computed: {
         isDisabled() {
-            console.log('is GM: ', this.isGM);
             return !this.isGM
         }
     },

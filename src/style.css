@@ -56,3 +56,8 @@ li a:hover {
 .column {
   flex: 50%;
 }
+
+.container {
+  display: grid;
+  width: 90%;
+}

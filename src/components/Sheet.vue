@@ -2,13 +2,17 @@
     <tabs class="tabs">
         <tab name="Stats">
             <Stats
-            :domain="domain"
-            :isGM="isGM"
-            @update:model-value="onUpdate"
+                :domain="domain"
+                :isGM="isGM"
+                @update:model-value="onUpdate"
             />
         </tab>
         <tab name="Relations">
-            <Relations :relation="domain.relations"/>
+            <Relations
+                :domain="domain"
+                :isGM="isGM"
+                @update:model-value="onUpdate"
+            />
         </tab>
         <tab name="Features">
             <Features/>

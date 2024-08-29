@@ -11,11 +11,11 @@ export enum Size {
 }
 
 export enum PowerDie {
-    D4,
-    D6,
-    D8,
-    D12,
-    D20
+    D4 = "D4",
+    D6 = "D6",
+    D8 = "D8",
+    D12 = "D12",
+    D20 = "D20"
 }
 
 export class Domain {
