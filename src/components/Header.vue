@@ -68,7 +68,11 @@ export default defineComponent({
     emits: ['update:modelValue', 'update:editMode'],
     computed: {
         isDisabled() {
-            return !this.isGM
+            if (!this.isGM) {
+                return true;
+            }
+
+            return !this.editMode;
         }
     },
     methods: {
@@ -95,7 +99,6 @@ export default defineComponent({
 
 .descriptor {
     margin-left: 1.25rem;
-    font-size: 0.875rem;
 }
 
 .dropdown {

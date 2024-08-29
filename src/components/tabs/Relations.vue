@@ -72,6 +72,7 @@ export default defineComponent({
         }
     },
     methods: {
+        // Move to mixin
         preventPropagation(event: any) {
             event.stopPropagation();
         },
@@ -159,30 +160,6 @@ export default defineComponent({
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active, .collapsible:hover {
-    transform: scale(1.02);
-}
-
-input.add-button {
-    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
-    background-image: url(/add.svg); /* 16px x 16px */
-    background-color: transparent; /* make the button transparent */
-    background-repeat: no-repeat;  /* make the background image appear only once */
-    background-position: 0px 0px;  /* equivalent to 'top left' */
-    border: none;           /* assuming we don't want any borders */
-    cursor: pointer;        /* make the cursor like hovering over an <a> element */
-    height: 25px;           /* make this the size of your image */
-    width: 25px;
-}
-
-input.remove-button {
-    filter: invert(13%) sepia(89%) saturate(7390%) hue-rotate(0deg) brightness(99%) contrast(111%);
-    background-image: url(/remove.svg); /* 16px x 16px */
-    background-color: transparent; /* make the button transparent */
-    background-repeat: no-repeat;  /* make the background image appear only once */
-    background-position: 0px 0px;  /* equivalent to 'top left' */
-    border: none;           /* assuming we don't want any borders */
-    cursor: pointer;        /* make the cursor like hovering over an <a> element */
-    height: 25px;           /* make this the size of your image */
-    width: 25px;
+    transform: scale(1.01);
 }
 </style>

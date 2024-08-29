@@ -23,7 +23,12 @@
             />
         </tab>
         <tab name="Features">
-            <Features/>
+            <Features
+                :domain="domain"
+                :isGM="isGM"
+                :isEditMode="editMode"
+                @update:model-value="onUpdate"
+            />
         </tab>
         <tab name="Military">
             <Military/>
