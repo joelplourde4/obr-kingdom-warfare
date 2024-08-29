@@ -53,8 +53,8 @@ export default defineComponent({
   
 <style scoped>
 
-.container {
-    display: grid;
+input {
+    text-align: center;
 }
 
 .text {
@@ -100,7 +100,6 @@ export default defineComponent({
     visibility: hidden;
     width: 100%;
     background-color: #0000002e;
-    color: #fff;
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;

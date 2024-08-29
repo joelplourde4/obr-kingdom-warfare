@@ -13,6 +13,7 @@
                     <img v-if="relation.show" src="/public/caret-up.svg">
                     <img v-if="!relation.show" src="/public/caret-down.svg">
                 </div>
+                <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveRelation(relation)"/>
             </button>
             <div v-if="relation.show" class="collapsible-content">
                 <div class="officer row" v-for="officer in relation.officers">
@@ -61,6 +62,7 @@ export default defineComponent({
         isDisabled() {
             return !this.isGM
         }
+        // TODO edit mode
     },
     methods: {
         preventPropagation(event: any) {
@@ -125,6 +127,7 @@ export default defineComponent({
     }
 
     .caret {
+        filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
         float: right;
         align-self: center;
     }
@@ -137,20 +140,18 @@ export default defineComponent({
 
 .collapsible {
     display: inline-flex;
-    background-color: #414141;
-    color: #ffffff;
+    background-color: #0000002e;
     cursor: pointer;
     padding: 0.75rem;
     width: 100%;
     border: none;
     text-align: left;
     outline: none;
-    font-size: 15px;
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active, .collapsible:hover {
-  background-color: #ccc;
+    transform: scale(1.02);
 }
 
 input.add-button {
@@ -166,7 +167,7 @@ input.add-button {
 }
 
 input.remove-button {
-    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+    filter: invert(13%) sepia(89%) saturate(7390%) hue-rotate(0deg) brightness(99%) contrast(111%);
     background-image: url(/remove.svg); /* 16px x 16px */
     background-color: transparent; /* make the button transparent */
     background-repeat: no-repeat;  /* make the background image appear only once */

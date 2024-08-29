@@ -123,17 +123,18 @@ export default defineComponent({
 <style scoped>
 
 .title {
-    font-size: 1.5rem;
+    font-size: x-large;
     width: 95%;
     text-align: center;
 }
 
 .subtitle {
-    font-size: 1.25rem;
+    font-size: large;
     margin: 0;
 }
 
 .attributes {
+    text-align: center;
     padding: 0.5rem 0rem 0.5rem 0rem;
 }
 

@@ -18,7 +18,7 @@
             <Features/>
         </tab>
         <tab name="Military">
-            <p>Coming soon</p>
+            <Military/>
         </tab>
     </tabs>
 </template>

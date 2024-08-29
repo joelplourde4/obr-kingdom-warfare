@@ -37,7 +37,7 @@ export class Skills {
         this.operations = new Attributes(
             "Operations",
             "Ability to muster new units, build fortifications, and perform many of the basic functions of maintaining a domain.",
-            "Athletics/Insight/Persuasion"
+            "Insight/Persuasion"
         )
     }
 }
