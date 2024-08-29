@@ -32,7 +32,7 @@
   </template>
   
 <script lang="ts">
-import { defineComponent, toRaw } from 'vue'
+import { defineComponent } from 'vue'
 
 import { Domain } from '../../models/Domain'
 import { Relation, RelationStatus, Officer } from '../../models/Relation';
@@ -64,7 +64,11 @@ export default defineComponent({
             return this.isEditMode === true;
         },
         isDisabled() {
-            return !this.isGM
+            if (!this.isGM) {
+                return true;
+            }
+
+            return !this.isEditMode;
         }
     },
     methods: {
@@ -95,7 +99,8 @@ export default defineComponent({
             this.onUpdate();
         },
         onUpdate() {
-            this.$emit('update:modelValue', toRaw(this.domain));
+            const json = JSON.parse(JSON.stringify(this.domain));
+            this.$emit('update:modelValue', json);
         }
     }
 })

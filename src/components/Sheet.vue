@@ -10,6 +10,7 @@
             <Stats
                 :domain="domain"
                 :isGM="isGM"
+                :isEditMode="editMode"
                 @update:model-value="onUpdate"
             />
         </tab>

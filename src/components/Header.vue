@@ -24,7 +24,11 @@
                 <div class="tooltip">
                     <p class="descriptor">Power Die</p>
                     <span class="tooltiptext">
-                        Does this work?
+                        Each officer in a domain has one power die, 
+                        with its type based on the domain's size. 
+                        After rolling initiative, any officer can add their die to a shared pool.
+                        The first officer to act can use any or all of the dice from the pool,
+                        depending on the domain power they want to use.
                     </span>
                 </div>
                 <select class="dropdown" v-model="domain.powerDie" @input="onUpdate" :disabled="isDisabled">
@@ -37,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRaw } from 'vue'
+import { defineComponent } from 'vue'
 
 import { Domain, Size, PowerDie } from '../models/Domain'
 
@@ -73,7 +77,8 @@ export default defineComponent({
             this.$emit('update:editMode', this.editMode);
         },
         onUpdate() {
-            this.$emit('update:modelValue', toRaw(this.domain));
+            const json = JSON.parse(JSON.stringify(this.domain));
+            this.$emit('update:modelValue', json);
         }
     }
 })

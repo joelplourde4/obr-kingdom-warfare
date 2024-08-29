@@ -26,6 +26,10 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        isEditMode: {
+            type: Boolean,
+            required: true
+        },
         attribute: {
             type: Attributes,
             required: true
@@ -42,7 +46,11 @@ export default defineComponent({
             return this.attribute.skills.length !== 0;
         },
         isDisabled() {
-            return !this.isGM;
+            if (!this.isGM) {
+                return true;
+            }
+
+            return !this.isEditMode;
         },
         modifier() {
             return 15;
@@ -87,36 +95,6 @@ input {
     padding-left: 0.125rem;
     height: 40px;
     max-width: 40px;
-}
-
-/* Tooltip container */
-.tooltip {
-  position: relative;
-  display: inline-block;
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 100%;
-    background-color: #0000002e;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-    
-    /* Position the tooltip text - see examples below! */
-    z-index: 1;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-
-.tooltip .tooltiptext {
-    left: 0%;
-    bottom: 0px;
-    position: fixed;
 }
 
 </style>

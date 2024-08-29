@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRaw } from 'vue'
+import { defineComponent } from 'vue'
 
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
@@ -37,12 +37,12 @@ export default defineComponent({
             // Load the metadata
             OBR.room.getMetadata().then(metadata => {
               const data = metadata["com.obr.domain-sheet/metadata"] as any;
-              this.domain = new Domain()//data.data as Domain;
+              this.domain = Object.setPrototypeOf(data.data, Domain.prototype)
             });
 
             // Subscribe to Global Messages
             OBR.broadcast.onMessage(GLOBAL_MESSAGE, (event) => {
-              this.domain = event.data as Domain;
+              this.domain = Object.setPrototypeOf(event.data, Domain.prototype)
             });
             clearInterval(intervalId);
           }
@@ -52,9 +52,11 @@ export default defineComponent({
       updateDomain(domain: Domain) {
         console.log('Saving: ', domain);
 
+        const json = JSON.parse(JSON.stringify(domain))
+
         const metadata = {
           "com.obr.domain-sheet/metadata": {
-            data: toRaw(domain)
+            data: json
           }
         }
 
@@ -62,7 +64,7 @@ export default defineComponent({
         OBR.room.setMetadata(metadata)
 
         // Broadcast a message to
-        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, toRaw(domain), { destination: "REMOTE" })
+        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, json, { destination: "REMOTE" })
       }
     }
 })
