@@ -44,6 +44,10 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        isEditMode: {
+            type: Boolean,
+            required: true
+        },
         domain: {
             type: Domain,
             required: true
@@ -57,12 +61,11 @@ export default defineComponent({
     emits: ['update:modelValue'],
     computed: {
         isVisible() {
-            return this.isGM
+            return this.isEditMode === true;
         },
         isDisabled() {
             return !this.isGM
         }
-        // TODO edit mode
     },
     methods: {
         preventPropagation(event: any) {
@@ -177,5 +180,4 @@ input.remove-button {
     height: 25px;           /* make this the size of your image */
     width: 25px;
 }
-
 </style>
