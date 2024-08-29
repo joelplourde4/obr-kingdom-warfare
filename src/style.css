@@ -44,6 +44,11 @@ li a:hover {
   background-color: #0000002e;
 }
 
+a.is-active {
+  font-weight: bold;
+  color: rgb(187, 153, 255);
+}
+
 .content {
   width: 100%;
   height: 100%;
@@ -98,4 +103,34 @@ option {
   background: #0000002e;
   background-color: rgba(8, 8, 8, 0.664);
   padding: 5px;
+}
+
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 100%;
+    background-color: #0000002e;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    
+    /* Position the tooltip text - see examples below! */
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip .tooltiptext {
+    left: 0%;
+    bottom: 0px;
+    position: fixed;
 }

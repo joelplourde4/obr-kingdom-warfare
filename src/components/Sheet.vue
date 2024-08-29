@@ -1,4 +1,10 @@
 <template lang="html">
+    <Header
+        :domain="domain"
+        :isGM="isGM"
+        @update:model-value="onUpdate"
+        @update:edit-mode="onEditMode"
+    />
     <tabs class="tabs">
         <tab name="Stats">
             <Stats
@@ -11,6 +17,7 @@
             <Relations
                 :domain="domain"
                 :isGM="isGM"
+                :isEditMode="editMode"
                 @update:model-value="onUpdate"
             />
         </tab>
@@ -26,6 +33,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+import Header from './Header.vue'
 import Stats from './tabs/Stats.vue'
 import Relations from './tabs/Relations.vue';
 import Features from './tabs/Features.vue';
@@ -34,7 +42,7 @@ import Military from './tabs/Military.vue';
 import { Domain } from '../models/Domain'
 
 export default defineComponent({
-    components: { Stats, Relations, Features, Military },
+    components: { Header, Stats, Relations, Features, Military },
     name: 'Sheet',
     props: {
         isGM: {
@@ -47,7 +55,16 @@ export default defineComponent({
         }
     },
     emits: ['update:domain'],
+    data() {
+        const editMode = false;
+        return {
+            editMode: editMode
+        }
+    },
     methods: {
+        onEditMode(editMode: boolean) {
+            this.editMode = editMode;
+        },
         onUpdate(domain: Domain) {
             this.$emit('update:domain', domain);
         }

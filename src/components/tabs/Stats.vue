@@ -1,24 +1,5 @@
 <template>
     <div class="content">
-            <input class="title" v-model="domain.name" @input="onUpdate" :disabled="isDisabled">
-            <div class="row">
-                    <div class="column row">
-                        <p class="descriptor">Domain Size</p>
-                        <select class="dropdown" v-model="domain.size" @input="onUpdate" :disabled="isDisabled">
-                            <option v-for="size in Size" :value="size">
-                                {{ size }}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="column row">
-                        <p class="descriptor">Power Die</p>
-                        <select class="dropdown" v-model="domain.powerDie" @input="onUpdate" :disabled="isDisabled">
-                            <option v-for="powerDie in PowerDie" :value="powerDie">
-                                {{ powerDie }}
-                            </option>
-                        </select>
-                    </div>
-            </div>
         <div class="row">
             <div class="column">
                 <p class="subtitle">Skills</p>
@@ -122,30 +103,13 @@ export default defineComponent({
   
 <style scoped>
 
-.title {
-    font-size: x-large;
-    width: 95%;
-    text-align: center;
-}
-
 .subtitle {
     font-size: large;
     margin: 0;
 }
 
 .attributes {
-    text-align: center;
     padding: 0.5rem 0rem 0.5rem 0rem;
-}
-
-.descriptor {
-    margin-left: 1.25rem;
-    font-size: 0.875rem;
-}
-
-.dropdown {
-    float: right;
-    margin: auto;
 }
 
 </style>
