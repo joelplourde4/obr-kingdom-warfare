@@ -11,7 +11,7 @@
                 />
                 <div class="source row">
                     <p>Source</p>
-                    <select class="dropdown" v-model="feature.source" @click="preventPropagation" :disabled="isDisabled">
+                    <select class="dropdown" v-model="feature.source" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                         <option v-for="relation in domain.relations" :value="relation.name">
                             {{ relation.name }}
                         </option>

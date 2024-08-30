@@ -4,7 +4,7 @@
             <button type="button" class="collapsible" @click="openCollapsible(relation)">
                 <img class="image" src="/public/kingdom.svg">
                 <input class="name" v-model="relation.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
-                <select class="dropdown" v-model="relation.relationStatus" @click="preventPropagation" :disabled="isDisabled">
+                <select class="dropdown" v-model="relation.relationStatus" @change="onUpdate" @click="preventPropagation" :disabled="isDisabled">
                     <option v-for="status in RelationStatus" :value="status">
                         {{ status }}
                     </option>

@@ -14,7 +14,7 @@
                         Size is a relative measure of the reach, influence and how far a domain's power extends.
                     </span>
                 </div>
-                <select class="dropdown" v-model="domain.size" @input="onUpdate" :disabled="isDisabled">
+                <select class="dropdown" v-model="domain.size" @change="onUpdate" :disabled="isDisabled">
                     <option v-for="size in Size" :value="size">
                         {{ size }}
                     </option>
@@ -31,7 +31,7 @@
                         depending on the domain power they want to use.
                     </span>
                 </div>
-                <select class="dropdown" v-model="domain.powerDie" @input="onUpdate" :disabled="isDisabled">
+                <select class="dropdown" v-model="domain.powerDie" @change="onUpdate" :disabled="isDisabled">
                     <option v-for="powerDie in PowerDie" :value="powerDie">
                         {{ powerDie }}
                     </option>

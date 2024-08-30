@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
@@ -20,7 +21,27 @@ export default defineComponent({
     components: { Sheet },
     name: 'App',
     data() {
+      const saveDomain = (domain: Domain) => {
+        let json = JSON.parse(JSON.stringify(domain));
+
+        const metadata = {
+          "com.obr.domain-sheet/metadata": {
+            data: json
+          }
+        }
+
+        console.log('Saving: ', json);
+
+        // Set the metadata
+        OBR.room.setMetadata(metadata)
+
+        // Broadcast a message to
+        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, json, { destination: "REMOTE" })
+      }
+
+      const debouncedFunction = useDebounceFn(saveDomain, 500)
       return {
+        debouncedFunction,
         isGM: false,
         domain: new Domain(),
         playerId: ""
@@ -50,21 +71,7 @@ export default defineComponent({
     },
     methods: {
       updateDomain(domain: Domain) {
-        console.log('Saving: ', domain);
-
-        const json = JSON.parse(JSON.stringify(domain))
-
-        const metadata = {
-          "com.obr.domain-sheet/metadata": {
-            data: json
-          }
-        }
-
-        // Set the metadata
-        OBR.room.setMetadata(metadata)
-
-        // Broadcast a message to
-        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, json, { destination: "REMOTE" })
+        this.debouncedFunction(domain);
       }
     }
 })
