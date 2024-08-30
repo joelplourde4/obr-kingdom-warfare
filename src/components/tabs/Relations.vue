@@ -33,49 +33,23 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { utils } from '../../mixins/utils'
 
-import { Domain } from '../../models/Domain'
 import { Relation, RelationStatus, Officer } from '../../models/Relation';
+
+// @ts-ignore
+import BaseComponent from './BaseComponent.js'
     
 export default defineComponent({
+    mixins: [utils],
+    extends: BaseComponent,
     name: 'Relation',
-    props: {
-        isGM: {
-            type: Boolean,
-            required: true
-        },
-        isEditMode: {
-            type: Boolean,
-            required: true
-        },
-        domain: {
-            type: Domain,
-            required: true
-        }
-    },
     data() {
         return {
             RelationStatus
         }
     },
-    emits: ['update:modelValue'],
-    computed: {
-        isVisible() {
-            return this.isEditMode === true;
-        },
-        isDisabled() {
-            if (!this.isGM) {
-                return true;
-            }
-
-            return !this.isEditMode;
-        }
-    },
     methods: {
-        // Move to mixin
-        preventPropagation(event: any) {
-            event.stopPropagation();
-        },
         openCollapsible(relation: Relation) {
             relation.show = !relation.show;
         },
@@ -98,10 +72,6 @@ export default defineComponent({
                 return x !== officer
             });
             this.onUpdate();
-        },
-        onUpdate() {
-            const json = JSON.parse(JSON.stringify(this.domain));
-            this.$emit('update:modelValue', json);
         }
     }
 })
@@ -110,6 +80,7 @@ export default defineComponent({
 <style scoped>
 
 .relation {
+    padding-bottom: 0.5rem;
 
     .image {
         height: 40px;

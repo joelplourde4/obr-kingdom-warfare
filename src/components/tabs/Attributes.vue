@@ -17,9 +17,11 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { utils } from '../../mixins/utils'
 import { Attributes } from '../../models/Stats'
     
 export default defineComponent({
+    mixins: [utils],
     name: 'Feature',
     props: {
         isGM: {
@@ -51,9 +53,6 @@ export default defineComponent({
             }
 
             return !this.isEditMode;
-        },
-        modifier() {
-            return 15;
         }
     }
 })  

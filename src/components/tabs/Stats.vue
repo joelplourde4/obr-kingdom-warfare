@@ -69,47 +69,23 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { utils } from '../../mixins/utils'
 
-import { Domain, Size, PowerDie } from '../../models/Domain'
+import { Size, PowerDie } from '../../models/Domain'
 import Attributes from './Attributes.vue';
 
+// @ts-ignore
+import BaseComponent from './BaseComponent.js'
+
 export default defineComponent({
+    mixins: [utils],
     components: { Attributes },
+    extends: BaseComponent,
     name: 'Stats',
-    props: {
-        isGM: {
-            type: Boolean,
-            required: true
-        },
-        isEditMode: {
-            type: Boolean,
-            required: true
-        },
-        domain: {
-            type: Domain,
-            required: true
-        }
-    },
     data() {
         return {
             Size,
             PowerDie
-        }
-    },
-    emits: ['update:modelValue'],
-    computed: {
-        isDisabled() {
-            if (!this.isGM) {
-                return true;
-            }
-
-            return !this.isEditMode;
-        }
-    },
-    methods: {
-        onUpdate() {
-            const json = JSON.parse(JSON.stringify(this.domain));
-            this.$emit('update:modelValue', json);
         }
     }
 })

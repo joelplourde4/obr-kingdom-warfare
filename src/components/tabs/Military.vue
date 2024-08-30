@@ -6,13 +6,15 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { utils } from '../../mixins/utils'
+
+// @ts-ignore
+import BaseComponent from './BaseComponent.js'
     
 export default defineComponent({
-    name: 'Military',
-    props: {},
-    setup () {
-        console.log('Setup Military!');
-    },
+    mixins: [utils],
+    extends: BaseComponent,
+    name: 'Military'
 })  
 </script>
   

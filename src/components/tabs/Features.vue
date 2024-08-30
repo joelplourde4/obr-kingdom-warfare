@@ -3,6 +3,12 @@
         <div class="feature row" v-for="feature in domain.features">
             <div class="container">
                 <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
+                <textarea class="description"
+                v-model="feature.description"
+                @input="onUpdate"
+                :disabled="isDisabled"
+                :class="isDisabled ? 'disabled' : ''"
+                />
                 <div class="source row">
                     <p>Source</p>
                     <select class="dropdown" v-model="feature.source" @click="preventPropagation" :disabled="isDisabled">
@@ -11,12 +17,6 @@
                         </option>
                     </select>
                 </div>
-                <textarea class="description"
-                v-model="feature.description"
-                @input="onUpdate"
-                :disabled="isDisabled"
-                :class="isDisabled ? 'disabled' : ''"
-                />
                 <br>
             </div>
             <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
@@ -27,42 +27,18 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Domain } from '../../models/Domain'
+import { utils } from '../../mixins/utils'
+
 import { Feature } from '../../models/Feature';
+
+// @ts-ignore
+import BaseComponent from './BaseComponent.js'
     
 export default defineComponent({
+    mixins: [utils],
+    extends: BaseComponent,
     name: 'Feature',
-    props: {
-        isGM: {
-            type: Boolean,
-            required: true
-        },
-        isEditMode: {
-            type: Boolean,
-            required: true
-        },
-        domain: {
-            type: Domain,
-            required: true
-        }
-    },
-    emits: ['update:modelValue'],
-    computed: {
-        isVisible() {
-            return this.isEditMode === true;
-        },
-        isDisabled() {
-            if (!this.isGM) {
-                return true;
-            }
-
-            return !this.isEditMode;
-        }
-    },
     methods: {
-        preventPropagation(event: any) {
-            event.stopPropagation();
-        },
         onAddFeature() {
             this.domain.features.push(new Feature());
             this.onUpdate();
@@ -72,10 +48,6 @@ export default defineComponent({
                 return x !== feature
             });
             this.onUpdate();
-        },
-        onUpdate() {
-            const json = JSON.parse(JSON.stringify(this.domain));
-            this.$emit('update:modelValue', json);
         }
     }
 })  
