@@ -32,11 +32,11 @@ import { utils } from '../../mixins/utils'
 import { Feature } from '../../models/Feature';
 
 // @ts-ignore
-import BaseComponent from './BaseComponent.js'
+import BaseTab from './BaseTab.js'
     
 export default defineComponent({
     mixins: [utils],
-    extends: BaseComponent,
+    extends: BaseTab,
     name: 'Feature',
     methods: {
         onAddFeature() {

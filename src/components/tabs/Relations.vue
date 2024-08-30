@@ -38,11 +38,11 @@ import { utils } from '../../mixins/utils'
 import { Relation, RelationStatus, Officer } from '../../models/Relation';
 
 // @ts-ignore
-import BaseComponent from './BaseComponent.js'
+import BaseTab from './BaseTab.js'
     
 export default defineComponent({
     mixins: [utils],
-    extends: BaseComponent,
+    extends: BaseTab,
     name: 'Relation',
     data() {
         return {

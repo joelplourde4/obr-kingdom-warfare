@@ -72,15 +72,15 @@ import { defineComponent } from 'vue'
 import { utils } from '../../mixins/utils'
 
 import { Size, PowerDie } from '../../models/Domain'
-import Attributes from './Attributes.vue';
+import Attributes from '../attributes/Attributes.vue';
 
 // @ts-ignore
-import BaseComponent from './BaseComponent.js'
+import BaseTab from './BaseTab.js'
 
 export default defineComponent({
     mixins: [utils],
     components: { Attributes },
-    extends: BaseComponent,
+    extends: BaseTab,
     name: 'Stats',
     data() {
         return {

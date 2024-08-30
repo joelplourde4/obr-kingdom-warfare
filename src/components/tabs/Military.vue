@@ -9,11 +9,11 @@ import { defineComponent } from 'vue'
 import { utils } from '../../mixins/utils'
 
 // @ts-ignore
-import BaseComponent from './BaseComponent.js'
+import BaseTab from './BaseTab.js'
     
 export default defineComponent({
     mixins: [utils],
-    extends: BaseComponent,
+    extends: BaseTab,
     name: 'Military'
 })  
 </script>
