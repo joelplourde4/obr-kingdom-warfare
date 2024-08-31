@@ -1,10 +1,18 @@
 <template>
     <input 
+        v-if="isEditMode"
         type="number"
         class="column modifier"
         v-model="attribute.level"
         :disabled="isDisabled"
         @input="onUpdate"
+    />
+    <input
+        v-if="!isEditMode"
+        type="text"
+        :value="formattedModifier"
+        class="column modifier"
+        :disabled="true"
     />
     <div class="column text tooltip">
         <div class="container">
@@ -41,9 +49,18 @@ export default defineComponent({
     methods: {
         onUpdate() {
             this.$emit('update:modelValue', this.attribute);
-        }
+        },
     },
     computed: {
+        formattedModifier(): string {
+            const modifier = (this.attribute.level - 10) / 2;
+            
+            if (modifier >= 0) {
+                return '+' + modifier
+            }
+            
+            return '-' + modifier
+        },
         hasSkills() {
             return this.attribute.skills.length !== 0;
         },
