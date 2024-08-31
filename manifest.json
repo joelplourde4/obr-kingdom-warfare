@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "manifest_version": 1,
     "action": {
-      "title": "Domain Sheet",
+      "title": "Kingdom & Warfare",
       "icon": "/kingdom.svg",
       "popover": "/",
       "height": 600,

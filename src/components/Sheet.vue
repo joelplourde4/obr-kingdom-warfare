@@ -31,7 +31,12 @@
             />
         </tab>
         <tab name="Military">
-            <Military/>
+            <Military
+                :domain="domain"
+                :isGM="isGM"
+                :isEditMode="editMode"
+                @update:model-value="onUpdate"
+            />
         </tab>
     </tabs>
 </template>

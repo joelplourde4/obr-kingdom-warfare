@@ -2,7 +2,7 @@
     <div class="content">
         <div class="relation" v-for="relation in domain.relations">
             <button type="button" class="collapsible" @click="openCollapsible(relation)">
-                <img class="image" src="/public/kingdom.svg">
+                <img class="image" src="/kingdom.svg">
                 <input class="name" v-model="relation.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
                 <select class="dropdown" v-model="relation.relationStatus" @change="onUpdate" @click="preventPropagation" :disabled="isDisabled">
                     <option v-for="status in RelationStatus" :value="status">
@@ -10,14 +10,14 @@
                     </option>
                 </select>
                 <div class="caret">
-                    <img v-if="relation.show" src="/public/caret-up.svg">
-                    <img v-if="!relation.show" src="/public/caret-down.svg">
+                    <img v-if="relation.show" src="/caret-up.svg">
+                    <img v-if="!relation.show" src="/caret-down.svg">
                 </div>
                 <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveRelation(relation)"/>
             </button>
             <div v-if="relation.show" class="collapsible-content">
                 <div class="officer row" v-for="officer in relation.officers">
-                    <img class="image" src="/public/person.svg">
+                    <img class="image" src="/person.svg">
                     <div class="container">
                         <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
                         <input class="description" v-model="officer.description" @input="onUpdate" :disabled="isDisabled">
@@ -58,7 +58,7 @@ export default defineComponent({
             this.onUpdate();
         },
         onRemoveRelation(relation: Relation) {
-            this.domain.relations = this.domain.relations.filter((x) => {
+            this.domain.relations = this.domain.relations.filter((x: Relation) => {
                 return x !== relation
             });
             this.onUpdate();
@@ -116,21 +116,5 @@ export default defineComponent({
 .officer {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-}
-
-.collapsible {
-    display: inline-flex;
-    background-color: #0000002e;
-    cursor: pointer;
-    padding: 0.75rem;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-}
-
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .collapsible:hover {
-    transform: scale(1.01);
 }
 </style>

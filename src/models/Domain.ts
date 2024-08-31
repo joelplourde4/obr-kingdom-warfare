@@ -1,6 +1,7 @@
 import { Stats } from './Stats.ts'
 import { Relation } from './Relation.ts';
 import { Feature } from './Feature.ts';
+import { Unit } from './Unit.ts';
 
 export enum Size {
     TINY = "Tiny",
@@ -25,6 +26,7 @@ export class Domain {
     stats: Stats;
     relations: Relation[];
     features: Feature[];
+    units: Unit[];
 
     constructor() {
         this.name = "Kingdom";
@@ -33,5 +35,6 @@ export class Domain {
         this.stats = new Stats();
         this.relations = [];
         this.features = [];
+        this.units = [];
     }
 };
