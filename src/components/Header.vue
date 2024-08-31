@@ -38,7 +38,7 @@
                 </select>
             </div>
     </div>
-    <hr class="horizontal-line"/>
+    <hr/>
 </template>
 
 <script lang="ts">
@@ -170,12 +170,5 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-
-.horizontal-line {
-    border-width: 0px 0px thin;
-    border-style: solid;
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
 
 </style>

@@ -2,7 +2,10 @@
     <div class="content">
         <div class="feature row" v-for="feature in domain.features">
             <div class="container">
-                <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
+                <div class="row">
+                    <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
+                    <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
+                </div>
                 <textarea class="description"
                 v-model="feature.description"
                 @input="onUpdate"
@@ -19,7 +22,6 @@
                 </div>
                 <br>
             </div>
-            <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
         </div>
         <input v-show="isVisible" type="button" class="add-button" @click="onAddFeature"/>
     </div>
@@ -76,6 +78,7 @@ export default defineComponent({
         height: 24px;
         float: left;
         align-self: center;
+        width: 100%;
     }
 
     .description {

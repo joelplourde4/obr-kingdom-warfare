@@ -9,6 +9,7 @@
                             <img v-if="unit.show" src="/caret-up.svg">
                             <img v-if="!unit.show" src="/caret-down.svg">
                         </div>
+                        <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
                     </div>
                     <div class="row">
                         <div class="tooltip">
@@ -45,7 +46,6 @@
                         </div>
                     </div>
                 </div>
-                <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
             </button>
             <div v-if="unit.show" class="collapsible-content">
                 <div class="row">
@@ -73,8 +73,9 @@
                             </li>
                         </ol>
                     </div>
-                    <p class="tier">{{ unit.tier }}</p>
+                    <h1 class="tier">{{ unit.tier }}</h1>
                 </div>
+                <hr>
             </div>
         </div>
         <input v-show="isVisible" type="button" class="add-button" @click="onAddUnit"/>
@@ -204,6 +205,7 @@ export default defineComponent({
     .tier {
         float: right;
         width: 50px;
+        font-family: serif;
     }
 
     .trait-header {
