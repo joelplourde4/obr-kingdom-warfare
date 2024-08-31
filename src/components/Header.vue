@@ -131,7 +131,7 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #0000002e;
+  background-color: var(--on-primary);
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -143,17 +143,17 @@ export default defineComponent({
   width: 16px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
+  background-color: var(--text);
   -webkit-transition: .4s;
   transition: .4s;
 }
 
 input:checked + .slider {
-  background-color: rgb(187, 153, 255);
+  background-color: var(--text-accent);
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px rgb(187, 153, 255);
+  box-shadow: 0 0 1px var(--text-accent);
 }
 
 input:checked + .slider:before {

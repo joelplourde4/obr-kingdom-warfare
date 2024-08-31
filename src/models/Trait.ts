@@ -35,7 +35,7 @@ export const TRAIT_MAP = new Map<Trait, string>([
     [Trait.ETERNAL, "This unit cannot be horrified, and it always succeeds on Morale checks to attack undead and fiends."],
     [Trait.FRENZY, "If this unit diminishes an enemy unit, it immediately gains a free attack against that unit"],
     [Trait.HORRIFY, "If this unit inflicts a casualty on an enemy unit, force a DC 15 Morale check. Failure exhausts the unit."],
-    [Trait.MARTIAL, "Inflicts two casualties on a successful Power check if this unit' size is greater than the their target's."],
+    [Trait.MARTIAL, "Inflicts two casualties on a successful Power check if this unit' size is greater than their target's."],
     [Trait.MINDLESS, "This unit cannot fail Morale checks."],
     [Trait.RAVENOUS, "While there is a diminished enemy unit, this unit can spend a round feeding on the corpses. Increment their casualty die."],
     [Trait.ROCK_HURLER, "If this unit succeeds on an Attack check, it inflicts 2 casualties, and against fortifications deal 1D6."],

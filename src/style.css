@@ -1,16 +1,22 @@
 :root {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.43;
-  font-weight: 400;
-
-  /*color-scheme: light dark;*/
-  color: rgba(255, 255, 255, 0.87);
-  /*background-color: #242424;*/
+  font-weight: 500;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary: #177AB0;
+  --on-primary: #0000002e;
+
+  --secondary: #080808;
+
+  --text: #ffffff;
+  --text-accent: rgb(187, 153, 255);
+
+  color: var(--text);
 }
 
 #app {
@@ -38,18 +44,18 @@ ol {
 
  li a {
   display: block;
-  color: white;
+  color: var(--text);
   text-align: center;
   padding: 16px;
   text-decoration: none;
 }
 
 li a:hover {
-  background-color: #0000002e;
+  background-color: var(--on-primary);
 }
 
 a.is-active {
-  color: rgb(187, 153, 255);
+  color: var(--text-accent);
 }
 
 .content {
@@ -73,8 +79,8 @@ a.is-active {
 input, textarea {
   border: none;
   border-radius: 5px;
-  color: #ffffff;
-  background-color: #0000002e;
+  color: var(--text);
+  background-color: var(--on-primary);
 }
 
 input:disabled, textarea:disabled {
@@ -98,13 +104,14 @@ input:hover, textarea:hover, select:hover, option:hover {
 select {
   border: none;
   border-radius: 5px;
-  color: #ffffff;
-  background-color: #0000002e;
+  color: var(--text);
+  background-color: var(--on-primary);
 }
 
 option {
-  background: #0000002e;
-  background-color: rgba(8, 8, 8, 0.664);
+  background: var(--on-primary);
+  background-color: var(--secondary);
+  opacity: 0.6;
   padding: 5px;
 }
 
@@ -116,10 +123,10 @@ option {
 
 /* Tooltip text */
 .tooltip .tooltiptext {
-    color: #fff;
+    color: var(--text);
     visibility: hidden;
     width: 100%;
-    background-color: #0000002e;
+    background-color: var(--on-primary);
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
@@ -174,7 +181,7 @@ p {
 
 .collapsible {
   display: inline-flex;
-  background-color: #0000002e;
+  background-color: var(--on-primary);
   cursor: pointer;
   padding: 0.25rem;
   width: 100%;
@@ -183,14 +190,10 @@ p {
   outline: none;
 }
 
-.active, .collapsible:hover {
-  /*transform: scale(1.01);*/
-}
-
 /** Scrollbar **/
 * {
   scrollbar-width: thin;
-  scrollbar-color: #0000002e #0000002e;
+  scrollbar-color: var(--on-primary) var(--on-primary);
 }
 
 /* Works on Chrome, Edge, and Safari */
@@ -199,17 +202,18 @@ p {
 }
 
 *::-webkit-scrollbar-track {
-  background: #0000002e;
+  background: var(--on-primary);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #0000002e;
+  background-color: var(--on-primary);
   border-radius: 20px;
-  border: 3px solid #0000002e;
+  border: 3px solid var(--on-primary);
 }
 
 hr {
   border-width: 0px 0px thin;
   border-style: solid;
-  border-color: rgba(255, 255, 255, 0.12);
+  opacity: 0.1;
+  border-color: var(--text);
 }

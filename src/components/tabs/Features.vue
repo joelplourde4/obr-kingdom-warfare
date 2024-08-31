@@ -46,7 +46,7 @@ export default defineComponent({
             this.onUpdate();
         },
         onRemoveFeature(feature: Feature) {
-            this.domain.features = this.domain.features.filter((x) => {
+            this.domain.features = this.domain.features.filter((x: Feature) => {
                 return x !== feature
             });
             this.onUpdate();
