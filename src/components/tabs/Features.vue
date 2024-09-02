@@ -1,26 +1,43 @@
 <template>
     <div class="content">
         <div class="feature row" v-for="feature in domain.features">
-            <div class="container">
-                <div class="row">
-                    <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
-                    <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
+            <div class="row">
+                <div v-if="isVisible" class="show">
+                    <div v-if="!feature.visible" class="tooltip">
+                        <input type="button" class="show-button" @click="onToggleFeature(feature)"/>
+                        <span class="tooltiptext">
+                            Is shown to the players, click to hide.
+                        </span>
+                    </div>
+                    <div v-if="feature.visible" class="tooltip">
+                        <input type="button" class="hide-button" @click="onToggleFeature(feature)"/>
+                        <span class="tooltiptext">
+                            Is hidden from the players, click to show.
+                        </span>
+                    </div>
                 </div>
-                <textarea class="description"
-                v-model="feature.description"
-                @input="onUpdate"
-                :disabled="isDisabled"
-                :class="isDisabled ? 'disabled' : ''"
-                />
-                <div class="source row">
-                    <p>Source</p>
-                    <select class="dropdown" v-model="feature.source" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
-                        <option v-for="relation in domain.relations" :value="relation.name">
-                            {{ relation.name }}
-                        </option>
-                    </select>
+                <div v-if="isShown(feature)" class="container">
+                    <div class="row">
+                        <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
+                        <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
+                    </div>
+                    <textarea class="description"
+                        ref="textarea"
+                        v-model="feature.description"
+                        @input="onTextAreaChange"
+                        :disabled="isDisabled"
+                        :class="isDisabled ? 'disabled' : ''"
+                    />
+                    <div class="source row">
+                        <p class="source-text">Source</p>
+                        <select class="dropdown" v-model="feature.source" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                            <option v-for="relation in domain.relations" :value="relation.name">
+                                {{ relation.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <br>
                 </div>
-                <br>
             </div>
         </div>
         <input v-show="isVisible" type="button" class="add-button" @click="onAddFeature"/>
@@ -40,6 +57,11 @@ export default defineComponent({
     mixins: [utils],
     extends: BaseTab,
     name: 'Feature',
+    updated() {
+        (this.$refs.textarea || []).forEach((element: any) => {
+            this.resizeTextArea(element);
+        });
+    },
     methods: {
         onAddFeature() {
             this.domain.features.push(new Feature());
@@ -50,7 +72,25 @@ export default defineComponent({
                 return x !== feature
             });
             this.onUpdate();
-        }
+        },
+        resizeTextArea(target: any) {
+            target.style.height = "auto";
+            target.style.height = `${target.scrollHeight}px`;
+        },
+        onTextAreaChange(event: any) {
+            this.resizeTextArea(event.target);
+            return this.onUpdate();
+        },
+        onToggleFeature(feature: Feature) {
+            feature.visible = !feature.visible;
+            this.onUpdate();
+        },
+        isShown(feature: Feature) {
+            if (this.isGM) {
+                return true;
+            }
+            return !feature.visible;
+        },
     }
 })  
 </script>
@@ -59,17 +99,25 @@ export default defineComponent({
 
 .feature {
 
+    .show {
+        margin-top: 0.5rem;
+        height: 25px;
+        width: 25px;
+    }
+
     .source {
         height: 24px;
         padding-left: 0.25rem;
 
         p {
+            font-size: smaller;
+            font-style: italic;
             display: contents;
             padding-right: 0.125rem;
         }
 
         select {
-            margin-left: 1rem;
+            margin-left: 0.25rem;
         }
     }
 

@@ -1,12 +1,10 @@
 export class Officer {
-    id: string;
     name: string;
     description: string;
     img: string;
     show: boolean;
 
     constructor() {
-        this.id = crypto.randomUUID();
         this.name = "Default";
         this.description = "Description";
         this.img = "/person.svg";
@@ -23,7 +21,6 @@ export enum RelationStatus {
 } 
 
 export class Relation {
-    id: string;
     name: string;
     img: string;
     relationStatus: RelationStatus
@@ -32,7 +29,6 @@ export class Relation {
     show: boolean
 
     constructor () {
-        this.id = crypto.randomUUID();
         this.name = "Default"
         this.img = "/kingdom.svg"
         this.relationStatus = RelationStatus.NEUTRAL

@@ -14,7 +14,6 @@ export class TraitDefinition {
     }
 }
 
-// TODO
 export class AncestryDefinition {
     trait: Trait
     inherit: boolean
