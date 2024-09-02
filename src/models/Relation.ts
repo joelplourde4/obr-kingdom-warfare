@@ -28,14 +28,16 @@ export class Relation {
     img: string;
     relationStatus: RelationStatus
     officers: Officer[]
+    expand: boolean
     show: boolean
 
     constructor () {
         this.id = crypto.randomUUID();
         this.name = "Default"
-        this.img = ""
+        this.img = "/kingdom.svg"
         this.relationStatus = RelationStatus.NEUTRAL
         this.officers = []
+        this.expand = false
         this.show = false
     }
 }
