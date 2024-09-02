@@ -6,13 +6,13 @@
                     <div v-if="!relation.show" class="tooltip">
                         <input type="button" class="show-button" @click="onToggleRelation(relation)"/>
                         <span class="tooltiptext">
-                            Is shown to the Player, click to hide.
+                            Is shown to the players, click to hide.
                         </span>
                     </div>
                     <div v-if="relation.show" class="tooltip">
                         <input type="button" class="hide-button" @click="onToggleRelation(relation)"/>
                         <span class="tooltiptext">
-                            Is hidden from the player, click to show.
+                            Is hidden from the players, click to show.
                         </span>
                     </div>
                 </div>
@@ -20,7 +20,7 @@
                     <button type="button" class="collapsible" @click="openCollapsible(relation)">
                         <div>
                             <img v-if="!isVisible" class="image" :src="relation.img">
-                            <img v-if="isVisible" class="image" :src="relation.img" @click="uploadImage(relation)">
+                            <img v-if="isVisible" class="image" :src="relation.img" @click="uploadRelationImage(relation)">
                         </div>
                         <input class="name" v-model="relation.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
                         <select class="dropdown" v-model="relation.relationStatus" @change="onUpdate" @click="preventPropagation" :disabled="isDisabled">
@@ -35,14 +35,33 @@
                         <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveRelation(relation)"/>
                     </button>
                     <div v-if="relation.expand" class="collapsible-content">
-                    <div class="officer row" v-for="officer in relation.officers">
-                        <img class="image" src="/person.svg">
-                        <div class="container">
-                            <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
-                            <input class="description" v-model="officer.description" @input="onUpdate" :disabled="isDisabled">
+                        <div v-for="officer in relation.officers">
+                            <div v-if="isOfficerShown(officer)" class="officer row">
+                                <div v-if="isVisible" class="show">
+                                    <div v-if="!officer.show" class="tooltip">
+                                        <input type="button" class="show-button" @click="onToggleOfficer(officer)"/>
+                                        <span class="tooltiptext">
+                                            Is shown to the players, click to hide.
+                                        </span>
+                                    </div>
+                                    <div v-if="officer.show" class="tooltip">
+                                        <input type="button" class="hide-button" @click="onToggleOfficer(officer)"/>
+                                        <span class="tooltiptext">
+                                            Is hidden from the players, click to show.
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <img v-if="!isVisible" class="image portrait" :src="officer.img">
+                                    <img v-if="isVisible" class="image portrait" :src="officer.img" @click="uploadOfficerImage(officer)">
+                                </div>
+                                <div class="container">
+                                    <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
+                                    <!--<input class="description" v-model="officer.description" @input="onUpdate" :disabled="isDisabled">-->
+                                </div>
+                                <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveOfficer(relation, officer)"/>
+                            </div>
                         </div>
-                        <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveOfficer(relation, officer)"/>
-                    </div>
                     <input v-show="isVisible" type="button" class="add-button" @click="onAddOfficer(relation)"/>
                 </div>
             </div>
@@ -75,13 +94,23 @@ export default defineComponent({
             if (this.isGM) {
                 return true;
             }
-            return relation.show;
+            return !relation.show;
+        },
+        isOfficerShown(officer: Officer) {
+            if (this.isGM) {
+                return true;
+            }
+            return !officer.show;
         },
         openCollapsible(relation: Relation) {
             relation.expand = !relation.expand;
         },
         onToggleRelation(relation: Relation) {
             relation.show = !relation.show;
+            this.onUpdate();
+        },
+        onToggleOfficer(officer: Officer) {
+            officer.show = !officer.show;
             this.onUpdate();
         },
         onAddRelation() {
@@ -104,11 +133,19 @@ export default defineComponent({
             });
             this.onUpdate();
         },
-        async uploadImage(relation: Relation) {
+        async uploadRelationImage(relation: Relation) {
             this.preventPropagation(event);
             const images = await OBR.assets.downloadImages(false, "The Barony of Bloodstone/heraldry/Heraldry - ", "NOTE");
             if (images.length > 0) {
                 relation.img = images[0].image.url;
+                this.onUpdate();
+            }
+        },
+        async uploadOfficerImage(officer: Officer) {
+            this.preventPropagation(event);
+            const images = await OBR.assets.downloadImages(false, "The Barony of Bloodstone", "NOTE");
+            if (images.length > 0) {
+                officer.img = images[0].image.url;
                 this.onUpdate();
             }
         }
@@ -122,7 +159,7 @@ export default defineComponent({
     padding-bottom: 0.5rem;
 
     .show {
-        margin: auto;
+        margin-top: 0.5rem;
         height: 25px;
         width: 25px;
     }
@@ -135,6 +172,10 @@ export default defineComponent({
         height: 40px;
         width: 40px;
         margin: auto;
+    }
+
+    .portrait {
+        border-radius: 25px;
     }
     
     .name {
@@ -165,5 +206,6 @@ export default defineComponent({
 .officer {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    padding-left: 1rem;
 }
 </style>

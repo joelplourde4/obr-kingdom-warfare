@@ -9,7 +9,7 @@ export class Officer {
         this.id = crypto.randomUUID();
         this.name = "Default";
         this.description = "Description";
-        this.img = "";
+        this.img = "/person.svg";
         this.show = false;
     }
 }
