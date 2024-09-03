@@ -54,7 +54,9 @@ export enum Type {
     CAVALRY = "Cavalry",
     SIEGE = "Siege",
     AERIAL = "Aerial",
-    SPELLCASTER = "Spellcaster"
+    SPELLCASTER = "Spellcaster",
+    FORTIFICATIONS = "Fortifications",
+    SIEGE_ENGINES = "Siege Engines"
 }
 
 export enum Equipment {
@@ -65,8 +67,9 @@ export enum Equipment {
 }
 
 export enum Experience {
-    LEVIES = "Levies",
+    GREEN = "Green",
     REGULAR = "Regular",
+    SEASONED = "Seasoned",
     VETERAN = "Veteran",
     ELITE = "Elite",
     SUPER_ELITE = "Super Elite"

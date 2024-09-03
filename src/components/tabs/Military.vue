@@ -9,6 +9,7 @@
                             <img v-if="unit.show" src="/caret-up.svg">
                             <img v-if="!unit.show" src="/caret-down.svg">
                         </div>
+                        <input type="button" class="add-button" @click="openModal">
                         <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
                     </div>
                     <div class="row">
@@ -91,6 +92,8 @@ import { TRAIT_MAP, ANCESTRY_TRAIT_MAP, TraitDefinition } from '../../models/Tra
 // @ts-ignore
 import BaseTab from './BaseTab.js'
 import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait  } from '../../models/Unit.js';
+import OBR from '@owlbear-rodeo/sdk';
+import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';
     
 export default defineComponent({
     mixins: [utils],
@@ -167,6 +170,16 @@ export default defineComponent({
             // Replace at index, the new trait.
             unit.traits[index] = traitDefinition.newTrait || Trait.AAAUUUGH;
             this.onUpdate();
+        },
+        openModal() {
+            const modal = {
+                id: "obr.kingdom-warfare/modal",
+                url: "/unit/",
+                height: 300,
+                width: 400
+            } as Modal
+
+            OBR.modal.open(modal);
         }
     }
 })  
