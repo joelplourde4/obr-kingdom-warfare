@@ -9,7 +9,7 @@
                             <img v-if="unit.show" src="/caret-up.svg">
                             <img v-if="!unit.show" src="/caret-down.svg">
                         </div>
-                        <input type="button" class="add-button" @click="openModal">
+                        <input type="button" class="external-link-button" @click="openModal(unit)">
                         <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
                     </div>
                     <div class="row">
@@ -48,7 +48,8 @@
                     </div>
                 </div>
             </button>
-            <div v-if="unit.show" class="collapsible-content">
+            <div v-if="unit.show" class="collapsible-content row">
+                <hr>
                 <div class="row">
                     <div class="column">
                         <div class="tooltip">
@@ -74,7 +75,26 @@
                             </li>
                         </ol>
                     </div>
-                    <h1 class="tier">{{ unit.tier }}</h1>
+                </div>
+                <div class="column advanced-section">
+                    <div class="tooltip">
+                        <span>Size</span>
+                        <select class="dropdown" v-model="unit.size" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                            <option v-for="size in Size" :value="size">
+                                {{ size }}
+                            </option>
+                        </select>
+                        <span class="tooltiptext">Size: Represent the casuality die (e.g HP). A unit's die is decremented each time it fails a morale check and each time it takes casualties.</span>
+                    </div>
+                    <div class="tooltip">
+                        <span>Tier</span>
+                        <select class="dropdown tier" v-model="unit.tier" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                            <option v-for="tier in Tier" :value="tier">
+                                {{ tier }}
+                            </option>
+                        </select>
+                        <span class="tooltiptext">Tier: Measure of the unit's overall power or nastiness.</span>
+                    </div>
                 </div>
                 <hr>
             </div>
@@ -87,11 +107,11 @@
 import { defineComponent } from 'vue'
 import { utils } from '../../mixins/utils'
 
-import { TRAIT_MAP, ANCESTRY_TRAIT_MAP, TraitDefinition } from '../../models/Trait.ts'
+import { TRAIT_DESCRIPTION_MAP, ANCESTRY_TRAIT_MAP, TraitDefinition } from '../../models/Trait.ts'
 
 // @ts-ignore
 import BaseTab from './BaseTab.js'
-import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait  } from '../../models/Unit.js';
+import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait, Size  } from '../../models/Unit.js';
 import OBR from '@owlbear-rodeo/sdk';
 import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';
     
@@ -106,7 +126,8 @@ export default defineComponent({
             Type,
             Ancestry,
             Tier,
-            Trait
+            Trait,
+            Size
         }
     },
     methods: {
@@ -154,7 +175,7 @@ export default defineComponent({
             }
             return new TraitDefinition(
                 trait,
-                TRAIT_MAP.get(trait) || "",
+                TRAIT_DESCRIPTION_MAP.get(trait) || "",
                 inherit
             )
         },
@@ -171,11 +192,16 @@ export default defineComponent({
             unit.traits[index] = traitDefinition.newTrait || Trait.AAAUUUGH;
             this.onUpdate();
         },
-        openModal() {
+        openModal(unit: Unit) {
+            this.preventPropagation(event);
+            const queryParams = `name=${unit.name}&equipment=${unit.equipment}&experience=${unit.experience}&type=${unit.type}&ancestry=${unit.ancestry}&tier=${unit.tier}&size=${unit.size}&traits=${unit.traits}`
+
+            const url = `/unit/?${queryParams}`.replace(/ /g, "_");
+
             const modal = {
                 id: "obr.kingdom-warfare/modal",
-                url: "/unit/",
-                height: 300,
+                url: url,
+                height: 500,
                 width: 400
             } as Modal
 
@@ -202,6 +228,11 @@ export default defineComponent({
         align-self: center;
     }
 
+    .advanced-section {
+        justify-content: right;
+        display: grid;
+    }
+
     .caret {
         filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
         float: right;
@@ -213,12 +244,6 @@ export default defineComponent({
         width: 80px;
         height: 30px;
         align-self: center;
-    }
-
-    .tier {
-        float: right;
-        width: 50px;
-        font-family: serif;
     }
 
     .trait-header {
@@ -245,6 +270,10 @@ export default defineComponent({
         .remove-trait {
             float: right;
         }
+    }
+
+    .tier {
+        font-family: initial;
     }
 }
 
