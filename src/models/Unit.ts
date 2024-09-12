@@ -45,6 +45,8 @@ export enum Ancestry {
     ORC = "Orc",
     UNDEAD = "Undead",
     SPECIAL = "Special",
+    TREANT = "Treant",
+    TROLL = "Troll"
 }
 
 export enum Type {
@@ -52,9 +54,10 @@ export enum Type {
     INFANTRY = "Infantry",
     ARTILLERY = "Artillery",
     CAVALRY = "Cavalry",
-    SIEGE = "Siege",
     AERIAL = "Aerial",
-    SPELLCASTER = "Spellcaster"
+    SPELLCASTER = "Spellcaster",
+    FORTIFICATION = "Fortification",
+    SIEGE_ENGINE = "Siege Engine"
 }
 
 export enum Equipment {
@@ -65,11 +68,22 @@ export enum Equipment {
 }
 
 export enum Experience {
-    LEVIES = "Levies",
+    GREEN = "Green",
     REGULAR = "Regular",
+    SEASONED = "Seasoned",
     VETERAN = "Veteran",
     ELITE = "Elite",
     SUPER_ELITE = "Super Elite"
+}
+
+export enum Size {
+    D4 = "1d4",
+    D6 = "1d6",
+    D8 = "1d8",
+    D10 = "1d10",
+    D12 = "1d12",
+    D20 = "1d20",
+    D24 = "2d12"
 }
 
 export class Unit {
@@ -80,6 +94,7 @@ export class Unit {
     type: Type;
     ancestry: Ancestry;
     tier: Tier;
+    size: Size;
     traits: Trait[];
 
     constructor() {
@@ -90,6 +105,7 @@ export class Unit {
         this.type = Type.INFANTRY;
         this.ancestry = Ancestry.HUMAN;
         this.tier = Tier.I;
+        this.size = Size.D4;
         this.traits = [];
     }
 }

@@ -1,0 +1,17 @@
+.row {
+    display: flex;
+  }
+  
+  .column {
+    flex: 50%;
+  }
+  
+  .container {
+    display: grid;
+    width: 90%;
+  }
+
+:root {
+  --on-primary: #0000002e;
+  --accent: rgb(187, 153, 255);
+}

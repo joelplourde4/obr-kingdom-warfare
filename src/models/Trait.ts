@@ -24,7 +24,7 @@ export class AncestryDefinition {
     }
 }
 
-export const TRAIT_MAP = new Map<Trait, string>([
+export const TRAIT_DESCRIPTION_MAP = new Map<Trait, string>([
     [Trait.AMPHIBIOUS, "This unit does not suffer terrain penalties for fighting in water or on land."],
     [Trait.AAAUUUGH, "When this unit breaks, all adjacent units suffer 1 casualty."],
     [Trait.ADAPTABLE, "This unit has advantage on Morale and Command tests."],
@@ -59,11 +59,10 @@ export const ANCESTRY_TRAIT_MAP = new Map<Ancestry, Trait[]>([
     [Ancestry.OGRE, [Trait.BRUTAL]],
     [Ancestry.ORC, [Trait.SAVAGE]],
     [Ancestry.UNDEAD, [Trait.UNDEAD, Trait.MINDLESS]],
-    /*
-    [Ancestry.FIEND, ],
-    [Ancestry.MONSTROUS, ],
-    [Ancestry.SPECIAL, ],
-    [Ancestry.TREANT, ],
-    [Ancestry.TROLL, ],
-    */
+    // TODO Finish this
+    [Ancestry.FIEND, []],
+    [Ancestry.MONSTROUS, []],
+    [Ancestry.SPECIAL, []],
+    [Ancestry.TREANT, []],
+    [Ancestry.TROLL, []]
 ]);

@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createWebHistory, createRouter } from 'vue-router'
 import {Tabs, Tab} from 'vue3-tabs-component';
 import OBR from "@owlbear-rodeo/sdk";
 
@@ -7,6 +8,20 @@ import App from './App.vue'
 
 const app = createApp(App)
 
+const routes = [
+    { 
+        path: '/',
+        name: 'Home',
+        component: App,
+    }
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes
+});
+
+app.use(router)
 app.component('tabs', Tabs)
 app.component('tab', Tab)
 app.mount('#app')
