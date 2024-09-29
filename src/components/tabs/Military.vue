@@ -5,14 +5,33 @@
                 <div class="column">
                     <div class="row">
                         <input class="name" v-model="unit.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
-                        <div class="caret">
+                        <div v-if="!isVisible" class="caret">
                             <img v-if="unit.show" src="/caret-up.svg">
                             <img v-if="!unit.show" src="/caret-down.svg">
                         </div>
-                        <input type="button" class="external-link-button" @click="openModal(unit)">
-                        <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
+                        <div v-if="isVisible" class="more">
+                            <img src="/more.svg">
+                            <div class="more-options">
+                                <div class="option-container caret">
+                                    <img v-if="unit.show" src="/caret-up.svg">
+                                    <img v-if="!unit.show" src="/caret-down.svg">
+                                </div>
+                                <div class="option-container tooltip">
+                                    <input type="button" class="external-link-button" @click="openModal(unit)">
+                                    <span class="tooltiptext">
+                                        On click, open the Unit card.
+                                    </span>
+                                </div>
+                                <div class="option-container tooltip">
+                                    <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
+                                    <span class="tooltiptext">
+                                        On click, remote the Unit.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row">
+                    <div class="attribute-selector row">
                         <div class="tooltip">
                             <select class="dropdown" v-model="unit.experience" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                                 <option v-for="experience in Experience" :value="experience">
@@ -99,7 +118,13 @@
                 <hr>
             </div>
         </div>
-        <input v-show="isVisible" type="button" class="add-button" @click="onAddUnit"/>
+        <div v-show="isVisible" class="add-button-container tooltip">
+            <input type="button" class="add-button" @click="onAddUnit"/>
+            <span>Unit</span>
+            <span class="tooltiptext">
+                On click, add a Unit.
+            </span>
+        </div>
     </div>
 </template>
   
@@ -226,6 +251,10 @@ export default defineComponent({
         height: 24px;
         float: left;
         align-self: center;
+    }
+
+    .attribute-selector {
+        justify-content: space-around
     }
 
     .advanced-section {

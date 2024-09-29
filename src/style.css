@@ -73,7 +73,7 @@ a.is-active {
 
 .container {
   display: grid;
-  width: 90%;
+  width: 100%;
 }
 
 input, textarea {
@@ -211,8 +211,6 @@ input.remove-button {
   height: 25px;           /* make this the size of your image */
   width: 25px;
   margin: auto;
-
-  padding-inline: 1.25rem;
 }
 
 /* Text Size */
@@ -258,4 +256,38 @@ hr {
   border-style: solid;
   opacity: 0.1;
   border-color: var(--text);
+}
+
+.more {
+  display: inline-block;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  margin: auto;
+}
+
+.more-options {
+  display: none;
+  position: absolute;
+  overflow: auto;
+  right: -20%;
+  top: 95%;
+  background-color: var(--on-primary);
+  z-index: 1;
+
+  .option-container {
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem;
+  }
+}
+
+.more:hover {
+  .more-options {
+      display: block;
+  }
+}
+
+.add-button-container {
+  margin: auto;
 }
