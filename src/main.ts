@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import { createWebHistory, createRouter } from 'vue-router'
+
+// @ts-ignore
 import {Tabs, Tab} from 'vue3-tabs-component';
 import OBR from "@owlbear-rodeo/sdk";
 
