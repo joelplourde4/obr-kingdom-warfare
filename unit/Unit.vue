@@ -376,7 +376,6 @@ h3, p, hr {
             margin-left: auto;
             height: 40px;
             width: 40px;
-            padding-bottom: 10px;
 
             .number {
                 position: absolute;

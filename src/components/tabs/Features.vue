@@ -2,24 +2,34 @@
     <div class="content">
         <div class="feature row" v-for="feature in domain.features">
             <div class="row">
-                <div v-if="isVisible" class="show">
-                    <div v-if="!feature.visible" class="tooltip">
-                        <input type="button" class="show-button" @click="onToggleFeature(feature)"/>
-                        <span class="tooltiptext">
-                            Is shown to the players, click to hide.
-                        </span>
-                    </div>
-                    <div v-if="feature.visible" class="tooltip">
-                        <input type="button" class="hide-button" @click="onToggleFeature(feature)"/>
-                        <span class="tooltiptext">
-                            Is hidden from the players, click to show.
-                        </span>
-                    </div>
-                </div>
                 <div v-if="isShown(feature)" class="container">
                     <div class="row">
                         <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
-                        <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
+                        <div v-if="isVisible" class="more">
+                            <img src="/more.svg">
+                            <div class="more-options">
+                                <div class="option-container show">
+                                    <div v-if="!feature.visible" class="tooltip">
+                                        <input type="button" class="show-button" @click="onToggleFeature(feature)"/>
+                                        <span class="tooltiptext">
+                                            Is shown to the players, click to hide.
+                                        </span>
+                                    </div>
+                                    <div v-if="feature.visible" class="tooltip">
+                                        <input type="button" class="hide-button" @click="onToggleFeature(feature)"/>
+                                        <span class="tooltiptext">
+                                            Is hidden from the players, click to show.
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="option-container tooltip">
+                                    <input type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
+                                    <span class="tooltiptext">
+                                        On click, remove the Feature.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <textarea class="description"
                         ref="textarea"
@@ -40,7 +50,13 @@
                 </div>
             </div>
         </div>
-        <input v-show="isVisible" type="button" class="add-button" @click="onAddFeature"/>
+        <div v-show="isVisible" class="add-button-container tooltip">
+            <input type="button" class="add-button" @click="onAddFeature"/>
+            <span>Feature</span>
+            <span class="tooltiptext">
+                On click, add a Feature.
+            </span>
+        </div>
     </div>
 </template>
   
@@ -109,7 +125,7 @@ export default defineComponent({
         height: 24px;
         padding-left: 0.25rem;
 
-        p {
+        .source-text {
             font-size: smaller;
             font-style: italic;
             display: contents;

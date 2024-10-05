@@ -2,72 +2,81 @@
     <div class="content">
         <div class="relation" v-for="relation in domain.relations">
             <div class="row">  
-                <div v-if="isVisible" class="show">
-                    <div v-if="!relation.show" class="tooltip">
-                        <input type="button" class="show-button" @click="onToggleRelation(relation)"/>
-                        <span class="tooltiptext">
-                            Is shown to the players, click to hide.
-                        </span>
-                    </div>
-                    <div v-if="relation.show" class="tooltip">
-                        <input type="button" class="hide-button" @click="onToggleRelation(relation)"/>
-                        <span class="tooltiptext">
-                            Is hidden from the players, click to show.
-                        </span>
-                    </div>
-                </div>
                 <div v-if="isShown(relation)" class="group">
                     <button type="button" class="collapsible" @click="openCollapsible(relation)">
-                        <div>
-                            <img v-if="!isVisible" class="image" :src="relation.img">
-                            <img v-if="isVisible" class="image" :src="relation.img" @click="uploadRelationImage(relation)">
+                    <div>
+                        <img v-if="!isVisible" class="image" :src="relation.img">
+                        <img v-if="isVisible" class="image" :src="relation.img" @click="uploadRelationImage(relation)">
+                    </div>
+                    <input class="name" v-model="relation.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
+                    <select class="dropdown" v-model="relation.relationStatus" @change="onUpdate" @click="preventPropagation" :disabled="isDisabled">
+                        <option v-for="status in RelationStatus" :value="status">
+                            {{ status }}
+                        </option>
+                    </select>
+                    <div v-if="!isVisible" class="caret">
+                        <img v-if="relation.expand" src="/caret-up.svg">
+                        <img v-if="!relation.expand" src="/caret-down.svg">
+                    </div>
+                    <div v-else class="more">
+                        <img src="/more.svg">
+                        <div class="more-options">
+                            <div class="option-container caret">
+                                <img v-if="relation.expand" src="/caret-up.svg">
+                                <img v-if="!relation.expand" src="/caret-down.svg">
+                            </div>
+                            <div v-if="!relation.show" class="option-container tooltip">
+                                <input type="button" class="show-button" @click="onToggleRelation(relation)"/>
+                                <span class="tooltiptext">
+                                    Is shown to the players, click to hide.
+                                </span>
+                            </div>
+                            <div v-if="relation.show" class="option-container tooltip">
+                                <input type="button" class="hide-button" @click="onToggleRelation(relation)"/>
+                                <span class="tooltiptext">
+                                    Is hidden from the players, click to show.
+                                </span>
+                            </div>
+                            <div class="option-container tooltip">
+                                <input type="button" class="remove-button" @click="onRemoveRelation(relation)"/>
+                                <span class="tooltiptext">
+                                    On click, remove the Relation.
+                                </span>
+                            </div>
                         </div>
-                        <input class="name" v-model="relation.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
-                        <select class="dropdown" v-model="relation.relationStatus" @change="onUpdate" @click="preventPropagation" :disabled="isDisabled">
-                            <option v-for="status in RelationStatus" :value="status">
-                                {{ status }}
-                            </option>
-                        </select>
-                        <div class="caret">
-                            <img v-if="relation.expand" src="/caret-up.svg">
-                            <img v-if="!relation.expand" src="/caret-down.svg">
-                        </div>
-                        <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveRelation(relation)"/>
+                    </div>
                     </button>
                     <div v-if="relation.expand" class="collapsible-content">
                         <div v-for="officer in relation.officers">
                             <div v-if="isOfficerShown(officer)" class="officer row">
-                                <div v-if="isVisible" class="show">
-                                    <div v-if="!officer.show" class="tooltip">
-                                        <input type="button" class="show-button" @click="onToggleOfficer(officer)"/>
-                                        <span class="tooltiptext">
-                                            Is shown to the players, click to hide.
-                                        </span>
-                                    </div>
-                                    <div v-if="officer.show" class="tooltip">
-                                        <input type="button" class="hide-button" @click="onToggleOfficer(officer)"/>
-                                        <span class="tooltiptext">
-                                            Is hidden from the players, click to show.
-                                        </span>
-                                    </div>
-                                </div>
                                 <div>
                                     <img v-if="!isVisible" class="image portrait" :src="officer.img">
                                     <img v-if="isVisible" class="image portrait" :src="officer.img" @click="uploadOfficerImage(officer)">
                                 </div>
                                 <div class="container">
                                     <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
-                                    <!--<input class="description" v-model="officer.description" @input="onUpdate" :disabled="isDisabled">-->
                                 </div>
                                 <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveOfficer(relation, officer)"/>
                             </div>
                         </div>
-                    <input v-show="isVisible" type="button" class="add-button" @click="onAddOfficer(relation)"/>
+                        <div v-show="isVisible" class="add-button-container tooltip">
+                            <input type="button" class="add-button" @click="onAddOfficer(relation)"/>
+                            <span>Officer</span>
+                            <span class="tooltiptext">
+                                On click, add an Officer.
+                            </span>
+                        </div>
                 </div>
             </div>
             </div>
         </div>
-        <input v-show="isVisible" type="button" class="add-button" @click="onAddRelation"/>
+        <div v-show="isVisible" class="add-button-container tooltip">
+            <input type="button" class="add-button" @click="onAddRelation"/>
+            <span>Relation</span>
+            <span class="tooltiptext">
+                On click, add a Relation.
+            </span>
+        </div>
     </div>
   </template>
   
@@ -106,6 +115,7 @@ export default defineComponent({
             relation.expand = !relation.expand;
         },
         onToggleRelation(relation: Relation) {
+            this.preventPropagation(event);
             relation.show = !relation.show;
             this.onUpdate();
         },
@@ -159,13 +169,18 @@ export default defineComponent({
     padding-bottom: 0.5rem;
 
     .show {
-        margin-top: 0.5rem;
+        display: flex;
+        margin-bottom: auto;
         height: 25px;
         width: 25px;
     }
 
     .group {
         width: 100%;
+    }
+
+    .small-group {
+        width: 95%;
     }
 
     .image {
