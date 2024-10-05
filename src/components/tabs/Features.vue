@@ -147,6 +147,7 @@ export default defineComponent({
 
     .description {
         margin: 0.25rem;
+        min-height: 40px;
     }
 
     textarea {

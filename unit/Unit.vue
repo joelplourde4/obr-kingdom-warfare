@@ -448,7 +448,7 @@ h3, p, hr {
 }
 
 .loader {
-  border: 8px solid var(--on-primary); /* Light grey */
+  border: 8px solid var(--background); /* Light grey */
   border-top: 8px solid var(--accent);
   border-radius: 50%;
   width: 60px;

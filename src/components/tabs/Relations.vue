@@ -191,6 +191,7 @@ export default defineComponent({
 
     .portrait {
         border-radius: 25px;
+        cursor: pointer;
     }
     
     .name {
