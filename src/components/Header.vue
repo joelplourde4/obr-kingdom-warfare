@@ -131,7 +131,7 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--on-primary);
+  background-color: var(--background);
   -webkit-transition: .4s;
   transition: .4s;
 }

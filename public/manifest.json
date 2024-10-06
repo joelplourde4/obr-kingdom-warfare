@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "manifest_version": 1,
     "author": "🤖",
-    "icon": "/kingdom.svg",
+    "icon": "/logo.png",
     "description": "This extension provides an implementation of the Domain Sheet for MCDM's Kingdom's & Warfare for DnD 5e.",
     "action": {
       "title": "Kingdom & Warfare",
