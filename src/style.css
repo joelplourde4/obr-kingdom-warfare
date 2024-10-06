@@ -11,6 +11,7 @@
   --primary: #9966ff;
   --accent: #bb99ff;
   --background: rgba(0, 0, 0, 0.1);
+  --default: #1e2231;
   --text: rgba(0, 0, 0, 1);
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-accent: var(--accent);
@@ -150,7 +151,7 @@ option {
 }
 
 input.show-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/shown.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -162,7 +163,7 @@ input.show-button {
 }
 
 input.hide-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/hidden.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -174,7 +175,7 @@ input.hide-button {
 }
 
 input.add-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/add.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -186,7 +187,7 @@ input.add-button {
 }
 
 input.external-link-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/external-link.svg); /* 16px x 16px */
   margin-top: 5px;
   background-color: transparent; /* make the button transparent */
@@ -290,4 +291,17 @@ hr {
 
 .add-button-container {
   margin: auto;
+}
+
+.dropdown {
+
+  background-color: var(--background);
+
+  option {
+      background-color: var(--default);
+  }
+}
+
+.dot {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
 }

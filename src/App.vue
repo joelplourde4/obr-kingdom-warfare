@@ -88,6 +88,7 @@ export default defineComponent({
         this.root?.style.setProperty("--primary", theme.primary.main);
         this.root?.style.setProperty("--text", theme.text.primary);
         this.root?.style.setProperty("--text-secondary", theme.text.secondary);
+        this.root?.style.setProperty("--default", theme.background.default);
       }
     }
 })
