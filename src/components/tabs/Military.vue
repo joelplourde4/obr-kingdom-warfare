@@ -10,7 +10,7 @@
                             <img v-if="!unit.show" src="/caret-down.svg">
                         </div>
                         <div v-if="isVisible" class="more">
-                            <img src="/more.svg">
+                            <img class="dot" src="/more.svg">
                             <div class="more-options">
                                 <div class="option-container caret">
                                     <img v-if="unit.show" src="/caret-up.svg">
@@ -263,7 +263,7 @@ export default defineComponent({
     }
 
     .caret {
-        filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+        filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
         float: right;
         align-self: center;
     }

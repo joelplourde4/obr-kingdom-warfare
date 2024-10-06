@@ -13,7 +13,7 @@ import { useDebounceFn } from '@vueuse/core'
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
 
-import OBR from "@owlbear-rodeo/sdk";
+import OBR, { Theme } from "@owlbear-rodeo/sdk";
 
 const GLOBAL_MESSAGE = "obr.domain.sheet.channel"
 
@@ -44,10 +44,13 @@ export default defineComponent({
         debouncedFunction,
         isGM: false,
         domain: new Domain(),
-        playerId: ""
+        playerId: "",
+        root: document.getElementById('content'),
       }
     },
     mounted() {
+      this.root = document.documentElement;
+
       const intervalId = window.setInterval(async () => {
           if (OBR.isReady) {
             // Load the Player ID
@@ -65,6 +68,14 @@ export default defineComponent({
             OBR.broadcast.onMessage(GLOBAL_MESSAGE, (event) => {
               this.domain = Object.setPrototypeOf(event.data, Domain.prototype)
             });
+
+            const theme = await OBR.theme.getTheme();
+            this.setTheme(theme);
+
+            OBR.theme.onChange((theme) => {
+              this.setTheme(theme);
+            }),
+
             clearInterval(intervalId);
           }
         }, 200)
@@ -72,6 +83,12 @@ export default defineComponent({
     methods: {
       updateDomain(domain: Domain) {
         this.debouncedFunction(domain);
+      },
+      setTheme(theme: Theme) {
+        this.root?.style.setProperty("--primary", theme.primary.main);
+        this.root?.style.setProperty("--text", theme.text.primary);
+        this.root?.style.setProperty("--text-secondary", theme.text.secondary);
+        this.root?.style.setProperty("--default", theme.background.default);
       }
     }
 })

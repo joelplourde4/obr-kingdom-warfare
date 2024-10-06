@@ -6,7 +6,7 @@
                     <div class="row">
                         <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
                         <div v-if="isVisible" class="more">
-                            <img src="/more.svg">
+                            <img class="dot" src="/more.svg">
                             <div class="more-options">
                                 <div class="option-container show">
                                     <div v-if="!feature.visible" class="tooltip">
@@ -147,6 +147,7 @@ export default defineComponent({
 
     .description {
         margin: 0.25rem;
+        min-height: 40px;
     }
 
     textarea {

@@ -8,13 +8,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary: #177AB0;
-  --on-primary: #0000002e;
-
-  --secondary: #080808;
-
-  --text: #ffffff;
-  --text-accent: rgb(187, 153, 255);
+  --primary: #9966ff;
+  --accent: #bb99ff;
+  --background: rgba(0, 0, 0, 0.1);
+  --default: #1e2231;
+  --text: rgba(0, 0, 0, 1);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-accent: var(--accent);
 
   color: var(--text);
 }
@@ -51,7 +51,7 @@ ol {
 }
 
 li a:hover {
-  background-color: var(--on-primary);
+  background-color: var(--background);
 }
 
 a.is-active {
@@ -80,7 +80,7 @@ input, textarea {
   border: none;
   border-radius: 5px;
   color: var(--text);
-  background-color: var(--on-primary);
+  background-color: var(--background);
 }
 
 input:disabled, textarea:disabled {
@@ -109,11 +109,11 @@ select {
   border: none;
   border-radius: 5px;
   color: var(--text);
-  background-color: var(--on-primary);
+  background-color: var(--background);
 }
 
 option {
-  background: var(--on-primary);
+  background: var(--background);
   background-color: var(--secondary);
   opacity: 0.6;
   padding: 5px;
@@ -130,7 +130,7 @@ option {
     color: var(--text);
     visibility: hidden;
     width: 100%;
-    background-color: var(--on-primary);
+    background-color: var(--background);
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
@@ -151,7 +151,7 @@ option {
 }
 
 input.show-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/shown.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -163,7 +163,7 @@ input.show-button {
 }
 
 input.hide-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/hidden.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -175,7 +175,7 @@ input.hide-button {
 }
 
 input.add-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/add.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -187,7 +187,7 @@ input.add-button {
 }
 
 input.external-link-button {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(269deg) brightness(103%) contrast(107%);
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
   background-image: url(/external-link.svg); /* 16px x 16px */
   margin-top: 5px;
   background-color: transparent; /* make the button transparent */
@@ -217,11 +217,12 @@ input.remove-button {
 p {
   font-size: 0.875rem;
   cursor: default;
+  color: var(--text-secondary);
 }
 
 .collapsible {
   display: inline-flex;
-  background-color: var(--on-primary);
+  background-color: var(--background);
   cursor: pointer;
   padding: 0.25rem;
   width: 100%;
@@ -233,7 +234,7 @@ p {
 /** Scrollbar **/
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--on-primary) var(--on-primary);
+  scrollbar-color: var(--background) var(--background);
 }
 
 /* Works on Chrome, Edge, and Safari */
@@ -242,13 +243,13 @@ p {
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--on-primary);
+  background: var(--background);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: var(--on-primary);
+  background-color: var(--background);
   border-radius: 20px;
-  border: 3px solid var(--on-primary);
+  border: 3px solid var(--background);
 }
 
 hr {
@@ -272,7 +273,7 @@ hr {
   overflow: auto;
   right: -20%;
   top: 95%;
-  background-color: var(--on-primary);
+  background-color: var(--background);
   z-index: 1;
 
   .option-container {
@@ -290,4 +291,17 @@ hr {
 
 .add-button-container {
   margin: auto;
+}
+
+.dropdown {
+
+  background-color: var(--background);
+
+  option {
+      background-color: var(--default);
+  }
+}
+
+.dot {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
 }
