@@ -16,18 +16,40 @@ This extension provides an implementation of the Domain Sheet for MCDM's [Kingdo
 
 ## Stats
 
-![stats interface](https://github.com/joelplourde4/obr-kingdom-warfare/main/docs/stats.jpg)
+In the 'Stats' tab, you will find the description of the Domain as described by its collection of skills and defenses.
+
+- In Edit mode, you will be able to edit the core value which will be used to calculate the modifier.
+
+![stats interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/stats.jpg)
 
 ## Relations
 
-![relations interface](https://github.com/joelplourde4/obr-kingdom-warfare/main/docs/relations.jpg)
+In the 'Relations' tab, you will find the description of the relationship between the player's domain and the NPCs.
+
+- In Edit mode:
+  - Add & Remove Relationship
+  - Add & Remove Officers
+  - Toggle the player visibility settings whether.
+  - Adjust the relationship status between the player's domain and the NPC realm.
+- By clicking on the images, you will be prompt to select an image from the Asset Manager.
+
+![relations interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/relations.jpg)
 
 ## Features
 
-![features interface](https://github.com/joelplourde4/obr-kingdom-warfare/main/docs/features.jpg)
+In the 'Features' tab, you will find the features obtained throughout gameplay which describes what you domain is capable of.
+
+![features interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/features.jpg)
 
 ## Military
 
-![features interface](https://github.com/joelplourde4/obr-kingdom-warfare/main/docs/military.jpg)
+In the 'Military' tab, you will find the list of units that are part of your domain.
 
-![unit card](https://github.com/joelplourde4/obr-kingdom-warfare/main/docs/unit.jpg)
+![features interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/military.jpg)
+
+In Edit Mode, you can generate the Unit Card for the Unit, and then either:
+
+- Download the Unit Card to your computer
+- Upload the Unit Card to your Asset Manager
+
+![unit card](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/unit.jpg)
