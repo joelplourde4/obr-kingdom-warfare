@@ -14,40 +14,66 @@ learn-more: https://owlbear.app
 
 This extension provides an implementation of the Domain Sheet for MCDM's [Kingdom's & Warfare](https://shop.mcdmproductions.com/collections/kingdoms-warfare) as well as the Warfare Rules and the Unit Card Creator inspired by the rules in MCDM's [Strongholds & Followers](https://shop.mcdmproductions.com/products/strongholds-followers-pdf)
 
-## Stats
+## Tabs
 
-In the 'Stats' tab, you will find the description of the Domain as described by its collection of skills and defenses.
+The essential information is displayed in the 'Header' section of the interface, which includes:
 
-- In Edit mode, you will be able to edit the core value which will be used to calculate the modifier.
+- The name of the Kingdom
+- The size of the Domain
+- The Power Die
+- A toggle to enable or disable Edit mode
+  - Edit mode allows the Game Master to modify values within the Domain sheet.
+  
+The Domain sheet is structured into 'Tabs,' which are detailed in the following section.
+
+### Stats
+
+In the 'Stats' tab, you can view a detailed description of the Domain, including its associated skills and defenses.
+
+- When in Edit mode, you can modify the core value, which will be used to calculate the corresponding modifier.
 
 ![stats interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/stats.jpg)
 
-## Relations
+### Relations
 
-In the 'Relations' tab, you will find the description of the relationship between the player's domain and the NPCs.
+In the 'Relations' tab, you can view the details of the player's domain's relationships with various NPCs.
 
-- In Edit mode:
-  - Add & Remove Relationship
-  - Add & Remove Officers
-  - Toggle the player visibility settings whether.
-  - Adjust the relationship status between the player's domain and the NPC realm.
-- By clicking on the images, you will be prompt to select an image from the Asset Manager.
+- In Edit mode, you can:
+  - Add or remove relationships
+  - Add or remove officers
+  - Toggle player visibility settings
+  - Adjust the relationship status between the player's domain and NPC realms
+- Clicking on the images will prompt you to select an image from the Asset Manager.
 
 ![relations interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/relations.jpg)
 
-## Features
+### Features
 
-In the 'Features' tab, you will find the features obtained throughout gameplay which describes what you domain is capable of.
+The 'Features' tab outlines the abilities acquired during gameplay, detailing the capabilities of your domain.
+
+- In Edit mode, you can:
+  - Add or remove features
+  - Toggle player visibility settings
+
+<i>Note: Features are purposefully designed to be broad, allowing players greater creative freedom.</i>
 
 ![features interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/features.jpg)
 
-## Military
+### Military
 
-In the 'Military' tab, you will find the list of units that are part of your domain.
+In the 'Military' tab, you can view the roster of units associated with your domain.
+
+In Edit mode, you can:
+- Add or remove units
+- Adjust unit attributes
+- Add or remove unit traits
+- Generate the Unit Card for the selected unit 
 
 ![features interface](https://raw.githubusercontent.com/joelplourde4/obr-kingdom-warfare/refs/heads/main/docs/military.jpg)
 
-In Edit Mode, you can generate the Unit Card for the Unit, and then either:
+#### Unit Card
+
+The unit is presented in a stat block format for easy reference during gameplay.
 
 - Download the Unit Card to your computer
 - Upload the Unit Card to your Asset Manager
