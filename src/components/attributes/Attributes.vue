@@ -53,7 +53,9 @@ export default defineComponent({
     },
     computed: {
         formattedModifier(): string {
-            const modifier = (this.attribute.level - 10) / 2;
+            let modifier = (this.attribute.level - 10) / 2;
+
+            modifier = Math.floor(modifier);
             
             if (modifier >= 0) {
                 return '+' + modifier
