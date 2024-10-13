@@ -5,6 +5,12 @@
                 <div class="column">
                     <div class="row">
                         <input class="name" v-model="unit.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
+                        <div class="option-container tooltip">
+                            <input type="button" class="external-link-button" @click="openModal(unit)">
+                            <span class="tooltiptext">
+                                On click, open the Unit card.
+                            </span>
+                        </div>
                         <div v-if="!isVisible" class="caret">
                             <img v-if="unit.show" src="/caret-up.svg">
                             <img v-if="!unit.show" src="/caret-down.svg">
@@ -15,12 +21,6 @@
                                 <div class="option-container caret">
                                     <img v-if="unit.show" src="/caret-up.svg">
                                     <img v-if="!unit.show" src="/caret-down.svg">
-                                </div>
-                                <div class="option-container tooltip">
-                                    <input type="button" class="external-link-button" @click="openModal(unit)">
-                                    <span class="tooltiptext">
-                                        On click, open the Unit card.
-                                    </span>
                                 </div>
                                 <div class="option-container tooltip">
                                     <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
@@ -266,6 +266,10 @@ export default defineComponent({
         filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
         float: right;
         align-self: center;
+    }
+
+    .dot {
+        margin-top: 2px;
     }
 
     .dropdown {
