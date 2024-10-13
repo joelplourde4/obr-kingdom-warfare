@@ -30,7 +30,7 @@ import { Attributes } from '../../models/Stats'
     
 export default defineComponent({
     mixins: [utils],
-    name: 'Feature',
+    name: 'Attributes',
     props: {
         isGM: {
             type: Boolean,
