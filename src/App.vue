@@ -126,7 +126,9 @@ export default defineComponent({
        */
       loadConfig(metadata: Metadata) {
         const configData = metadata[CONFIG_METADATA_KEY] as any;
-        this.config = Config.fromJson(configData.data);
+        if (configData) {
+          this.config = Config.fromJson(configData.data);
+        }
       },
       /**
        * Method that updates the config after a debounce time.
