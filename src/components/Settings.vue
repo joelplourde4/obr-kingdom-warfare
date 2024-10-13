@@ -1,34 +1,52 @@
 <template>
     <div class="column">
-        <h3>Settings</h3>
+        <div class="tooltip">
+            <h3>Core Settings</h3>
+            <span class="tooltiptext">
+                This extension does not assume any specific approach to the rules at your game table, so it offers multiple core configuration options.
+            </span>
+        </div>
+        <Configuration
+            :value="config.sharedMode"
+            :title="'Shared Mode'"
+            :description="'This extension offers two Domain Sheet options: a shared sheet for all players or individual sheets for each player, including the GM.'"
+            :tooltip="'When unchecked, each player will have their own Domain Sheet.'"
+            @update:model-value="onChanged('sharedMode')"
+        />
+        <div class="tooltip">
+            <h3>Functionality</h3>
+            <span class="tooltiptext">
+                This extension does not assume any specific approach to the rules at your game table, so it offers multiple core configuration options.
+            </span>
+        </div>
         <Configuration
             :value="config.header"
-            :description="'Header'"
-            :tooltip="'When unchecked, the \'Header\' will be hidden.'"
+            :title="'Toggle Header'"
+            :tooltip="'When unchecked, the \'Header\' section of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('header')"
         />
         <Configuration
             :value="config.stats"
-            :description="'Stats Tab'"
-            :tooltip="'When unchecked, the \'Stats\' tab will be hidden.'"
+            :title="'Toggle Stats Tab'"
+            :tooltip="'When unchecked, the \'Stats\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('stats')"
         />
         <Configuration
             :value="config.relations"
-            :description="'Relation Tab'"
-            :tooltip="'When unchecked, the \'Relations\' tab will be hidden.'"
+            :title="'Toggle Relations Tab'"
+            :tooltip="'When unchecked, the \'Relations\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('relations')"
         />
         <Configuration
             :value="config.features"
-            :description="'Feature Tab'"
-            :tooltip="'When unchecked, the \'Features\' tab will be hidden.'"
+            :title="'Toggle Features Tab'"
+            :tooltip="'When unchecked, the \'Features\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('features')"
         />
         <Configuration
             :value="config.military"
-            :description="'Military Tab'"
-            :tooltip="'When unchecked, the \'Military\' tab will be hidden.'"
+            :title="'Toggle Military Tab'"
+            :tooltip="'When unchecked, the \'Military\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('military')"
         />
     </div>
@@ -72,5 +90,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+.title {
+    align-self: center;
+}
 
 </style>

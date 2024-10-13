@@ -1,6 +1,8 @@
 <template lang="html">
     <NavigationBar
         :isGM="isGM"
+        :isSettings="settings"
+        :hasPermission="hasPermission"
         @update:edit-mode="onEditMode"
         @update:settings="onSettings"
     />
@@ -15,7 +17,8 @@
         <div v-if="config.header">
         <Header
             :domain="domain"
-            :isGM="isGM"
+            :isGM="hasPermission"
+            :isEditMode="editMode"
             @update:model-value="onUpdate"
         />
         </div>
@@ -23,7 +26,7 @@
             <tab v-if="config.stats" name="Stats">
                 <Stats
                     :domain="domain"
-                    :isGM="isGM"
+                    :isGM="hasPermission"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
                 />
@@ -31,7 +34,7 @@
             <tab v-if="config.relations" name="Relations">
                 <Relations
                     :domain="domain"
-                    :isGM="isGM"
+                    :isGM="hasPermission"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
                 />
@@ -39,7 +42,7 @@
             <tab v-if="config.features" name="Features">
                 <Features
                     :domain="domain"
-                    :isGM="isGM"
+                    :isGM="hasPermission"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
                 />
@@ -47,7 +50,7 @@
             <tab v-if="config.military" name="Military">
                 <Military
                     :domain="domain"
-                    :isGM="isGM"
+                    :isGM="hasPermission"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
                 />
@@ -57,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
 import Settings from './Settings.vue';
 import NavigationBar from './NavigationBar.vue';
@@ -67,7 +70,7 @@ import Relations from './tabs/Relations.vue';
 import Features from './tabs/Features.vue';
 import Military from './tabs/Military.vue';
 
-import { Domain } from '../models/Domain'
+import { Domain } from '../models/Domain';
 import { Config } from '../models/Config';
 
 export default defineComponent({
@@ -78,8 +81,12 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        hasPermission: {
+            type: Boolean,
+            required: true
+        },
         domain: {
-            type: Domain,
+            type: Object as PropType<Domain>,
             required: true
         },
         config: {

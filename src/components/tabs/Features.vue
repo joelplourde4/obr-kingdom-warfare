@@ -74,7 +74,7 @@ export default defineComponent({
     extends: BaseTab,
     name: 'Feature',
     updated() {
-        (this.$refs.textarea || []).forEach((element: any) => {
+        ((this.$refs.textarea || []) as Array<any>).forEach((element: any) => {
             this.resizeTextArea(element);
         });
     },

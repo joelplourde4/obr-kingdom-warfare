@@ -28,13 +28,33 @@ export class Domain {
     features: Feature[];
     units: Unit[];
 
-    constructor() {
-        this.name = "Kingdom";
-        this.size = Size.TINY;
-        this.powerDie = PowerDie.D4;
-        this.stats = new Stats();
-        this.relations = [];
-        this.features = [];
-        this.units = [];
+    constructor(
+        name: string = "Kingdom",
+        size: Size = Size.TINY,
+        powerDie: PowerDie = PowerDie.D4,
+        stats: Stats = new Stats(),
+        relations: Relation[] = [],
+        features: Feature[] = [],
+        units: Unit[] = []
+    ) {
+        this.name = name;
+        this.size = size;
+        this.powerDie = powerDie;
+        this.stats = stats;
+        this.relations = relations;
+        this.features = features;
+        this.units = units;
+    }
+
+    static fromJson(domain: any): Domain {
+        return new Domain(
+            domain.name,
+            domain.size,
+            domain.powerDie,
+            domain.stats,
+            domain.relations,
+            domain.features,
+            domain.units
+        )
     }
 };

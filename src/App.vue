@@ -3,6 +3,7 @@
     :domain="domain"
     :config="config"
     :isGM="isGM"
+    :hasPermission="hasPermission"
     @update:domain="updateDomain"
     @update:config="updateConfig"
   />
@@ -15,53 +16,25 @@ import { useDebounceFn } from '@vueuse/core'
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
 
-import OBR, { Theme } from "@owlbear-rodeo/sdk";
+import OBR, { Metadata, Theme } from "@owlbear-rodeo/sdk";
 import { Config } from './models/Config.ts';
 
-const GLOBAL_SHEET_MESSAGE = "obr.domain.sheet.channel"
-const GLOBAL_CONFIG_MESSAGE = "obr.domain.config.channel"
+const DM_ID = "000000000-0000-0000-0000-0000000000000";
+
+const DOMAIN_METADATA_KEY = "com.obr.domain-sheet/sheet/metadata/";
+const CONFIG_METADATA_KEY = "com.obr.domain-sheet/config/metadata";
 
 export default defineComponent({
     components: { Sheet },
     name: 'App',
     data() {
-      const saveDomain = (domain: Domain) => {
-        let json = JSON.parse(JSON.stringify(domain));
-
-        const metadata = {
-          "com.obr.domain-sheet/sheet/metadata": {
-            data: json
-          }
-        }
-
-        // Set the metadata
-        OBR.room.setMetadata(metadata)
-
-        // Broadcast a message to
-        OBR.broadcast.sendMessage(GLOBAL_SHEET_MESSAGE, json, { destination: "REMOTE" })
-      }
-
-      const saveConfig = (config: Config) => {
-        let json = JSON.parse(JSON.stringify(config));
-
-        const metadata = {
-          "com.obr.domain-sheet/config/metadata": {
-            data: json
-          }
-        }
-
-        // Set the metadata
-        OBR.room.setMetadata(metadata)
-
-        OBR.broadcast.sendMessage(GLOBAL_CONFIG_MESSAGE, json, { destination: "REMOTE" })
-      }
-
-      const debouncedSaveDomain = useDebounceFn(saveDomain, 500)
-      const debouncedSaveConfig = useDebounceFn(saveConfig, 500)
+      const debouncedSaveDomain = useDebounceFn((domain) => { this.saveDomain(domain) }, 500)
+      const debouncedSaveConfig = useDebounceFn((config) => { this.saveConfig(config) }, 500)
       return {
         debouncedSaveDomain,
         debouncedSaveConfig,
         isGM: false,
+        hasPermission: false,
         domain: new Domain(),
         config: new Config(),
         playerId: "",
@@ -74,26 +47,16 @@ export default defineComponent({
       const intervalId = window.setInterval(async () => {
           if (OBR.isReady) {
             // Load the Player ID
-            this.playerId = await OBR.player.getConnectionId()
-
-            this.isGM = await OBR.player.hasPermission("MAP_CREATE");
+            this.playerId = await OBR.player.getId();
 
             // Load the metadata
-            OBR.room.getMetadata().then(metadata => {
-              const domainData = metadata["com.obr.domain-sheet/sheet/metadata"] as any;
-              this.domain = Object.setPrototypeOf(domainData.data, Domain.prototype);
+            await this.loadMetadata();
 
-              const configData = metadata["com.obr.domain-sheet/config/metadata"] as any;
-              this.config = Object.setPrototypeOf(configData.data, Config.prototype);
-            });
-
-            // Subscribe to Global Messages
-            OBR.broadcast.onMessage(GLOBAL_SHEET_MESSAGE, (event) => {
-              this.domain = Object.setPrototypeOf(event.data, Domain.prototype)
-            });
-
-            OBR.broadcast.onMessage(GLOBAL_CONFIG_MESSAGE, (event) => {
-              this.config = Object.setPrototypeOf(event.data, Config.prototype)
+            // Listen for changes to the metadata of the room.
+            OBR.room.onMetadataChange((metadata) => {
+              this.loadConfig(metadata);
+              this.loadDomain(metadata);
+              this.loadPermission();
             });
 
             const theme = await OBR.theme.getTheme();
@@ -105,14 +68,84 @@ export default defineComponent({
 
             clearInterval(intervalId);
           }
-        }, 200)
+        }, 200);
+    },
+    computed: {
+      getDomainId() {
+        return this.config.sharedMode ? DM_ID : this.playerId;
+      }
     },
     methods: {
+      /**
+       * Method to load the metadata from the Room.
+       */
+      async loadMetadata() {
+        await OBR.room.getMetadata().then(metadata => {
+          this.loadConfig(metadata);
+          this.loadDomain(metadata);
+        }).finally(() => {
+          this.loadPermission();
+        });
+      },
+      /**
+       * Determine whether the player has permission or not.
+       */
+      async loadPermission() {
+        this.isGM = await OBR.player.hasPermission("MAP_CREATE");
+        if (!this.config.sharedMode) {
+          this.hasPermission = true;
+        } else {
+          this.hasPermission = this.isGM;
+        }
+      },
       updateDomain(domain: Domain) {
         this.debouncedSaveDomain(domain);
       },
+      /**
+       * Load a Domain from the metadata.
+       * @param metadata the metadata of the room.
+       */
+      loadDomain(metadata: Metadata) {
+        const domain = metadata[DOMAIN_METADATA_KEY + this.getDomainId] as Domain;
+        if (domain) {
+          this.domain = domain;
+        }
+      },
+      /**
+       * Save the domain to the room metadata.
+       * @param domain the domain
+       */
+      saveDomain(domain: Domain) {
+        OBR.room.setMetadata({
+          [DOMAIN_METADATA_KEY + this.getDomainId]: JSON.parse(JSON.stringify(domain))
+        });
+      },
+      /**
+       * Load the configuration from the metadata
+       * @param metadata the metadata of the room.
+       */
+      loadConfig(metadata: Metadata) {
+        const configData = metadata[CONFIG_METADATA_KEY] as any;
+        this.config = Config.fromJson(configData.data);
+      },
+      /**
+       * Method that updates the config after a debounce time.
+       * @param config the config
+       */
       updateConfig(config: Config) {
         this.debouncedSaveConfig(config);
+      },
+      /**
+       * Save the configuration to the room metadata.
+       * @param config the config
+       */
+      saveConfig(config: Config) {
+        // Set the metadata
+        OBR.room.setMetadata({
+          [CONFIG_METADATA_KEY]: {
+            data: JSON.parse(JSON.stringify(config))
+          }
+        });
       },
       setTheme(theme: Theme) {
         this.root?.style.setProperty("--primary", theme.primary.main);

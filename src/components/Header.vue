@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
 import { Domain, Size, PowerDie } from '../models/Domain'
 
@@ -49,15 +49,17 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        isEditMode: {
+            type: Boolean,
+            required: true
+        },
         domain: {
-            type: Domain,
+            type: Object as PropType<Domain>,
             required: true
         }
     },
     data() {
-        const editMode = false;
         return {
-            editMode: editMode,
             Size,
             PowerDie
         }
@@ -69,14 +71,10 @@ export default defineComponent({
                 return true;
             }
 
-            return !this.editMode;
+            return !this.isEditMode;
         }
     },
     methods: {
-        toggleEditMode() {
-            this.editMode = !this.editMode;
-            this.$emit('update:editMode', this.editMode);
-        },
         onUpdate() {
             const json = JSON.parse(JSON.stringify(this.domain));
             this.$emit('update:modelValue', json);

@@ -1,6 +1,7 @@
+import { defineComponent, PropType } from "vue";
 import { Domain } from "../../models/Domain";
 
-export default {
+export default defineComponent({
     name: 'BaseTab',
     props: {
         isGM: {
@@ -12,13 +13,13 @@ export default {
             required: true
         },
         domain: {
-            type: Domain,
+            type: Object as PropType<Domain>,
             required: true
         }
     },
     emits: ['update:modelValue'],
     computed: {
-        isVisible() {
+        isVisible(): boolean {
             return this.isEditMode === true;
         },
         isDisabled() {
@@ -35,4 +36,4 @@ export default {
             this.$emit('update:modelValue', json);
         }
     }
-}
+});

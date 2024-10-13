@@ -4,12 +4,32 @@ export class Config {
     relations: boolean;
     features: boolean;
     military: boolean;
+    sharedMode: boolean;
 
-    constructor() {
-        this.header = true;
-        this.stats = true;
-        this.relations = true;
-        this.features = true;
-        this.military = true;
+    constructor(
+            header: boolean = true,
+            stats: boolean = true,
+            relations: boolean = true,
+            features: boolean = true,
+            military: boolean = true,
+            sharedMode: boolean = true
+    ){
+        this.header = header;
+        this.stats = stats;
+        this.relations = relations;
+        this.features = features;
+        this.military = military;
+        this.sharedMode = sharedMode;
     }
+
+    static fromJson(config: any): Config {
+        return new Config(
+            config.header,
+            config.stats,
+            config.relations,
+            config.features,
+            config.military,
+            config.sharedMode
+        )
+    } 
 };
