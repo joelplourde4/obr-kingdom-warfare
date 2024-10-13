@@ -1,15 +1,20 @@
 <template>
     <div class="tooltip row">
-        <input
-            class="checkbox"
-            type="checkbox"
-            :checked="value"
-            @click="onChanged"
-        />
-        <span>{{ description }}</span>
-        <span class="tooltiptext">
-            {{ tooltip }}
-        </span>
+        <div class="row">
+            <input
+                class="checkbox"
+                type="checkbox"
+                :checked="value"
+                @click="onChanged"
+            />
+            <span>{{ title }}</span>
+            <span class="tooltiptext">
+                {{ tooltip }}
+            </span>
+        </div>
+        <div v-if="description" class="row">
+            <p class="description">{{ description }}</p>
+        </div>
     </div>
 </template>
   
@@ -23,9 +28,13 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
-        description: {
+        title: {
             type: String,
             required: true
+        },
+        description: {
+            type: String,
+            required: false
         },
         tooltip: {
             type: String,
@@ -55,6 +64,11 @@ export default defineComponent({
 
 .checkbox {
     margin-right: 0.5rem;
+}
+
+.description {
+    margin: 0.25rem;
+    text-align: left;
 }
 
 </style>

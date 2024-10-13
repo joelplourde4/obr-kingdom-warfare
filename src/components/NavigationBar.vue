@@ -1,10 +1,10 @@
 <template>
-    <div v-if="isGM" class="row header">
+    <div v-if="hasPermission" class="row header">
         <label class="switch">
             <input type="checkbox" @click="toggleEditMode"/>
             <span class="slider round"></span>
         </label>
-        <input type="button" class="settings-button settings-icon" @click="toggleSettings">
+        <input v-if="isGM" type="button" class="settings-button settings-icon" @click="toggleSettings">
     </div>
 </template>
 
@@ -15,6 +15,14 @@ export default defineComponent({
     name: 'NavigationBar',
     props: {
         isGM: {
+            type: Boolean,
+            required: true
+        },
+        isSettings: {
+          type: Boolean,
+          required: true
+        },
+        hasPermission: {
             type: Boolean,
             required: true
         },
@@ -55,12 +63,13 @@ export default defineComponent({
 
 .header {
     margin-bottom: 0.5rem;
+    align-items: center;
+    margin-left: 78%;
 }
 
 .settings-icon {
     margin-top: -0.125rem;
     margin-left: 0.5rem;
-    margin-left: 80%;
 }
 
 /* The switch - the box around the slider */
