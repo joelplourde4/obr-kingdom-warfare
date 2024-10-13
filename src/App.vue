@@ -61,7 +61,11 @@ export default defineComponent({
             // Load the metadata
             OBR.room.getMetadata().then(metadata => {
               const data = metadata["com.obr.domain-sheet/metadata"] as any;
-              this.domain = Object.setPrototypeOf(data.data, Domain.prototype)
+              if (data) {
+                this.domain = Object.setPrototypeOf(data.data, Domain.prototype)
+              } else {
+                this.domain = new Domain();
+              }
             });
 
             // Subscribe to Global Messages

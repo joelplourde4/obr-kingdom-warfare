@@ -38,6 +38,14 @@
                 @update:model-value="onUpdate"
             />
         </tab>
+        <tab name="Warfare">
+            <Warfare
+                :domain="domain"
+                :isGM="isGM"
+                :isEditMode="editMode"
+                @update:model-value="onUpdate"
+            />
+        </tab>
     </tabs>
 </template>
 
@@ -49,11 +57,12 @@ import Stats from './tabs/Stats.vue'
 import Relations from './tabs/Relations.vue';
 import Features from './tabs/Features.vue';
 import Military from './tabs/Military.vue';
+import Warfare from './tabs/Warfare.vue';
 
 import { Domain } from '../models/Domain'
 
 export default defineComponent({
-    components: { Header, Stats, Relations, Features, Military },
+    components: { Header, Stats, Relations, Features, Military, Warfare },
     name: 'Sheet',
     props: {
         isGM: {
