@@ -60,6 +60,7 @@
             </tab>
             <tab v-if="config.warfare" name="Warfare">
                 <Warfare
+                    :players="players"
                     :domain="domain"
                     :isGM="hasPermission"
                     :isEditMode="editMode"

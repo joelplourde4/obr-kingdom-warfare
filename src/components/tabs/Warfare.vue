@@ -9,7 +9,25 @@
             </tr>
             <tr v-for="unit in units">
                 <td class="left-align">
-                    <input type="text" @dblclick="focusUnit(unit)" :value="unit.name"/>
+                    <div class="name-container" @mouseleave="onNameMouseLeave($event, unit)">
+                        <input 
+                            type="text" 
+                            :value="unit.name"
+                            :style="{'border': 'solid 0.0625rem ' + unit.color}"
+                            @dblclick="focusUnit(unit)"
+                            @contextmenu="onNameRightClick($event, unit)"
+                        />
+                        <div v-if="unit.opened" class="dropdown hover">
+                            <div v-for="player in players">
+                                <span
+                                    class="pill"
+                                    :style="{'background-color': player.color }"
+                                    @click="onAssignColor(unit, player.color )"
+                                >
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </td>
                 <td class="center-align">
                     <div>
@@ -44,12 +62,34 @@
                 </td>
             </tr>
         </table>
+        <div class="footer row">
+            <div class="refresh-menu" @mouseleave="onMouseLeaveRefreshMenu">
+                <div v-if="refreshDropdownOpened" class="refresh-menu-content">
+                    <button v-for="player in players" class="refresh-button" @click="refreshArmy(player.color)">
+                        Army 
+                        <span
+                            class="pill"
+                            :style="{'background-color': player.color }"
+                        >
+                        </span>
+                    </button>
+                </div>
+                <button class="refresh-button" @click="toggleRefreshMenu">
+                    Refresh Units
+                    <img v-if="refreshDropdownOpened" class="caret" src="/caret-up.svg">
+                    <img v-if="!refreshDropdownOpened" class="caret" src="/caret-down.svg">
+                </button>
+            </div>
+            <button class="refresh-button" @click="removeAllDrawings">
+                Remove Drawings
+            </button>
+        </div>
     </div>
 </template>
   
 <script lang="ts">
 import { defineComponent } from 'vue'
-import OBR, { buildImage, buildLabel, ContextMenuContext, ImageContent, ImageGrid, Item, Metadata } from '@owlbear-rodeo/sdk';
+import OBR, { buildImage, buildLabel, ContextMenuContext, ImageContent, ImageGrid, Item, Metadata, Player } from '@owlbear-rodeo/sdk';
 import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
@@ -69,10 +109,17 @@ export default defineComponent({
     mixins: [utils],
     extends: BaseTab,
     name: 'Warfare',
+    props: {
+        players: {
+            type: Array<Player>,
+            required: true
+        }
+    },
     data() {
         let sceneItemChangeCallback = () => {};
         let sceneMetadataCallback = () => {};
         return {
+            refreshDropdownOpened: false,
             sceneItemChangeCallback,
             sceneMetadataCallback,
             units: [] as DeployedUnit[]
@@ -257,7 +304,7 @@ export default defineComponent({
 
             this.units[index].exhausted = !this.units[index].exhausted;
 
-            this.refreshUnit(this.units[index]);
+            this.refreshUnits([this.units[index]]);
         },
         /**
          * Method called when the unit is rallied.
@@ -272,6 +319,18 @@ export default defineComponent({
             this.units[index].rallied = !this.units[index].rallied;
 
             this.rallyUnit(this.units[index]);
+        },
+        /**
+         * Refresh all units in input
+         * @param units The units to refresh
+         */
+        async refreshUnits(units: DeployedUnit[]) {
+            for (let unit of units) {
+                // TODO combine these await.
+                await this.refreshUnit(unit);
+            }
+
+            this.saveUnits(this.units);
         },
         /**
          * Method to add the Exhausted indicator in the scene.
@@ -290,8 +349,6 @@ export default defineComponent({
                     .filter((id) => id !== unit.id);
                 await OBR.scene.items.deleteItems(allIds);
             }
-
-            this.saveUnits(this.units);
         },
         /**
          * Method to add the Rallied indicator in the scene.
@@ -487,6 +544,81 @@ export default defineComponent({
                 x: ctu.position.x - offsetX + width / 2,
                 y: ctu.position.y - offsetY + height / 2,
             };
+        },
+        /**
+         * Method called when the player assigns a color to this unit.
+         * @param unit The deployed unit.
+         * @param color The color to assign.
+         */
+        onAssignColor(unit: DeployedUnit, color: string) {
+            unit.color = color;
+            unit.opened = !unit.opened;
+
+            this.saveUnits(this.units);
+        },
+        /**
+         * Event triggered whenever the mouse leaves the hovering of the name
+         * @param event The event.
+         * @param unit The deployed unit.
+         */
+        onNameMouseLeave(event: any, unit: DeployedUnit) {
+            if (!unit.opened) {
+                return;
+            }
+
+            event.preventDefault();
+            unit.opened = false;
+        },
+        /**
+         * Method called when the unit's name is right-clicked.
+         */
+        onNameRightClick(event: any, unit: DeployedUnit) {
+            event.preventDefault();
+            unit.opened = !unit.opened;
+        },
+        /**
+         * Event triggered whenever the mouse leaves the refresh menu when it is opened.
+         */
+        onMouseLeaveRefreshMenu() {
+            if (!this.refreshDropdownOpened) {
+                return;
+            }
+            this.refreshDropdownOpened = false;
+        },
+        /**
+         * Toggle the refresh menu.
+         */
+        toggleRefreshMenu() {
+            this.refreshDropdownOpened = !this.refreshDropdownOpened;
+        },
+        /**
+         * Method to refresh the army assigned to the color
+         * @param color The color
+         */
+        refreshArmy(color: string) {
+            // Find all units that needs to be refreshed.
+            const affectedUnits = this.units.filter((unit) => unit.color === color);
+
+            if (affectedUnits.length == 0) {
+                return;
+            }
+
+            // Mark these as refreshed.
+            affectedUnits.forEach((unit) => {
+                unit.exhausted = false;
+            });
+
+            this.refreshUnits(affectedUnits);
+            this.refreshDropdownOpened = !this.refreshDropdownOpened;
+        },
+        /**
+         * Method to remove all drawings from the scene.
+         */
+        removeAllDrawings() {
+            OBR.scene.items.getItems((item: Item) => item.layer === "DRAWING").then((drawings) => {
+                const ids = drawings.map((item) => item.id)
+                OBR.scene.items.deleteItems(ids);
+            });
         }
     }
 })  
@@ -496,10 +628,13 @@ export default defineComponent({
 
 .input-number-value {
     width: 1.5rem;
+    text-align: center;
 }
 
 table {
-    width: 100%;
+    overflow-y: auto;
+    height: 325px;
+    display: block;
 
     .left-align {
         text-align: left;
@@ -512,6 +647,75 @@ table {
 
 th {
     font-size: small;
+}
+
+.footer {
+    position: relative;
+    padding-top: 0.5rem;
+    justify-content: center;
+}
+
+.name-container {
+    position: relative;
+}
+
+.hover {
+    background-color: var(--default);
+    position: absolute;
+    z-index: 100;
+    padding: 0.5rem;
+    column-count: 4;
+    width: min-content;
+}
+
+.pill {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+    border-radius: 1rem;
+}
+
+.refresh-button {
+    cursor: pointer;
+    color: var(--text);
+    width: max-content;
+    background-color: var(--background);
+    border: none;
+    align-items: center;
+    display: flex;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+
+    .pill {
+        height: 0.75rem;
+        width: 0.75rem;
+    }
+
+    .caret {
+        filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
+    }
+}
+
+.refresh-menu {
+    position: relative;
+    display: inline-block;
+    width: max-content;
+
+    .refresh-menu-content {
+        left: 0.625rem;
+        bottom: 2.5rem;
+        width: inherit;
+        position: absolute;
+        background-color: var(--default);
+
+        button {
+            background-color: var(--default);
+        }
+    }
 }
 
 </style>
