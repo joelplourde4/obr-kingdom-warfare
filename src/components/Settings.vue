@@ -49,6 +49,12 @@
             :tooltip="'When unchecked, the \'Military\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('military')"
         />
+        <Configuration
+            :value="config.warfare"
+            :title="'Toggle Warfare Tab'"
+            :tooltip="'When unchecked, the \'Warfare\' tab of the Domain Sheet will be hidden.'"
+            @update:model-value="onChanged('warfare')"
+        />
     </div>
 </template>
 

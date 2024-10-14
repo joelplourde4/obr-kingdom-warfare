@@ -58,6 +58,14 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
+            <tab v-if="config.warfare" name="Warfare">
+                <Warfare
+                    :domain="domain"
+                    :isGM="hasPermission"
+                    :isEditMode="editMode"
+                    @update:model-value="onUpdate"
+                />
+            </tab>
         </tabs>
     </div>
 </template>
@@ -72,13 +80,14 @@ import Stats from './tabs/Stats.vue'
 import Relations from './tabs/Relations.vue';
 import Features from './tabs/Features.vue';
 import Military from './tabs/Military.vue';
+import Warfare from './tabs/Warfare.vue';
 
 import { Domain } from '../models/Domain';
 import { Config } from '../models/Config';
 import { Player } from '@owlbear-rodeo/sdk';
 
 export default defineComponent({
-    components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military },
+    components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military, Warfare },
     name: 'Sheet',
     props: {
         isGM: {
