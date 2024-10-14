@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <table>
-            <tr>
+            <tr v-if="units.length > 0">
                 <th class="left-align">Name</th>
                 <th class="center-align">HP</th>
                 <th class="center-align">Exh.</th>
@@ -62,7 +62,7 @@
                 </td>
             </tr>
         </table>
-        <div class="footer row">
+        <div v-if="units.length > 0" class="footer row">
             <div class="refresh-menu" @mouseleave="onMouseLeaveRefreshMenu">
                 <div v-if="refreshDropdownOpened" class="refresh-menu-content">
                     <button v-for="player in players" class="refresh-button" @click="refreshArmy(player.color)">
@@ -230,7 +230,13 @@ export default defineComponent({
             OBR.scene.items.updateItems(context.items, (items) => {
                 for (let item of items) {
                     if (item.metadata[WARFARE_METADATA_KEY] === undefined) {
-                        this.units.push(new DeployedUnit(item.id, item.name));
+                        const unit = new DeployedUnit(item.id, item.name);
+                        const player = this.players.find((player) => player.id === item.lastModifiedUserId);
+                        if (player) {
+                            unit.color = player.color;
+                        }
+
+                        this.units.push(unit);
                     }
 
                     item.metadata[WARFARE_METADATA_KEY] = {
