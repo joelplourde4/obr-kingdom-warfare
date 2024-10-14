@@ -91,6 +91,7 @@
             <button class="file-button" @click="download">Download</button>
             <button class="file-button" @click="upload">Upload</button>
         </div>
+        <span v-if="error" class="error">{{ error }}</span>
     </div>
     <div v-else class="loader">
     </div>
@@ -114,7 +115,8 @@ export default defineComponent({
         return {
             initialized: false,
             card: new Card(),
-            route
+            route,
+            error: ""
         }
     },
     created() {
@@ -323,7 +325,10 @@ export default defineComponent({
                         description: `Unit Card of ${this.card.name}`
                 } as ImageUpload
 
-                OBR.assets.uploadImages([imageUpload], "NOTE");
+                OBR.assets.uploadImages([imageUpload], "NOTE").catch((error) => {
+                    console.error(error);
+                    this.error = "You need to be logged in to use the 'Upload' feature.";
+                });
             });
         }
     }
@@ -463,6 +468,12 @@ h3, p, hr {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.error {
+    color: red;
+    display: block;
+    text-align: center;
 }
 
 </style>

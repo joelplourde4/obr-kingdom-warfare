@@ -1,8 +1,13 @@
 <template>
   <Sheet
+    :players="players"
     :domain="domain"
+    :config="config"
     :isGM="isGM"
+    :hasPermission="hasPermission"
     @update:domain="updateDomain"
+    @update:config="updateConfig"
+    @update:switch-sheet="switchSheet"
   />
 </template>
 
@@ -13,38 +18,31 @@ import { useDebounceFn } from '@vueuse/core'
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
 
-import OBR, { Theme } from "@owlbear-rodeo/sdk";
+import OBR, { Metadata, Player, Theme } from "@owlbear-rodeo/sdk";
+import { Config } from './models/Config.ts';
 
-const GLOBAL_MESSAGE = "obr.domain.sheet.channel"
+const DM_ID = "000000000-0000-0000-0000-0000000000000";
+
+const DOMAIN_METADATA_KEY = "com.obr.domain-sheet/sheet/metadata/";
+const CONFIG_METADATA_KEY = "com.obr.domain-sheet/config/metadata";
 
 export default defineComponent({
     components: { Sheet },
     name: 'App',
     data() {
-      const saveDomain = (domain: Domain) => {
-        let json = JSON.parse(JSON.stringify(domain));
-
-        const metadata = {
-          "com.obr.domain-sheet/metadata": {
-            data: json
-          }
-        }
-
-        console.log('Saving: ', json);
-
-        // Set the metadata
-        OBR.room.setMetadata(metadata)
-
-        // Broadcast a message to
-        OBR.broadcast.sendMessage(GLOBAL_MESSAGE, json, { destination: "REMOTE" })
-      }
-
-      const debouncedFunction = useDebounceFn(saveDomain, 500)
+      const debouncedSaveDomain = useDebounceFn((domain) => { this.saveDomain(domain) }, 500)
+      const debouncedSaveConfig = useDebounceFn((config) => { this.saveConfig(config) }, 500)
       return {
-        debouncedFunction,
+        debouncedSaveDomain,
+        debouncedSaveConfig,
         isGM: false,
+        hasPermission: false,
         domain: new Domain(),
+        config: new Config(),
         playerId: "",
+        playerName: "",
+        selectedPlayerId: "",
+        players: [] as Array<Player>,
         root: document.getElementById('content'),
       }
     },
@@ -53,24 +51,17 @@ export default defineComponent({
 
       const intervalId = window.setInterval(async () => {
           if (OBR.isReady) {
-            // Load the Player ID
-            this.playerId = await OBR.player.getConnectionId()
-
-            this.isGM = await OBR.player.hasPermission("MAP_CREATE");
+            // Load the Players
+            await this.loadPlayers();
 
             // Load the metadata
-            OBR.room.getMetadata().then(metadata => {
-              const data = metadata["com.obr.domain-sheet/metadata"] as any;
-              if (data) {
-                this.domain = Object.setPrototypeOf(data.data, Domain.prototype)
-              } else {
-                this.domain = new Domain();
-              }
-            });
+            await this.loadMetadata();
 
-            // Subscribe to Global Messages
-            OBR.broadcast.onMessage(GLOBAL_MESSAGE, (event) => {
-              this.domain = Object.setPrototypeOf(event.data, Domain.prototype)
+            // Listen for changes to the metadata of the room.
+            OBR.room.onMetadataChange((metadata) => {
+              this.loadConfig(metadata);
+              this.loadDomain(metadata);
+              this.loadPermission();
             });
 
             const theme = await OBR.theme.getTheme();
@@ -80,13 +71,137 @@ export default defineComponent({
               this.setTheme(theme);
             }),
 
+            OBR.party.onChange((party) => {
+              this.players = [];
+
+              this.players.push({
+                id: this.playerId,
+                name: this.playerName,
+                connectionId: '',
+                role: this.isGM ? 'GM' : 'PLAYER',
+                color: '',
+                syncView: false,
+                metadata: {}
+              });
+
+              this.players.push(...party);
+            });
+
             clearInterval(intervalId);
           }
-        }, 200)
+        }, 200);
+    },
+    computed: {
+      getDomainId() {
+        return this.config.sharedMode ? DM_ID : this.selectedPlayerId;
+      }
     },
     methods: {
+      /**
+       * Method to load the metadata from the Room.
+       */
+      async loadMetadata() {
+        await OBR.room.getMetadata().then(metadata => {
+          this.loadConfig(metadata);
+          this.loadDomain(metadata);
+        }).finally(() => {
+          this.loadPermission();
+        });
+      },
+      /**
+       * Determine whether the player has permission or not.
+       */
+      async loadPermission() {
+        this.isGM = await OBR.player.hasPermission("MAP_CREATE");
+        if (!this.config.sharedMode) {
+          this.hasPermission = true;
+        } else {
+          this.hasPermission = this.isGM;
+        }
+      },
       updateDomain(domain: Domain) {
-        this.debouncedFunction(domain);
+        this.debouncedSaveDomain(domain);
+      },
+      /**
+       * Load a Domain from the metadata.
+       * @param metadata the metadata of the room.
+       */
+      loadDomain(metadata: Metadata) {
+        const domain = metadata[DOMAIN_METADATA_KEY + this.getDomainId] as Domain;
+        if (domain) {
+          this.domain = domain;
+        } else {
+          this.domain = new Domain();
+        }
+      },
+      /**
+       * Save the domain to the room metadata.
+       * @param domain the domain
+       */
+      saveDomain(domain: Domain) {
+        OBR.room.setMetadata({
+          [DOMAIN_METADATA_KEY + this.getDomainId]: JSON.parse(JSON.stringify(domain))
+        });
+      },
+      /**
+       * Load the configuration from the metadata
+       * @param metadata the metadata of the room.
+       */
+      loadConfig(metadata: Metadata) {
+        const configData = metadata[CONFIG_METADATA_KEY] as any;
+        if (configData) {
+          this.config = Config.fromJson(configData.data);
+        }
+      },
+      /**
+       * Method that updates the config after a debounce time.
+       * @param config the config
+       */
+      updateConfig(config: Config) {
+        this.debouncedSaveConfig(config);
+      },
+      /**
+       * Save the configuration to the room metadata.
+       * @param config the config
+       */
+      saveConfig(config: Config) {
+        // Set the metadata
+        OBR.room.setMetadata({
+          [CONFIG_METADATA_KEY]: {
+            data: JSON.parse(JSON.stringify(config))
+          }
+        });
+      },
+      /**
+       * Load the players currently in the Room.
+       */
+      async loadPlayers() {
+        this.playerId = await OBR.player.getId();
+        this.playerName = await OBR.player.getName();
+
+        this.selectedPlayerId = this.playerId;
+
+        this.players.push({
+          id: this.playerId,
+          name: this.playerName,
+          connectionId: '',
+          role: this.isGM ? 'GM' : 'PLAYER',
+          color: '',
+          syncView: false,
+          metadata: {}
+        });
+
+        OBR.party.getPlayers().then((party) => {
+          this.players.push(...party);
+        });
+      },
+      /**
+       * This method switches the sheet to a different player
+       * @param playerId The player id to switch to.
+       */
+      switchSheet(playerId: string) {
+        this.selectedPlayerId = playerId;
+        this.loadMetadata();
       },
       setTheme(theme: Theme) {
         this.root?.style.setProperty("--primary", theme.primary.main);

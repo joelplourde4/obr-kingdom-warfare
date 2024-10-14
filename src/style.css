@@ -151,7 +151,7 @@ option {
 }
 
 input.show-button {
-  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/shown.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -163,7 +163,7 @@ input.show-button {
 }
 
 input.hide-button {
-  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/hidden.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -175,7 +175,7 @@ input.hide-button {
 }
 
 input.add-button {
-  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/add.svg); /* 16px x 16px */
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
@@ -187,7 +187,7 @@ input.add-button {
 }
 
 input.external-link-button {
-  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/external-link.svg); /* 16px x 16px */
   margin-top: 5px;
   background-color: transparent; /* make the button transparent */
@@ -197,7 +197,19 @@ input.external-link-button {
   cursor: pointer;        /* make the cursor like hovering over an <a> element */
   height: 25px;           /* make this the size of your image */
   width: 25px;
-  
+}
+
+input.settings-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/settings.svg); /* 16px x 16px */
+  margin-top: 5px;
+  background-color: transparent; /* make the button transparent */
+  background-repeat: no-repeat;  /* make the background image appear only once */
+  background-position: 0px 0px;  /* equivalent to 'top left' */
+  border: none;           /* assuming we don't want any borders */
+  cursor: pointer;        /* make the cursor like hovering over an <a> element */
+  height: 25px;           /* make this the size of your image */
+  width: 25px;
 }
 
 input.remove-button {
@@ -304,4 +316,27 @@ hr {
 
 .dot {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  margin: 0px 0px 2px;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: var(--accent);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
