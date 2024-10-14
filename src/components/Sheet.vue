@@ -58,6 +58,14 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
+            <tab v-if="config.warfare" name="Warfare">
+                <Warfare
+                    :domain="domain"
+                    :isGM="hasPermission"
+                    :isEditMode="editMode"
+                    @update:model-value="onUpdate"
+                />
+            </tab>
         </tabs>
     </div>
 </template>

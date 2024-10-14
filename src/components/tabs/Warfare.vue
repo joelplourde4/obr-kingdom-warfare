@@ -49,11 +49,12 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
-import OBR, { buildImage, buildLabel, ContextMenuContext, ImageContent, ImageGrid, Item } from '@owlbear-rodeo/sdk';
+import OBR, { buildImage, buildLabel, ContextMenuContext, ImageContent, ImageGrid, Item, Metadata } from '@owlbear-rodeo/sdk';
 import { utils } from '../../mixins/utils'
 
 // @ts-ignore
 import BaseTab from './BaseTab.js'
+import { DeployedUnit } from '../../models/DeployedUnit.js';
 
 const ICON_SIZE = 200
 const ICON_DPI = 150
@@ -61,96 +62,54 @@ const ICON_DPI = 150
 const EXHAUSTED: string = "EXHAUSTED"
 const RALLIED: string = "RALLIED"
 
-const GLOBAL_MESSAGE = "obr.domain.sheet.warfare.channel"
+const ID = "com.obr.domain-sheet/warfare"
 
-export class Casuality {
-    current: number;
-    total: number;
-
-    constructor() {
-        this.current = -1;
-        this.total = -1;
-    }
-}
-
-export class DeployedUnit {
-    id: string;
-    name: string;
-    casuality: Casuality;
-    exhausted: boolean;
-    rallied: boolean;
-
-    constructor(id: string, name: string) {
-        this.id = id;
-        this.name = name;
-        this.casuality = new Casuality();
-        this.exhausted = false;
-        this.rallied = false;
-    }
-}
+const WARFARE_METADATA_KEY = ID + "/metadata";
 
 export default defineComponent({
     mixins: [utils],
     extends: BaseTab,
     name: 'Warfare',
     data() {
+        let sceneItemChangeCallback = () => {};
+        let sceneMetadataCallback = () => {};
         return {
+            sceneItemChangeCallback,
+            sceneMetadataCallback,
             units: [] as DeployedUnit[]
         }
     },
     mounted() {
-        const intervalId = window.setInterval(async () => {
+        const obrIntervalId = window.setInterval(async () => {
             if (OBR.isReady) {
-                const contextMenu = {
-                    id: "my-id",
-                    icons: [{
-                        icon: "/kingdom.svg",
-                        label: "Add Unit",
-                        filter: {
-                            every: [
-                                { key: "visible", value: true },
-                                { key: "layer", value: "CHARACTER" }
-                            ]
-                        }
-                    }],
-                    onClick: this.addUnit
-                }
+                OBR.contextMenu.create(this.buildContextMenu());
+                
+                clearInterval(obrIntervalId);
+            }
+        }, 200);
 
-                OBR.contextMenu.create(contextMenu);
-
-                OBR.scene.items.onChange((items) => {
+        const sceneIntervalId = window.setInterval(async () => {
+            const isReady = await OBR.scene.isReady();
+            if (isReady) {
+                this.sceneItemChangeCallback = OBR.scene.items.onChange((items) => {
                     this.onChange(items);
                 });
 
-                OBR.scene.onReadyChange((ready) => {
-                    if (ready) {
-                        // Load the metadata
-                        OBR.scene.getMetadata().then(metadata => {
-                            const data = metadata["com.obr.domain-sheet/warfare/metadata"] as any;
-                            if (data) {
-                                for (let entry of data.data) {
-                                    const unit = Object.setPrototypeOf(entry, DeployedUnit.prototype);
-
-                                    this.units.push(unit);
-
-                                    this.refreshUnit(unit);
-                                }
-                            }
-                        });
-                    }
+                OBR.scene.getMetadata().then(metadata => {
+                    this.loadUnits(metadata);
                 });
 
-                // Subscribe to Global Messages
-                OBR.broadcast.onMessage(GLOBAL_MESSAGE, (event) => {
-                    this.units = [];
-                    for (let entry of event.data as any) {
-                        this.units.push(Object.setPrototypeOf(entry, DeployedUnit.prototype));
-                    }
+                this.sceneMetadataCallback = OBR.scene.onMetadataChange((metadata) => {
+                    this.loadUnits(metadata);
                 });
-                
-                clearInterval(intervalId);
+
+                clearInterval(sceneIntervalId);
             }
         }, 200);
+    },
+    unmounted() {
+        this.sceneItemChangeCallback();
+        this.sceneMetadataCallback();
     },
     methods: {
         /**
@@ -158,19 +117,23 @@ export default defineComponent({
          * @param units The deployed units.
          */
         saveUnits(units: DeployedUnit[]) {
-            let json = JSON.parse(JSON.stringify(units));
+            OBR.scene.setMetadata({
+                [WARFARE_METADATA_KEY]: { data: JSON.parse(JSON.stringify(units)) }
+            })
+        },
+        /**
+         * Load the units from the metadata.
+         */
+        loadUnits(metadata: Metadata) {
+            this.units = [];
 
-            const metadata = {
-                "com.obr.domain-sheet/warfare/metadata": {
-                    data: json
+            const data = metadata[WARFARE_METADATA_KEY] as any;
+            if (data) {
+                for (let entry of data.data) {
+                    this.units.push(DeployedUnit.fromJson(entry));
                 }
             }
-
-            // Set the metadata
-            OBR.scene.setMetadata(metadata)
-
-            // Broadcast a message to
-            OBR.broadcast.sendMessage(GLOBAL_MESSAGE, json, { destination: "REMOTE" })
+            return this.units;
         },
         /**
          * Method trigger when the unit name is double-click
@@ -198,25 +161,59 @@ export default defineComponent({
             }
         },
         /**
+         * Event triggered whenever the context menu gets clicked.
+         * @param context  The context menu context
+         * @param _elementId The element
+         */
+        onContextMenuClick(context: ContextMenuContext, _elementId: string) {
+            const addToRoster = context.items.every(
+                (item) => item.metadata[WARFARE_METADATA_KEY] === undefined
+            );
+            if (addToRoster) {
+                this.addUnitToRoster(context, _elementId);
+            } else {
+                this.removeUnitFromRoster(context, _elementId);
+            }
+        },
+        /**
          * Method to add an unit to the deployment
          * @param context The context menu context
          * @param _elementId The element ID
          */
-        addUnit(context: ContextMenuContext, _elementId: string) {
-            for (let item of context.items) {
-                let exists = false;
-                for (let unit of this.units) {
-                    if (unit.id === item.id) {
-                        exists = true;
+        addUnitToRoster(context: ContextMenuContext, _elementId: string) {
+            OBR.scene.items.updateItems(context.items, (items) => {
+                for (let item of items) {
+                    if (item.metadata[WARFARE_METADATA_KEY] === undefined) {
+                        this.units.push(new DeployedUnit(item.id, item.name));
+                    }
+
+                    item.metadata[WARFARE_METADATA_KEY] = {
+                        key: item.id
+                    };
+                }
+
+                this.saveUnits(this.units);
+            });
+        },
+        /**
+         * Method to remove an unit from the roster when the user click on 'Remove Unit' in the scene.
+         * @param context The context
+         * @param _elementId The element id
+         */
+        removeUnitFromRoster(context: ContextMenuContext, _elementId: string) {
+            OBR.scene.items.updateItems(context.items, (items) => {
+                for (let item of items) {
+                    if (item.metadata[WARFARE_METADATA_KEY] !== undefined) {
+                        this.units = this.units.filter((x: DeployedUnit) =>
+                            x.id !== item.id
+                        );
+
+                        delete item.metadata[WARFARE_METADATA_KEY];
                     }
                 }
 
-                if (!exists) {
-                    this.units.push(new DeployedUnit(item.id, item.name));
-                }
-            }
-
-            this.saveUnits(this.units);
+                this.saveUnits(this.units);
+            });
         },
         /**
          * Method to remove an unit from the roster when it gets deleted from the scene.
@@ -229,10 +226,11 @@ export default defineComponent({
 
             this.saveUnits(this.units);
         },
+        /**
+         * Method to update the value of the casualty bar.
+         */
         async onCasualty(unit: DeployedUnit) {
-            console.log(unit);
             const attachments = await OBR.scene.items.getItemAttachments([unit.id]);
-            console.log(attachments);
 
             const index = attachments.findIndex((a) => a.name === "HEALTH");
             if (index < 0) {
@@ -240,10 +238,10 @@ export default defineComponent({
                 const label = this.buildHealth(items[0], unit);
                 await OBR.scene.items.addItems([label]);
             } else {
+                // Simply update the attachments
                 await OBR.scene.items.updateItems([attachments[index]], (items) => {
                     items[0].text.plainText = unit.casuality.current + "/" + unit.casuality.total;
                 });
-                // Simply update the attachments
             }
 
             this.saveUnits(this.units);
@@ -317,6 +315,38 @@ export default defineComponent({
             this.saveUnits(this.units);
         },
         /**
+         * Build the context menu to be right-clicked.
+         */
+        buildContextMenu() {
+            return {
+                id: ID + '/add-unit',
+                icons: [
+                    {
+                        icon: "/sword.svg",
+                        label: "Add Unit",
+                        filter: {
+                            every: [
+                                { key: "visible", value: true },
+                                { key: "layer", value: "CHARACTER" },
+                                { key: ["metadata", WARFARE_METADATA_KEY], value: undefined }
+                            ]
+                        }
+                    },
+                    {
+                        icon: "/sword.svg",
+                        label: "Remove Unit",
+                        filter: {
+                            every: [
+                                { key: "visible", value: true },
+                                { key: "layer", value: "CHARACTER" },
+                            ]
+                        }
+                    }
+                ],
+                onClick: this.onContextMenuClick
+            }
+        },
+        /**
          * Build the Exhausted Image associated to the item.
          * @param item The parent item.
          */
@@ -330,7 +360,7 @@ export default defineComponent({
                 width: ICON_SIZE,
                 height: ICON_SIZE,
                 mime: "image/svg+xml",
-                url: "https://obr-kingdom-warfare.onrender.com/kingdom.svg"
+                url: "https://obr-kingdom-warfare.onrender.com/exhausted.svg"
             } as ImageContent;
 
             const offsetY = isRallied ? ICON_DPI : 0;
@@ -345,7 +375,7 @@ export default defineComponent({
                 dpi: ICON_DPI
             } as ImageGrid;
 
-            const circle = buildImage(imageContent, grid)
+            return buildImage(imageContent, grid)
                 .scale({ x: 1, y: 1 })
                 .position(position)
                 .attachedTo(item.id)
@@ -355,7 +385,6 @@ export default defineComponent({
                 .disableHit(false)
                 .visible(item.visible)
                 .build();
-            return circle;
         },
         /**
          * Build the Rallied Image associated to the item.
@@ -371,7 +400,7 @@ export default defineComponent({
                 width: ICON_SIZE,
                 height: ICON_SIZE,
                 mime: "image/svg+xml",
-                url: "https://obr-kingdom-warfare.onrender.com/person.svg"
+                url: "https://obr-kingdom-warfare.onrender.com/flag.svg"
             } as ImageContent;
 
             const offsetY = isExhausted ? ICON_DPI : 0;
@@ -386,7 +415,7 @@ export default defineComponent({
                 dpi: ICON_DPI
             } as ImageGrid;
 
-            const circle = buildImage(imageContent, grid)
+            return buildImage(imageContent, grid)
                 .scale({ x: 1, y: 1 })
                 .position(position)
                 .attachedTo(item.id)
@@ -396,7 +425,6 @@ export default defineComponent({
                 .disableHit(true)
                 .visible(item.visible)
                 .build();
-            return circle;
         },
         /**
          * This method builds the health component displayed on screen

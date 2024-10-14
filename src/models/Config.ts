@@ -4,6 +4,7 @@ export class Config {
     relations: boolean;
     features: boolean;
     military: boolean;
+    warfare: boolean;
     sharedMode: boolean;
 
     constructor(
@@ -12,6 +13,7 @@ export class Config {
             relations: boolean = true,
             features: boolean = true,
             military: boolean = true,
+            warfare: boolean = true,
             sharedMode: boolean = true
     ){
         this.header = header;
@@ -19,6 +21,7 @@ export class Config {
         this.relations = relations;
         this.features = features;
         this.military = military;
+        this.warfare = warfare;
         this.sharedMode = sharedMode;
     }
 
@@ -29,6 +32,7 @@ export class Config {
             config.relations,
             config.features,
             config.military,
+            config.warfare,
             config.sharedMode
         )
     } 
