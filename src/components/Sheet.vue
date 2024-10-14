@@ -1,10 +1,13 @@
 <template lang="html">
     <NavigationBar
+        :players="players"
         :isGM="isGM"
         :isSettings="settings"
+        :isSharedMode="config.sharedMode"
         :hasPermission="hasPermission"
         @update:edit-mode="onEditMode"
         @update:settings="onSettings"
+        @update:switch-sheet="onSwitchSheet"
     />
     <div v-if="settings">
         <Settings
@@ -72,6 +75,7 @@ import Military from './tabs/Military.vue';
 
 import { Domain } from '../models/Domain';
 import { Config } from '../models/Config';
+import { Player } from '@owlbear-rodeo/sdk';
 
 export default defineComponent({
     components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military },
@@ -85,6 +89,10 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        players: {
+            type: Array<Player>,
+            required: true
+        },
         domain: {
             type: Object as PropType<Domain>,
             required: true
@@ -94,7 +102,7 @@ export default defineComponent({
             required: true
         },
     },
-    emits: ['update:domain','update:config'],
+    emits: ['update:domain','update:config', 'update:switchSheet'],
     data() {
         const editMode = false;
         const settings = false;
@@ -116,6 +124,9 @@ export default defineComponent({
         },
         onConfigChanged(config: Config) {
             this.$emit('update:config', config);
+        },
+        onSwitchSheet(playerId: string) {
+            this.$emit('update:switchSheet', playerId);
         }
     }
 })

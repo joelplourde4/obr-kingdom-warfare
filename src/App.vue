@@ -1,11 +1,13 @@
 <template>
   <Sheet
+    :players="players"
     :domain="domain"
     :config="config"
     :isGM="isGM"
     :hasPermission="hasPermission"
     @update:domain="updateDomain"
     @update:config="updateConfig"
+    @update:switch-sheet="switchSheet"
   />
 </template>
 
@@ -16,7 +18,7 @@ import { useDebounceFn } from '@vueuse/core'
 import Sheet from './components/Sheet.vue'
 import { Domain } from './models/Domain.ts'
 
-import OBR, { Metadata, Theme } from "@owlbear-rodeo/sdk";
+import OBR, { Metadata, Player, Theme } from "@owlbear-rodeo/sdk";
 import { Config } from './models/Config.ts';
 
 const DM_ID = "000000000-0000-0000-0000-0000000000000";
@@ -38,6 +40,9 @@ export default defineComponent({
         domain: new Domain(),
         config: new Config(),
         playerId: "",
+        playerName: "",
+        selectedPlayerId: "",
+        players: [] as Array<Player>,
         root: document.getElementById('content'),
       }
     },
@@ -46,8 +51,8 @@ export default defineComponent({
 
       const intervalId = window.setInterval(async () => {
           if (OBR.isReady) {
-            // Load the Player ID
-            this.playerId = await OBR.player.getId();
+            // Load the Players
+            await this.loadPlayers();
 
             // Load the metadata
             await this.loadMetadata();
@@ -66,13 +71,29 @@ export default defineComponent({
               this.setTheme(theme);
             }),
 
+            OBR.party.onChange((party) => {
+              this.players = [];
+
+              this.players.push({
+                id: this.playerId,
+                name: this.playerName,
+                connectionId: '',
+                role: this.isGM ? 'GM' : 'PLAYER',
+                color: '',
+                syncView: false,
+                metadata: {}
+              });
+
+              this.players.push(...party);
+            });
+
             clearInterval(intervalId);
           }
         }, 200);
     },
     computed: {
       getDomainId() {
-        return this.config.sharedMode ? DM_ID : this.playerId;
+        return this.config.sharedMode ? DM_ID : this.selectedPlayerId;
       }
     },
     methods: {
@@ -109,6 +130,8 @@ export default defineComponent({
         const domain = metadata[DOMAIN_METADATA_KEY + this.getDomainId] as Domain;
         if (domain) {
           this.domain = domain;
+        } else {
+          this.domain = new Domain();
         }
       },
       /**
@@ -148,6 +171,37 @@ export default defineComponent({
             data: JSON.parse(JSON.stringify(config))
           }
         });
+      },
+      /**
+       * Load the players currently in the Room.
+       */
+      async loadPlayers() {
+        this.playerId = await OBR.player.getId();
+        this.playerName = await OBR.player.getName();
+
+        this.selectedPlayerId = this.playerId;
+
+        this.players.push({
+          id: this.playerId,
+          name: this.playerName,
+          connectionId: '',
+          role: this.isGM ? 'GM' : 'PLAYER',
+          color: '',
+          syncView: false,
+          metadata: {}
+        });
+
+        OBR.party.getPlayers().then((party) => {
+          this.players.push(...party);
+        });
+      },
+      /**
+       * This method switches the sheet to a different player
+       * @param playerId The player id to switch to.
+       */
+      switchSheet(playerId: string) {
+        this.selectedPlayerId = playerId;
+        this.loadMetadata();
       },
       setTheme(theme: Theme) {
         this.root?.style.setProperty("--primary", theme.primary.main);

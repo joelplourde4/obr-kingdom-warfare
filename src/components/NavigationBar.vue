@@ -1,14 +1,23 @@
 <template>
     <div v-if="hasPermission" class="row header">
-        <label class="switch">
-            <input type="checkbox" @click="toggleEditMode"/>
-            <span class="slider round"></span>
-        </label>
-        <input v-if="isGM" type="button" class="settings-button settings-icon" @click="toggleSettings">
+      <div v-if="displaySheetSelector" class="sheet-selector">
+        <span>Sheet:</span>
+        <select class="dropdown" v-model="selectedPlayer" @change="onPlayerSelected">
+          <option v-for="player in players" :value="player.id">
+            {{ player.name }}
+          </option>
+        </select>
+      </div>
+      <label v-if="!isSettings" class="switch">
+        <input type="checkbox" @click="toggleEditMode"/>
+        <span class="slider round"></span>
+      </label>
+      <input v-if="isGM" type="button" class="settings-button settings-icon" @click="toggleSettings">
     </div>
 </template>
 
 <script lang="ts">
+import { Player } from '@owlbear-rodeo/sdk';
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -22,6 +31,14 @@ export default defineComponent({
           type: Boolean,
           required: true
         },
+        isSharedMode: {
+          type: Boolean,
+          required: true
+        },
+        players: {
+          type: Array<Player>,
+          required: true,
+        },
         hasPermission: {
             type: Boolean,
             required: true
@@ -30,12 +47,15 @@ export default defineComponent({
     data() {
         const editMode = false;
         const settings = false;
+        const selectedPlayer = (this.players[0] || {}) as Player;
+
         return {
-            editMode: editMode,
-            settings: settings,
+          selectedPlayer: selectedPlayer,
+          editMode: editMode,
+          settings: settings,
         }
     },
-    emits: ['update:editMode','update:settings'],
+    emits: ['update:editMode','update:settings', 'update:switchSheet'],
     computed: {
         isDisabled() {
             if (!this.isGM) {
@@ -43,6 +63,17 @@ export default defineComponent({
             }
 
             return !this.editMode;
+        },
+        displaySheetSelector() {
+          if (this.isSettings) {
+            return false;
+          }
+
+          if (!this.isGM) {
+            return false;
+          }
+
+          return !this.isSharedMode;
         }
     },
     methods: {
@@ -54,6 +85,9 @@ export default defineComponent({
             this.settings = !this.settings;
             this.$emit('update:settings', this.settings);
         },
+        onPlayerSelected() {
+          this.$emit('update:switchSheet', this.selectedPlayer);
+        }
     }
 })
   
@@ -64,7 +98,13 @@ export default defineComponent({
 .header {
     margin-bottom: 0.5rem;
     align-items: center;
-    margin-left: 78%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sheet-selector {
+  justify-content: flex-start;
+  margin-right: auto;
 }
 
 .settings-icon {
