@@ -52,8 +52,7 @@ import { defineComponent } from 'vue'
 import OBR, { buildImage, buildLabel, ContextMenuContext, ImageContent, ImageGrid, Item, Metadata } from '@owlbear-rodeo/sdk';
 import { utils } from '../../mixins/utils'
 
-// @ts-ignore
-import BaseTab from './BaseTab.js'
+import BaseTab from './BaseTab.ts'
 import { DeployedUnit } from '../../models/DeployedUnit.js';
 
 const ICON_SIZE = 200
@@ -513,29 +512,6 @@ table {
 
 th {
     font-size: small;
-}
-
-input[type="checkbox"] {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--OBR-font);
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    margin: 0px 0px 2px;
-    vertical-align: middle;
-}
-
-input[type="checkbox"]:checked::after {
-    content: "";
-    width: 12px;
-    height: 12px;
-    background-color: var(--accent);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 </style>
