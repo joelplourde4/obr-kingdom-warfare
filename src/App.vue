@@ -39,8 +39,11 @@ export default defineComponent({
         hasPermission: false,
         domain: new Domain(),
         config: new Config(),
-        playerId: "",
-        playerName: "",
+        currentPlayer: {
+          id: "",
+          name: "",
+          color: ""
+        } as Player,
         selectedPlayerId: "",
         players: [] as Array<Player>,
         root: document.getElementById('content'),
@@ -75,16 +78,26 @@ export default defineComponent({
               this.players = [];
 
               this.players.push({
-                id: this.playerId,
-                name: this.playerName,
+                id: this.currentPlayer.id,
+                name: this.currentPlayer.name,
                 connectionId: '',
                 role: this.isGM ? 'GM' : 'PLAYER',
-                color: '',
+                color: this.currentPlayer.color,
                 syncView: false,
                 metadata: {}
               });
 
               this.players.push(...party);
+            });
+
+            OBR.player.onChange((player) => {
+              this.currentPlayer.name = player.name;
+              this.currentPlayer.color = player.color;
+
+              const index = this.players.findIndex((x) => x.id === player.id);
+              if (index >= 0) {
+                this.players[index] = player;
+              }
             });
 
             clearInterval(intervalId);
@@ -172,21 +185,25 @@ export default defineComponent({
           }
         });
       },
+      async loadCurrentPlayer() {
+        this.currentPlayer.id = await OBR.player.getId();
+        this.currentPlayer.name = await OBR.player.getName();
+        this.currentPlayer.color = await OBR.player.getColor();
+
+        this.selectedPlayerId = this.currentPlayer.id;
+      },
       /**
        * Load the players currently in the Room.
        */
       async loadPlayers() {
-        this.playerId = await OBR.player.getId();
-        this.playerName = await OBR.player.getName();
-
-        this.selectedPlayerId = this.playerId;
+        await this.loadCurrentPlayer();
 
         this.players.push({
-          id: this.playerId,
-          name: this.playerName,
+          id: this.currentPlayer.id,
+          name: this.currentPlayer.name,
           connectionId: '',
           role: this.isGM ? 'GM' : 'PLAYER',
-          color: '',
+          color: this.currentPlayer.color,
           syncView: false,
           metadata: {}
         });

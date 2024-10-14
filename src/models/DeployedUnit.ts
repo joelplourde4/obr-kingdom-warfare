@@ -15,18 +15,25 @@ export class DeployedUnit {
     exhausted: boolean;
     rallied: boolean;
 
+    opened: boolean;
+    color: string;
+
     constructor(
         id: string,
         name: string,
         casuality: Casuality = new Casuality(),
         exhausted: boolean = false,
-        rallied: boolean = false
+        rallied: boolean = false,
+        opened: boolean = false,
+        color: string = "#000000"
     ) {
         this.id = id;
         this.name = name;
         this.casuality = casuality;
         this.exhausted = exhausted;
         this.rallied = rallied;
+        this.opened = opened;
+        this.color = color;
     }
 
     static fromJson(deployedUnit: DeployedUnit) {
@@ -35,7 +42,9 @@ export class DeployedUnit {
             deployedUnit.name,
             deployedUnit.casuality,
             deployedUnit.exhausted,
-            deployedUnit.rallied
+            deployedUnit.rallied,
+            deployedUnit.opened,
+            deployedUnit.color,
         );
     }
 }
