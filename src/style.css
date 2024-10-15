@@ -146,9 +146,7 @@ option {
     position: fixed;
 }
 
-input.show-button {
-  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
-  background-image: url(/shown.svg); /* 16px x 16px */
+input.icon-button {
   background-color: transparent; /* make the button transparent */
   background-repeat: no-repeat;  /* make the background image appear only once */
   background-position: 0px 0px;  /* equivalent to 'top left' */
@@ -156,69 +154,43 @@ input.show-button {
   cursor: pointer;        /* make the cursor like hovering over an <a> element */
   height: 25px;           /* make this the size of your image */
   width: 25px;
+}
+
+input.show-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/shown.svg);
 }
 
 input.hide-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
-  background-image: url(/hidden.svg); /* 16px x 16px */
-  background-color: transparent; /* make the button transparent */
-  background-repeat: no-repeat;  /* make the background image appear only once */
-  background-position: 0px 0px;  /* equivalent to 'top left' */
-  border: none;           /* assuming we don't want any borders */
-  cursor: pointer;        /* make the cursor like hovering over an <a> element */
-  height: 25px;           /* make this the size of your image */
-  width: 25px;
+  background-image: url(/hidden.svg);
 }
 
 input.add-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
-  background-image: url(/add.svg); /* 16px x 16px */
-  background-color: transparent; /* make the button transparent */
-  background-repeat: no-repeat;  /* make the background image appear only once */
-  background-position: 0px 0px;  /* equivalent to 'top left' */
-  border: none;           /* assuming we don't want any borders */
-  cursor: pointer;        /* make the cursor like hovering over an <a> element */
-  height: 25px;           /* make this the size of your image */
-  width: 25px;
+  background-image: url(/add.svg);
 }
 
 input.external-link-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
-  background-image: url(/external-link.svg); /* 16px x 16px */
+  background-image: url(/external-link.svg);
   margin-top: 5px;
-  background-color: transparent; /* make the button transparent */
-  background-repeat: no-repeat;  /* make the background image appear only once */
-  background-position: 0px 0px;  /* equivalent to 'top left' */
-  border: none;           /* assuming we don't want any borders */
-  cursor: pointer;        /* make the cursor like hovering over an <a> element */
-  height: 25px;           /* make this the size of your image */
-  width: 25px;
 }
 
 input.settings-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
-  background-image: url(/settings.svg); /* 16px x 16px */
-  margin-top: 5px;
-  background-color: transparent; /* make the button transparent */
-  background-repeat: no-repeat;  /* make the background image appear only once */
-  background-position: 0px 0px;  /* equivalent to 'top left' */
-  border: none;           /* assuming we don't want any borders */
-  cursor: pointer;        /* make the cursor like hovering over an <a> element */
-  height: 25px;           /* make this the size of your image */
-  width: 25px;
+  background-image: url(/settings.svg);
 }
 
 input.remove-button {
   filter: invert(13%) sepia(89%) saturate(7390%) hue-rotate(0deg) brightness(99%) contrast(111%);
-  background-image: url(/remove.svg); /* 16px x 16px */
-  background-color: transparent; /* make the button transparent */
-  background-repeat: no-repeat;  /* make the background image appear only once */
-  background-position: 0px 0px;  /* equivalent to 'top left' */
-  border: none;           /* assuming we don't want any borders */
-  cursor: pointer;        /* make the cursor like hovering over an <a> element */
-  height: 25px;           /* make this the size of your image */
-  width: 25px;
+  background-image: url(/remove.svg);
   margin: auto;
+}
+
+input.duplicate-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/duplicate.svg);
 }
 
 /* Text Size */
@@ -281,7 +253,7 @@ hr {
   overflow: auto;
   right: -20%;
   top: 95%;
-  background-color: var(--background);
+  background-color: var(--default);
   z-index: 1;
 
   .option-container {

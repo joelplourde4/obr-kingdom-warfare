@@ -26,19 +26,19 @@
                                 <img v-if="!relation.expand" src="/caret-down.svg">
                             </div>
                             <div v-if="!relation.show" class="option-container tooltip">
-                                <input type="button" class="show-button" @click="onToggleRelation(relation)"/>
+                                <input type="button" class="icon-button show-button" @click="onToggleRelation(relation)"/>
                                 <span class="tooltiptext">
                                     Is shown to the players, click to hide.
                                 </span>
                             </div>
                             <div v-if="relation.show" class="option-container tooltip">
-                                <input type="button" class="hide-button" @click="onToggleRelation(relation)"/>
+                                <input type="button" class="icon-button hide-button" @click="onToggleRelation(relation)"/>
                                 <span class="tooltiptext">
                                     Is hidden from the players, click to show.
                                 </span>
                             </div>
                             <div class="option-container tooltip">
-                                <input type="button" class="remove-button" @click="onRemoveRelation(relation)"/>
+                                <input type="button" class="icon-button remove-button" @click="onRemoveRelation(relation)"/>
                                 <span class="tooltiptext">
                                     On click, remove the Relation.
                                 </span>
@@ -56,11 +56,11 @@
                                 <div class="container">
                                     <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
                                 </div>
-                                <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveOfficer(relation, officer)"/>
+                                <input v-show="isVisible" type="button" class="icon-button remove-button" @click="onRemoveOfficer(relation, officer)"/>
                             </div>
                         </div>
                         <div v-show="isVisible" class="add-button-container tooltip">
-                            <input type="button" class="add-button" @click="onAddOfficer(relation)"/>
+                            <input type="button" class="icon-button add-button" @click="onAddOfficer(relation)"/>
                             <span>Officer</span>
                             <span class="tooltiptext">
                                 On click, add an Officer.
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div v-show="isVisible" class="add-button-container tooltip">
-            <input type="button" class="add-button" @click="onAddRelation"/>
+            <input type="button" class="icon-button add-button" @click="onAddRelation"/>
             <span>Relation</span>
             <span class="tooltiptext">
                 On click, add a Relation.

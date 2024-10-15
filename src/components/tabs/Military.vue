@@ -10,7 +10,7 @@
                         </div>
                         <input class="name" v-model="unit.name" @input="onChanges(unit)" @click="preventPropagation" :disabled="isDisabled">
                         <div class="option-container tooltip">
-                            <input type="button" class="external-link-button" @click="openModal(unit)">
+                            <input type="button" class="icon-button external-link-button" @click="openModal(unit)">
                             <span class="tooltiptext">
                                 On click, open the Unit card.
                             </span>
@@ -27,7 +27,13 @@
                                     <img v-if="!unit.show" src="/caret-down.svg">
                                 </div>
                                 <div class="option-container tooltip">
-                                    <input v-show="isVisible" type="button" class="remove-button" @click="onRemoveUnit(unit)"/>
+                                    <input v-show="isVisible" type="button" class="icon-button duplicate-button" @click="onDuplicateUnit(unit)"/>
+                                    <span class="tooltiptext">
+                                        On click, duplicate the Unit.
+                                    </span>
+                                </div>
+                                <div class="option-container tooltip">
+                                    <input v-show="isVisible" type="button" class="icon-button remove-button" @click="onRemoveUnit(unit)"/>
                                     <span class="tooltiptext">
                                         On click, remote the Unit.
                                     </span>
@@ -78,7 +84,7 @@
                         <div class="tooltip">
                             <div class="trait-header row">
                                 <p>Traits</p>
-                                <input v-show="isVisible" type="button" class="add-button" @click="onAddTrait(unit)"/>
+                                <input v-show="isVisible" type="button" class="icon-button add-button" @click="onAddTrait(unit)"/>
                             </div>
                             <span class="tooltiptext">Maneuvers or special features that the unit can employ in battle.</span>
                         </div>
@@ -92,7 +98,7 @@
                                             {{ availableTrait }}
                                         </option>
                                     </select>
-                                    <input v-show="isVisible" type="button" class="remove-button remove-trait" @click="onRemoveTrait(unit, trait)"/>
+                                    <input v-show="isVisible" type="button" class="icon-button remove-button remove-trait" @click="onRemoveTrait(unit, trait)"/>
                                 </div>
                                 <span class="tooltiptext">{{ trait.description }}</span>
                             </li>
@@ -121,7 +127,7 @@
             </div>
         </div>
         <div v-show="isVisible" class="add-button-container tooltip">
-            <input type="button" class="add-button" @click="onAddUnit"/>
+            <input type="button" class="icon-button add-button" @click="onAddUnit"/>
             <span>Unit</span>
             <span class="tooltiptext">
                 On click, add a Unit.
@@ -197,6 +203,11 @@ export default defineComponent({
                 return x !== unit
             });
             this.onChanges(unit);
+        },
+        onDuplicateUnit(unit: Unit) {
+            const newUnit = JSON.parse(JSON.stringify(unit))
+            this.domain.units.push(newUnit);
+            this.onChanges(newUnit);
         },
         onAddTrait(unit: Unit) {
             unit.traits.push(Trait.ADAPTABLE);
