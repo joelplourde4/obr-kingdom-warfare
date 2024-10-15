@@ -97,15 +97,29 @@ export class Unit {
     size: Size;
     traits: Trait[];
 
-    constructor() {
-        this.name = "Default";
+    // Computed value
+    cost: number;
+
+    constructor(
+        name?: string,
+        experience?: Experience,
+        equipment?: Equipment,
+        type?: Type,
+        ancestry?: Ancestry,
+        tier?: Tier,
+        size?: Size,
+        traits?: Trait[],
+        cost?: number,
+    ) {
+        this.name = name || "Default";
+        this.experience = experience || Experience.GREEN;
+        this.equipment = equipment || Equipment.LIGHT;
+        this.type = type || Type.INFANTRY;
+        this.ancestry = ancestry || Ancestry.HUMAN;
+        this.tier = tier || Tier.I;
+        this.size = size || Size.D4;
+        this.traits = traits || [];
         this.show = false;
-        this.experience = Experience.REGULAR;
-        this.equipment = Equipment.LIGHT;
-        this.type = Type.INFANTRY;
-        this.ancestry = Ancestry.HUMAN;
-        this.tier = Tier.I;
-        this.size = Size.D4;
-        this.traits = [];
+        this.cost = 0;
     }
 }

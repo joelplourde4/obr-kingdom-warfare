@@ -16,6 +16,12 @@ export class Stats {
     }
 }
 
+export const TIER_I = 500;
+export const TIER_II = 800;
+export const TIER_III = 1300;
+export const TIER_IV = 2000;
+// Tier V is anything above.
+
 export const ANCESTRY_STATS_MAP = new Map<Ancestry, Stats>([
     [Ancestry.DRAGONBORN, new Stats(2, 2, 1, 1, 1)],
     [Ancestry.DWARF, new Stats(3, 1, 1, 1 ,2)],

@@ -1,14 +1,14 @@
 <template>
     <div class="content military">
         <div class="unit" v-for="unit in domain.units">
-            <button type="button" class="collapsible column" @click="openCollapsible(unit)">
+            <button type="button" class="collapsible column" @click="openCollapsible($event, unit)">
                 <div class="column">
                     <div class="row">
                         <div class="tooltip">
                             <p class="tier">{{ unit.tier }}</p>
                             <span class="tooltiptext">Tier: Measure of the unit's overall power or nastiness.</span>
                         </div>
-                        <input class="name" v-model="unit.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
+                        <input class="name" v-model="unit.name" @input="onChanges(unit)" @click="preventPropagation" :disabled="isDisabled">
                         <div class="option-container tooltip">
                             <input type="button" class="external-link-button" @click="openModal(unit)">
                             <span class="tooltiptext">
@@ -37,7 +37,7 @@
                     </div>
                     <div class="attribute-selector row">
                         <div class="tooltip">
-                            <select class="dropdown" v-model="unit.experience" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                            <select class="dropdown" v-model="unit.experience" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
                                 <option v-for="experience in Experience" :value="experience">
                                     {{ experience }}
                                 </option>
@@ -45,7 +45,7 @@
                             <span class="tooltiptext">Experience is a combination of how much training a unit has and how much fighting it's seen.</span>
                         </div>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="unit.equipment" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                            <select class="dropdown" v-model="unit.equipment" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
                                 <option v-for="equipment in Equipment" :value="equipment">
                                     {{ equipment }}
                                 </option>
@@ -53,7 +53,7 @@
                             <span class="tooltiptext">Describes a unit's arms and armor, heavier units have better weapons and armor, granting them bonuses to Power, Toughness and Damage.</span>
                         </div>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="unit.type" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                            <select class="dropdown" v-model="unit.type" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
                                 <option v-for="type in Type" :value="type">
                                     {{ type }}
                                 </option>
@@ -102,12 +102,19 @@
                 <div class="column advanced-section">
                     <div class="tooltip">
                         <span>Size</span>
-                        <select class="dropdown" v-model="unit.size" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                        <select class="dropdown" v-model="unit.size" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
                             <option v-for="size in Size" :value="size">
                                 {{ size }}
                             </option>
                         </select>
                         <span class="tooltiptext">Size: Represent the casuality die (e.g HP). A unit's die is decremented each time it fails a morale check and each time it takes casualties.</span>
+                    </div>
+                    <div class="tooltip">
+                        <div class="row">
+                            <span class="cost-label">Cost</span>
+                            <p class="cost dropdown">{{ unit.cost }}</p>
+                        </div>
+                        <span class="tooltiptext">Cost: Indicates both the initial hiring fee for the unit and its ongoing upkeep expense.</span>
                     </div>
                 </div>
                 <hr>
@@ -125,7 +132,9 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import { utils } from '../../mixins/utils'
+import { statsCalculator } from '../../../unit/mixins/statsCalculator'
 
 import { TRAIT_DESCRIPTION_MAP, ANCESTRY_TRAIT_MAP, TraitDefinition } from '../../models/Trait.ts'
 
@@ -136,11 +145,16 @@ import OBR from '@owlbear-rodeo/sdk';
 import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';
     
 export default defineComponent({
-    mixins: [utils],
+    mixins: [utils, statsCalculator],
     extends: BaseTab,
     name: 'Military',
     data() {
+        const debouncedUpdate = useDebounceFn((unit) => { 
+            // @ts-ignore
+            this.updateUnit(unit);
+        }, 500)
         return {
+            debouncedUpdate,
             Experience,
             Equipment,
             Type,
@@ -150,31 +164,49 @@ export default defineComponent({
             Size
         }
     },
+    computed: {
+        getTier() {
+            return this.calculateTier(this.unit);
+        }
+    },
     methods: {
-        openCollapsible(unit: Unit) {
+        updateUnit(unit: Unit) {
+            const cost = this.calculateCost(unit);
+            unit.cost = cost;
+            unit.tier = this.calculateTier(unit);
+            this.onUpdate();
+        },
+        onChanges(unit: Unit) {
+            this.debouncedUpdate(unit);
+        },
+        openCollapsible($event: any, unit: Unit) {
+            if ($event.detail === 0) {
+                // Ignore spacebar press
+                return;
+            }
             unit.show = !unit.show;
         },
         onAddUnit() {
             const unit = new Unit();
             unit.traits = [...ANCESTRY_TRAIT_MAP.get(unit.ancestry) || []];
             this.domain.units.push(unit);
-            this.onUpdate();
+            this.onChanges(unit);
         },
         onRemoveUnit(unit: Unit) {
             this.domain.units = this.domain.units.filter((x: Unit) => {
                 return x !== unit
             });
-            this.onUpdate();
+            this.onChanges(unit);
         },
         onAddTrait(unit: Unit) {
             unit.traits.push(Trait.ADAPTABLE);
-            this.onUpdate();
+            this.onChanges(unit);
         },
         onRemoveTrait(unit: Unit, traitDefinition: TraitDefinition) {
             unit.traits = unit.traits.filter((x) => {
                 return x !== traitDefinition.name
             });
-            this.onUpdate();
+            this.onChanges(unit);
         },
         getAvailableTraits(unit: Unit): Trait[] {
             return Object.values(Trait).filter((trait) => {
@@ -207,7 +239,7 @@ export default defineComponent({
         /* On Change Events*/
         onAncestryChange(unit: Unit) {
             unit.traits = [...ANCESTRY_TRAIT_MAP.get(unit.ancestry) || []];
-            this.onUpdate();
+            this.onChanges(unit);
         },
         onTraitChange(unit: Unit, traitDefinition: TraitDefinition) {
             // Find the index where the trait is.
@@ -215,7 +247,7 @@ export default defineComponent({
 
             // Replace at index, the new trait.
             unit.traits[index] = traitDefinition.newTrait || Trait.AAAUUUGH;
-            this.onUpdate();
+            this.onChanges(unit);
         },
         openModal(unit: Unit) {
             this.preventPropagation(event);
@@ -277,6 +309,16 @@ export default defineComponent({
         width: 80px;
         height: 30px;
         align-self: center;
+    }
+
+    .cost-label {
+        align-content: center;
+    }
+
+    .cost {
+        background-color: var(--background);
+        border-radius: 5px;
+        align-content: center;
     }
 
     .trait-header {
