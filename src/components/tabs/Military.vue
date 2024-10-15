@@ -4,6 +4,10 @@
             <button type="button" class="collapsible column" @click="openCollapsible(unit)">
                 <div class="column">
                     <div class="row">
+                        <div class="tooltip">
+                            <p class="tier">{{ unit.tier }}</p>
+                            <span class="tooltiptext">Tier: Measure of the unit's overall power or nastiness.</span>
+                        </div>
                         <input class="name" v-model="unit.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
                         <div class="option-container tooltip">
                             <input type="button" class="external-link-button" @click="openModal(unit)">
@@ -84,8 +88,8 @@
                                 <div v-if="!trait.inherit" class="row">
                                     <p class="trait">{{ trait.name }}</p>
                                     <select v-if="isEditMode" class="selector" v-model="trait.newTrait" @click="preventPropagation" @change="onTraitChange(unit, trait)" :disabled="isDisabled">
-                                        <option v-for="x in Trait" :value="x">
-                                            {{ x }}
+                                        <option v-for="availableTrait in getAvailableTraits(unit)" :value="availableTrait">
+                                            {{ availableTrait }}
                                         </option>
                                     </select>
                                     <input v-show="isVisible" type="button" class="remove-button remove-trait" @click="onRemoveTrait(unit, trait)"/>
@@ -104,15 +108,6 @@
                             </option>
                         </select>
                         <span class="tooltiptext">Size: Represent the casuality die (e.g HP). A unit's die is decremented each time it fails a morale check and each time it takes casualties.</span>
-                    </div>
-                    <div class="tooltip">
-                        <span>Tier</span>
-                        <select class="dropdown tier" v-model="unit.tier" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
-                            <option v-for="tier in Tier" :value="tier">
-                                {{ tier }}
-                            </option>
-                        </select>
-                        <span class="tooltiptext">Tier: Measure of the unit's overall power or nastiness.</span>
                     </div>
                 </div>
                 <hr>
@@ -180,6 +175,11 @@ export default defineComponent({
                 return x !== traitDefinition.name
             });
             this.onUpdate();
+        },
+        getAvailableTraits(unit: Unit): Trait[] {
+            return Object.values(Trait).filter((trait) => {
+                return unit.traits.findIndex((x) => x === trait) < 0;
+            });
         },
         getTraitDefinitions(unit: Unit): TraitDefinition[] {
             const traitDefinitions = [];
@@ -291,8 +291,13 @@ export default defineComponent({
         display: grid;
 
         .selector {
+            border: none;
             background: none;
             width: 20px;
+        }
+
+        option {
+            background-color: var(--default);
         }
 
         .trait {
@@ -307,6 +312,11 @@ export default defineComponent({
 
     .tier {
         font-family: initial;
+        font-size: x-large;
+        padding: 5px 10px 0px 10px;
+        margin: 0;
+        text-align: center;
+        display: block;
     }
 }
 
