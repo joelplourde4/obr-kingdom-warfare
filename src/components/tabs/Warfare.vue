@@ -231,7 +231,12 @@ export default defineComponent({
                 for (let item of items) {
                     if (item.metadata[WARFARE_METADATA_KEY] === undefined) {
                         const unit = new DeployedUnit(item.id, item.name);
-                        const player = this.players.find((player) => player.id === item.lastModifiedUserId);
+
+                        const player = this.players.find((player) => {
+                            if (player.selection) {
+                                return player.selection.length > 0;
+                            }
+                        });
                         if (player) {
                             unit.color = player.color;
                         }
