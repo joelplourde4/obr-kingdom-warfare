@@ -114,7 +114,7 @@
                             <span class="cost-label">Cost</span>
                             <p class="cost dropdown">{{ unit.cost }}</p>
                         </div>
-                        <span class="tooltiptext">Cost: Represent the cost to hire the unit, but also dictates its upkeep.</span>
+                        <span class="tooltiptext">Cost: Indicates both the initial hiring fee for the unit and its ongoing upkeep expense.</span>
                     </div>
                 </div>
                 <hr>
