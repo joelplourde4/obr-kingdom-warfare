@@ -10,20 +10,20 @@
                             <div class="more-options">
                                 <div class="option-container show">
                                     <div v-if="!feature.visible" class="tooltip">
-                                        <input type="button" class="show-button" @click="onToggleFeature(feature)"/>
+                                        <input type="button" class="icon-button show-button" @click="onToggleFeature(feature)"/>
                                         <span class="tooltiptext">
                                             Is shown to the players, click to hide.
                                         </span>
                                     </div>
                                     <div v-if="feature.visible" class="tooltip">
-                                        <input type="button" class="hide-button" @click="onToggleFeature(feature)"/>
+                                        <input type="button" class="icon-button hide-button" @click="onToggleFeature(feature)"/>
                                         <span class="tooltiptext">
                                             Is hidden from the players, click to show.
                                         </span>
                                     </div>
                                 </div>
                                 <div class="option-container tooltip">
-                                    <input type="button" class="remove-button" @click="onRemoveFeature(feature)"/>
+                                    <input type="button" class="icon-button remove-button" @click="onRemoveFeature(feature)"/>
                                     <span class="tooltiptext">
                                         On click, remove the Feature.
                                     </span>
@@ -51,7 +51,7 @@
             </div>
         </div>
         <div v-show="isVisible" class="add-button-container tooltip">
-            <input type="button" class="add-button" @click="onAddFeature"/>
+            <input type="button" class="icon-button add-button" @click="onAddFeature"/>
             <span>Feature</span>
             <span class="tooltiptext">
                 On click, add a Feature.

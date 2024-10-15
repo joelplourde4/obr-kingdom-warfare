@@ -12,7 +12,7 @@
         <input type="checkbox" @click="toggleEditMode"/>
         <span class="slider round"></span>
       </label>
-      <input v-if="isGM" type="button" class="settings-button settings-icon" @click="toggleSettings">
+      <input v-if="isGM" type="button" class="icon-button settings-button settings-icon" @click="toggleSettings">
     </div>
 </template>
 
