@@ -13,15 +13,15 @@
                                 <img class="type" :src="getType">
                             </div>
                             <div class="name column">
-                                <h3>{{ card.name }}</h3>
+                                <h3>{{ unit.name }}</h3>
                                 <hr>
                                 <div class="row">
-                                    <p>{{ card.ancestry }}</p>
-                                    <p>{{ card.experience }}</p>
+                                    <p>{{ unit.ancestry }}</p>
+                                    <p>{{ unit.experience }}</p>
                                 </div>
                                 <div class="row">
-                                    <p>{{ card.equipment }}</p>
-                                    <p>{{ card.type }}</p>
+                                    <p>{{ unit.equipment }}</p>
+                                    <p>{{ unit.type }}</p>
                                 </div>
                             </div>
                             <div class="cost container">
@@ -79,7 +79,7 @@
                     </div>
                     <div class="traits">
                         <h3>Traits</h3>
-                        <div class="trait" v-for="trait in card.traits || []" :value="trait">
+                        <div class="trait" v-for="trait in unit.traits || []" :value="trait">
                             <span class="bold">{{ trait }}</span>
                             <span>{{ getTraitDescription(trait) }}</span>
                         </div>
@@ -101,20 +101,21 @@
 import { useRoute } from 'vue-router';
 import html2canvas from 'html2canvas';
 import { defineComponent } from 'vue'
-import { Card } from './models/Card';
-import { Trait, Type } from '../src/models/Unit';
+import { Trait, Type, Unit } from '../src/models/Unit';
 
 import { TRAIT_DESCRIPTION_MAP } from '../src/models/Trait.ts'
 
 import { ANCESTRY_STATS_MAP, EXPERIENCE_STATS_MAP, EQUIPMENT_STATS_MAP, TYPE_STATS_MAP, TYPE_COST_MODIFIER_MAP, SIZE_COST_MODIFIER_MAP, TRAIT_COST_MAP, ANCESTRY_COLOR_MAP, INFANTRY_ATTACK_MAP, CAVALRY_AERIAL_ATTACK_MAP, ARTILLERY_ATTACK_MAP, INFANTRY_DAMAGE_MAP, CAVALRY_AERIAL_DAMAGE_MAP } from './models/Stats.ts'
 import OBR, { ImageGrid, ImageUpload, Vector2 } from '@owlbear-rodeo/sdk';
+import { statsCalculator } from './mixins/statsCalculator.ts';
 
 export default defineComponent({
+    mixins: [statsCalculator],
     data() {
         const route = useRoute();
         return {
             initialized: false,
-            card: new Card(),
+            unit: new Unit(),
             route,
             error: ""
         }
@@ -124,7 +125,7 @@ export default defineComponent({
             // Get the query params, initialize the unit card with them.
             const q = this.route.query;
 
-            this.card = new Card(
+            this.unit = new Unit(
                 this.formatString(q.name),
                 this.formatString(q.experience),
                 this.formatString(q.equipment),
@@ -142,123 +143,50 @@ export default defineComponent({
     },
     computed: {
         getColor() {
-            return ANCESTRY_COLOR_MAP.get(this.card.ancestry) || "#ffffff"
+            return ANCESTRY_COLOR_MAP.get(this.unit.ancestry) || "#ffffff"
         },
         getAttack() {
-            let attack = 0;
-            attack += ANCESTRY_STATS_MAP.get(this.card.ancestry)?.attack || 0;
-            attack += EXPERIENCE_STATS_MAP.get(this.card.experience)?.attack || 0;
-            attack += EQUIPMENT_STATS_MAP.get(this.card.equipment)?.attack || 0;
-            attack += TYPE_STATS_MAP.get(this.card.type)?.attack || 0;
-            return attack;
+            return this.calculateAttack(this.unit);
         },
         getDefense() {
-            let defense = 10;
-            defense += ANCESTRY_STATS_MAP.get(this.card.ancestry)?.defense || 0;
-            defense += EXPERIENCE_STATS_MAP.get(this.card.experience)?.defense || 0;
-            defense += EQUIPMENT_STATS_MAP.get(this.card.equipment)?.defense || 0;
-            defense += TYPE_STATS_MAP.get(this.card.type)?.defense || 0;
-            return defense;
+            return this.calculateDefense(this.unit);
         },
         getToughness() {
-            let toughness = 10;
-            toughness += ANCESTRY_STATS_MAP.get(this.card.ancestry)?.toughness || 0;
-            toughness += EXPERIENCE_STATS_MAP.get(this.card.experience)?.toughness || 0;
-            toughness += EQUIPMENT_STATS_MAP.get(this.card.equipment)?.toughness || 0;
-            toughness += TYPE_STATS_MAP.get(this.card.type)?.toughness || 0;
-            return toughness;
+            return this.calculateToughness(this.unit);
         },
         getPower() {
-            let power = 0;
-            power += ANCESTRY_STATS_MAP.get(this.card.ancestry)?.power || 0;
-            power += EXPERIENCE_STATS_MAP.get(this.card.experience)?.power || 0;
-            power += EQUIPMENT_STATS_MAP.get(this.card.equipment)?.power || 0;
-            power += TYPE_STATS_MAP.get(this.card.type)?.power || 0;
-            return power;
+            return this.calculatePower(this.unit);
         },
         getMorale() {
-            let morale = 0;
-            morale += ANCESTRY_STATS_MAP.get(this.card.ancestry)?.morale || 0;
-            morale += EXPERIENCE_STATS_MAP.get(this.card.experience)?.morale || 0;
-            morale += EQUIPMENT_STATS_MAP.get(this.card.equipment)?.morale || 0;
-            morale += TYPE_STATS_MAP.get(this.card.type)?.morale || 0;
-            return morale;
+            return this.calculateMorale(this.unit);
         },
         getCost() {
-            let cost = 0;
-
-            cost += this.getAttack;
-            cost += this.getPower;
-            cost += this.getDefense - 10;
-            cost += this.getToughness - 10;
-
-            cost += this.getMorale * 2;
-
-            cost *= TYPE_COST_MODIFIER_MAP.get(this.card.type) || 1;
-
-            cost *= SIZE_COST_MODIFIER_MAP.get(this.card.size) || 1;
-
-            cost *= 10;
-
-            this.card.traits.forEach(trait => {
-                cost += TRAIT_COST_MAP.get(trait) || 50;
-            });
-
-            cost += 30;
-
-            return Math.round(cost);
+            return this.calculateCost(this.unit);
         },
         getNumberAttacks() {
-            let numberAttack = 1;
-
-            if (this.card.type === Type.INFANTRY) {
-                numberAttack += INFANTRY_ATTACK_MAP.get(this.card.experience) || 0;
-            } else if (this.card.type === Type.CAVALRY) {
-                numberAttack += CAVALRY_AERIAL_ATTACK_MAP.get(this.card.experience) || 0;
-            } else if (this.card.type === Type.AERIAL) {
-                numberAttack += CAVALRY_AERIAL_ATTACK_MAP.get(this.card.experience) || 0;
-            } else if (this.card.type === Type.ARTILLERY) {
-                numberAttack += ARTILLERY_ATTACK_MAP.get(this.card.experience) || 0;
-            }
-            return numberAttack;
+            return this.calculateNumberAttacks(this.unit);
         },
         getDamage() {
-            let damage = 1;
-
-            if (this.card.type === Type.INFANTRY) {
-                damage += INFANTRY_DAMAGE_MAP.get(this.card.equipment) || 0;
-            } else if (this.card.type === Type.CAVALRY) {
-                damage += CAVALRY_AERIAL_DAMAGE_MAP.get(this.card.equipment) || 0;
-            } else if (this.card.type === Type.AERIAL) {
-                damage += CAVALRY_AERIAL_DAMAGE_MAP.get(this.card.equipment) || 0;
-            }
-            return damage;
+            return this.calculateDamage(this.unit);
         },
         getMovement() {
-            let movement = 1;
-            if (this.card.type === Type.CAVALRY) {
-                movement += 1;
-            }
-            if (this.card.type === Type.AERIAL) {
-                movement += 1;
-            }
-            return movement;
+            return this.calculateMovement(this.unit);
         },
         getType() {
-            const type = this.convertString(this.card.type);
-            const equipment = this.convertString(this.card.equipment);
+            const type = this.convertString(this.unit.type);
+            const equipment = this.convertString(this.unit.equipment);
             return `./assets/type/${type}/${type}-${equipment}.png`;
         },
         getAncestry() {
-            const ancestry = this.convertString(this.card.ancestry);
+            const ancestry = this.convertString(this.unit.ancestry);
             return `./assets/ancestry/${ancestry}.png`;
         },
         getExperience() {
-            const experience = this.convertString(this.card.experience);
+            const experience = this.convertString(this.unit.experience);
             return `./assets/experience/${experience}.png`;
         },
         getSize() {
-            return this.card.size;
+            return this.unit.size;
         },
     },
     methods: {
@@ -291,7 +219,7 @@ export default defineComponent({
                 const link = document.createElement('a');
                 if (typeof link.download === 'string') {
                     link.href = canvas.toDataURL();
-                    link.download = `${this.card.name}.jpg`;
+                    link.download = `${this.unit.name}.jpg`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -311,7 +239,7 @@ export default defineComponent({
                 data.toBlob((blob) => {
                     const imageUpload = {
                         file: blob,
-                        name: `${this.card.name}`,
+                        name: `${this.unit.name}`,
                         grid: {
                             offset: {
                                 x: 0,
@@ -322,7 +250,7 @@ export default defineComponent({
                         textItemType: 'LABEL',
                         visible: true,
                         locked: false,
-                        description: `Unit Card of ${this.card.name}`
+                        description: `Unit Card of ${this.unit.name}`
                 } as ImageUpload
 
                 OBR.assets.uploadImages([imageUpload], "NOTE").catch((error) => {
@@ -368,7 +296,7 @@ h3, p, hr {
     }
 
     .name {
-        margin-left: 40px;
+        margin-left: 35px;
         margin-top: 40px;
     }
 
