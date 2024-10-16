@@ -144,8 +144,7 @@ import { statsCalculator } from '../../../unit/mixins/statsCalculator'
 
 import { TRAIT_DESCRIPTION_MAP, ANCESTRY_TRAIT_MAP, TraitDefinition } from '../../models/Trait.ts'
 
-// @ts-ignore
-import BaseTab from './BaseTab.js'
+import BaseTab from './BaseTab.ts'
 import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait, Size  } from '../../models/Unit.js';
 import OBR from '@owlbear-rodeo/sdk';
 import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';

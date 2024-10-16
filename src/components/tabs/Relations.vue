@@ -86,8 +86,7 @@ import { utils } from '../../mixins/utils'
 import OBR from "@owlbear-rodeo/sdk";
 import { Relation, RelationStatus, Officer } from '../../models/Relation';
 
-// @ts-ignore
-import BaseTab from './BaseTab.js'
+import BaseTab from './BaseTab.ts'
     
 export default defineComponent({
     mixins: [utils],
