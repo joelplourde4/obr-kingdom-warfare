@@ -2,18 +2,31 @@
     <NavigationBar
         :players="players"
         :isGM="isGM"
+        :config="config"
         :isSettings="settings"
+        :isWarfare="warfare"
         :isSharedMode="config.sharedMode"
         :hasPermission="hasPermission"
         @update:edit-mode="onEditMode"
         @update:settings="onSettings"
         @update:switch-sheet="onSwitchSheet"
+        @update:warfare="onWarfare"
     />
-    <div v-if="settings">
+    <div v-if="isPage">
         <Settings
+            v-if="settings"
             :isGM="isGM"
             :config="config"
             @update:configuration="onConfigChanged"
+        />
+        <Warfare
+            v-show="warfare"
+            :config="config"
+            :players="players"
+            :domain="domain"
+            :isGM="hasPermission"
+            :isEditMode="editMode"
+            @update:model-value="onUpdate"
         />
     </div>
     <div v-else>
@@ -52,15 +65,6 @@
             </tab>
             <tab v-if="config.military" name="Military">
                 <Military
-                    :domain="domain"
-                    :isGM="hasPermission"
-                    :isEditMode="editMode"
-                    @update:model-value="onUpdate"
-                />
-            </tab>
-            <tab v-if="config.warfare" name="Warfare">
-                <Warfare
-                    :players="players"
                     :domain="domain"
                     :isGM="hasPermission"
                     :isEditMode="editMode"
@@ -123,12 +127,15 @@ export default defineComponent({
     },
     emits: ['update:domain','update:config', 'update:switchSheet'],
     data() {
-        const editMode = false;
-        const settings = false;
-
         return {
-            editMode: editMode,
-            settings: settings
+            editMode: false,
+            settings: false,
+            warfare: false
+        }
+    },
+    computed: {
+        isPage() {
+            return this.settings || this.warfare;
         }
     },
     methods: {
@@ -137,6 +144,11 @@ export default defineComponent({
         },
         onSettings(settings: boolean) {
             this.settings = settings;
+            this.warfare = false;
+        },
+        onWarfare(warfare: boolean) {
+            this.warfare = warfare;
+            this.settings = false;
         },
         onUpdate(domain: Domain) {
             this.$emit('update:domain', domain);

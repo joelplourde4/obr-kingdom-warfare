@@ -8,17 +8,19 @@
           </option>
         </select>
       </div>
-      <label v-if="!isSettings" class="switch">
+      <label v-if="displayEditMode" class="switch">
         <input type="checkbox" @click="toggleEditMode"/>
         <span class="slider round"></span>
       </label>
-      <input v-if="isGM" type="button" class="icon-button settings-button settings-icon" @click="toggleSettings">
+      <input v-if="displayWarfareIcon" type="button" class="icon-button warfare-button settings-icon" @click="toggleWarfare">
+      <input v-if="displaySettingsIcon" type="button" class="icon-button settings-button settings-icon" @click="toggleSettings">
     </div>
 </template>
 
 <script lang="ts">
 import { Player } from '@owlbear-rodeo/sdk';
 import { defineComponent } from 'vue'
+import { Config } from '../models/Config';
 
 export default defineComponent({
     name: 'NavigationBar',
@@ -27,7 +29,15 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        config: {
+          type: Config,
+          required: true
+        },
         isSettings: {
+          type: Boolean,
+          required: true
+        },
+        isWarfare: {
           type: Boolean,
           required: true
         },
@@ -45,17 +55,15 @@ export default defineComponent({
         },
     },
     data() {
-        const editMode = false;
-        const settings = false;
         const selectedPlayer = (this.players[0] || {}) as Player;
-
         return {
           selectedPlayer: selectedPlayer,
-          editMode: editMode,
-          settings: settings,
+          editMode: false,
+          settings: false,
+          warfare: false,
         }
     },
-    emits: ['update:editMode','update:settings', 'update:switchSheet'],
+    emits: ['update:editMode','update:settings', 'update:switchSheet', 'update:warfare'],
     computed: {
         isDisabled() {
             if (!this.isGM) {
@@ -74,6 +82,32 @@ export default defineComponent({
           }
 
           return !this.isSharedMode;
+        },
+        displayEditMode() {
+          if (this.isSettings) {
+            return false;
+          }
+
+          if (this.isWarfare) {
+            return false;
+          }
+          return true;
+        },
+        displayWarfareIcon() {
+          if (!this.config.warfare) {
+            return false;
+          }
+
+          if (this.isSettings) {
+            return false;
+          }
+          return true;
+        },
+        displaySettingsIcon() {
+          if (this.warfare) {
+            return false;
+          }
+          return this.isGM;
         }
     },
     methods: {
@@ -84,6 +118,10 @@ export default defineComponent({
         toggleSettings() {
             this.settings = !this.settings;
             this.$emit('update:settings', this.settings);
+        },
+        toggleWarfare() {
+          this.warfare = !this.warfare;
+          this.$emit('update:warfare', this.warfare);
         },
         onPlayerSelected() {
           this.$emit('update:switchSheet', this.selectedPlayer);
@@ -118,7 +156,6 @@ export default defineComponent({
   position: relative;
   display: inline-block;
   width: 56px;
-  height: 24px;
 }
 
 /* Hide default HTML checkbox */

@@ -94,6 +94,7 @@ import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
 import { DeployedUnit } from '../../models/DeployedUnit.js';
+import { Config } from '../../models/Config.ts';
 
 const ICON_SIZE = 200
 const ICON_DPI = 150
@@ -110,6 +111,10 @@ export default defineComponent({
     extends: BaseTab,
     name: 'Warfare',
     props: {
+        config: {
+            type: Config,
+            required: true
+        },
         players: {
             type: Array<Player>,
             required: true
@@ -129,7 +134,6 @@ export default defineComponent({
         const obrIntervalId = window.setInterval(async () => {
             if (OBR.isReady) {
                 OBR.contextMenu.create(this.buildContextMenu());
-                
                 clearInterval(obrIntervalId);
             }
         }, 200);
@@ -386,7 +390,7 @@ export default defineComponent({
          */
         buildContextMenu() {
             return {
-                id: ID + '/add-unit',
+                id: ID,
                 icons: [
                     {
                         icon: "/sword.svg",
@@ -644,7 +648,7 @@ export default defineComponent({
 
 table {
     overflow-y: auto;
-    height: 325px;
+    height: 500px;
     display: block;
 
     .left-align {
