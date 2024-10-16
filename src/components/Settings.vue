@@ -55,6 +55,12 @@
             :tooltip="'When unchecked, the \'Warfare\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('warfare')"
         />
+        <Configuration
+            :value="config.treasury"
+            :title="'Toggle Treasury Tab'"
+            :tooltip="'When unchecked, the \'Treasury\' tab of the Domain Sheet will be hidden.'"
+            @update:model-value="onChanged('treasury')"
+        />
     </div>
 </template>
 

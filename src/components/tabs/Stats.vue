@@ -74,8 +74,7 @@ import { utils } from '../../mixins/utils'
 import { Size, PowerDie } from '../../models/Domain'
 import Attributes from '../attributes/Attributes.vue';
 
-// @ts-ignore
-import BaseTab from './BaseTab.js'
+import BaseTab from './BaseTab.ts'
 
 export default defineComponent({
     mixins: [utils],

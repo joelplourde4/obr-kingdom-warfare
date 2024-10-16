@@ -66,8 +66,7 @@ import { utils } from '../../mixins/utils'
 
 import { Feature } from '../../models/Feature';
 
-// @ts-ignore
-import BaseTab from './BaseTab.js'
+import BaseTab from './BaseTab.ts'
     
 export default defineComponent({
     mixins: [utils],

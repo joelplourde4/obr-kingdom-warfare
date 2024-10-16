@@ -67,6 +67,14 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
+            <tab v-if="config.treasury" name="Treasury">
+                <Treasury
+                    :domain="domain"
+                    :isGM="hasPermission"
+                    :isEditMode="editMode"
+                    @update:model-value="onUpdate"
+                />
+            </tab>
         </tabs>
     </div>
 </template>
@@ -82,13 +90,14 @@ import Relations from './tabs/Relations.vue';
 import Features from './tabs/Features.vue';
 import Military from './tabs/Military.vue';
 import Warfare from './tabs/Warfare.vue';
+import Treasury from './tabs/Treasury.vue';
 
 import { Domain } from '../models/Domain';
 import { Config } from '../models/Config';
 import { Player } from '@owlbear-rodeo/sdk';
 
 export default defineComponent({
-    components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military, Warfare },
+    components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military, Warfare, Treasury },
     name: 'Sheet',
     props: {
         isGM: {
