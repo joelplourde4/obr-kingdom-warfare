@@ -61,6 +61,15 @@
             :tooltip="'When unchecked, the \'Treasury\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('treasury')"
         />
+        <Configuration
+            :value="config.multiplier"
+            :title="'Resource Multiplier'"
+            :tooltip="'Controls how many resources are generated every domain turn. A higher multiplier boosts resource availability without increasing upkeep, while a lower setting makes resource management more challenging, requiring careful planning to maintain profitability.'"
+            :description="'Adjust the resource generation rate each domain turn.'"
+            :disabled="!config.treasury"
+            :isChild="true"
+            @update:model-value="onChanged('multiplier')"
+        />
     </div>
 </template>
 
@@ -93,7 +102,11 @@ export default defineComponent({
     methods: {
         onChanged(setting: string) {
             const key = setting as SettingKey;
-            this.config[key] = !this.config[key]
+            if (typeof this.config[key] === 'boolean') {
+                this.config[key] = !this.config[key] as Boolean
+            } else {
+                this.config[key] = this.config[key];
+            }
             this.$emit('update:configuration', this.config);
         }
     }

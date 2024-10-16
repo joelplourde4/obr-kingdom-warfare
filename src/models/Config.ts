@@ -6,6 +6,7 @@ export class Config {
     military: boolean;
     warfare: boolean;
     treasury: boolean;
+    multiplier: number;
     sharedMode: boolean;
 
     constructor(
@@ -16,6 +17,7 @@ export class Config {
             military: boolean = true,
             warfare: boolean = true,
             treasury: boolean = false,
+            multiplier: number = 100,
             sharedMode: boolean = true
     ){
         this.header = header;
@@ -25,6 +27,7 @@ export class Config {
         this.military = military;
         this.warfare = warfare;
         this.treasury = treasury;
+        this.multiplier = multiplier;
         this.sharedMode = sharedMode;
     }
 
@@ -37,6 +40,7 @@ export class Config {
             config.military,
             config.warfare,
             config.treasury,
+            config.multiplier,
             config.sharedMode
         )
     } 
