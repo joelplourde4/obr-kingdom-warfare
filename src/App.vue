@@ -178,6 +178,9 @@ export default defineComponent({
        * @param config the config
        */
       saveConfig(config: Config) {
+        if (!config.warfare) {
+          OBR.contextMenu.remove("com.obr.domain-sheet/warfare")
+        }
         // Set the metadata
         OBR.room.setMetadata({
           [CONFIG_METADATA_KEY]: {

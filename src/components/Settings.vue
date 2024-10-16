@@ -1,7 +1,7 @@
 <template>
     <div class="column">
         <div class="tooltip">
-            <h3>Core Settings</h3>
+            <h3 class="title">Core Settings</h3>
             <span class="tooltiptext">
                 This extension does not assume any specific approach to the rules at your game table, so it offers multiple core configuration options.
             </span>
@@ -13,8 +13,15 @@
             :tooltip="'When unchecked, each player will have their own Domain Sheet.'"
             @update:model-value="onChanged('sharedMode')"
         />
+        <Configuration
+            :value="config.warfare"
+            :title="'Warfare'"
+            :description="'This extension provides the ability to track your units on the battlefield when using warfare rules.'"
+            :tooltip="'When unchecked, the \'Warfare\' functionality will be disabled.'"
+            @update:model-value="onChanged('warfare')"
+        />
         <div class="tooltip">
-            <h3>Functionality</h3>
+            <h3 class="title">Functionality</h3>
             <span class="tooltiptext">
                 This extension does not assume any specific approach to the rules at your game table, so it offers multiple core configuration options.
             </span>
@@ -48,12 +55,6 @@
             :title="'Toggle Military Tab'"
             :tooltip="'When unchecked, the \'Military\' tab of the Domain Sheet will be hidden.'"
             @update:model-value="onChanged('military')"
-        />
-        <Configuration
-            :value="config.warfare"
-            :title="'Toggle Warfare Tab'"
-            :tooltip="'When unchecked, the \'Warfare\' tab of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('warfare')"
         />
         <Configuration
             :value="config.treasury"
@@ -103,8 +104,10 @@ export default defineComponent({
         onChanged(setting: string) {
             const key = setting as SettingKey;
             if (typeof this.config[key] === 'boolean') {
+                // @ts-ignore
                 this.config[key] = !this.config[key] as Boolean
             } else {
+                // @ts-ignore
                 this.config[key] = this.config[key];
             }
             this.$emit('update:configuration', this.config);
@@ -117,7 +120,7 @@ export default defineComponent({
 <style scoped>
 
 .title {
-    align-self: center;
+    margin: 0.5rem 0 0.5rem 0;
 }
 
 </style>

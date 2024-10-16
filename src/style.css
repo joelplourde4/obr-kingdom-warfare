@@ -46,7 +46,7 @@ ol {
   display: block;
   color: var(--text);
   text-align: center;
-  padding: 4px;
+  padding: 10px;
   text-decoration: none;
 }
 
@@ -191,6 +191,11 @@ input.remove-button {
 input.duplicate-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/duplicate.svg);
+}
+
+input.warfare-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/sword.svg);
 }
 
 /* Text Size */
