@@ -1,13 +1,23 @@
 <template>
-    <div class="tooltip row">
+    <div class="tooltip row" :style="{ 'margin-left': isChild ? '50px' : '0px'}">
         <div class="row">
             <input
+                v-if="isBoolean"
                 class="checkbox"
                 type="checkbox"
-                :checked="value"
+                :disabled="disabled"
+                :checked="valueAsBoolean"
                 @click="onChanged"
             />
             <span>{{ title }}</span>
+            <input
+                v-if="isNumber"
+                class="number"
+                type="number"
+                :disabled="disabled"
+                :value="valueAsNumber"
+                @click="onChanged"
+            />
             <span class="tooltiptext">
                 {{ tooltip }}
             </span>
@@ -25,7 +35,7 @@ export default defineComponent({
     name: 'Feature',
     props: {
         value: {
-            type: Boolean,
+            type: [Boolean, Number],
             required: true
         },
         title: {
@@ -39,6 +49,14 @@ export default defineComponent({
         tooltip: {
             type: String,
             required: true
+        },
+        disabled: {
+            type: Boolean,
+            required: false
+        },
+        isChild: {
+            type: Boolean,
+            required: false
         }
     },
     emits: ['update:modelValue'],
@@ -49,14 +67,26 @@ export default defineComponent({
             configuration: configuration,
         }
     },
+    computed: {
+        isBoolean() {
+            return typeof this.value === 'boolean'
+        },
+        valueAsBoolean(): boolean {
+            return this.value as boolean;
+        },
+        isNumber() {
+            return typeof this.value === 'number'
+        },
+        valueAsNumber(): number {
+            return this.value as number;
+        }
+    },
     methods: {
         onChanged() {
             this.configuration = !this.configuration;
             this.$emit('update:modelValue', this.configuration)
         }
     },
-    computed: {
-    }
 })  
 </script>
   
@@ -64,6 +94,11 @@ export default defineComponent({
 
 .checkbox {
     margin-right: 0.5rem;
+}
+
+.number {
+    width: 50%;
+    margin-left: 0.5rem;
 }
 
 .description {
