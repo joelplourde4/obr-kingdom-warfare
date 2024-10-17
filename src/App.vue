@@ -1,5 +1,6 @@
 <template>
   <Sheet
+    :currentPlayer="currentPlayer"
     :players="players"
     :domain="domain"
     :config="config"

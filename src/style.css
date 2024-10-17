@@ -314,3 +314,16 @@ input[type="checkbox"]:checked::after {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+table {
+  overflow-y: auto;
+  display: block;
+
+  .left-align {
+      text-align: left;
+  }
+
+  .center-align {
+      text-align: center;
+  }
+}

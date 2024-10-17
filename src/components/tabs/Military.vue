@@ -1,5 +1,6 @@
 <template>
     <div class="content military">
+        <p v-if="domain.units.length === 0 && !isEditMode">No units have been recruited yet.</p>
         <div class="unit" v-for="unit in domain.units">
             <button type="button" class="collapsible column" @click="openCollapsible($event, unit)">
                 <div class="column">
