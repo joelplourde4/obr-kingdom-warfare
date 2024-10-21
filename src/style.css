@@ -326,4 +326,8 @@ table {
   .center-align {
       text-align: center;
   }
+
+  .right-align {
+    text-align: right;
+  }
 }

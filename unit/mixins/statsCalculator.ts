@@ -1,5 +1,6 @@
+import { Civilization, GoverningStyle } from '../../src/models/Realm.ts';
 import { Tier, Type, Unit } from '../../src/models/Unit.ts';
-import { ANCESTRY_STATS_MAP, EXPERIENCE_STATS_MAP, EQUIPMENT_STATS_MAP, TYPE_STATS_MAP, TYPE_COST_MODIFIER_MAP, SIZE_COST_MODIFIER_MAP, TRAIT_COST_MAP, ANCESTRY_COLOR_MAP, INFANTRY_ATTACK_MAP, CAVALRY_AERIAL_ATTACK_MAP, ARTILLERY_ATTACK_MAP, INFANTRY_DAMAGE_MAP, CAVALRY_AERIAL_DAMAGE_MAP, TIER_I, TIER_II, TIER_III, TIER_IV } from '../models/Stats.ts'
+import { ANCESTRY_STATS_MAP, EXPERIENCE_STATS_MAP, EQUIPMENT_STATS_MAP, TYPE_STATS_MAP, TYPE_COST_MODIFIER_MAP, SIZE_COST_MODIFIER_MAP, TRAIT_COST_MAP, INFANTRY_ATTACK_MAP, CAVALRY_AERIAL_ATTACK_MAP, ARTILLERY_ATTACK_MAP, INFANTRY_DAMAGE_MAP, CAVALRY_AERIAL_DAMAGE_MAP, TIER_I, TIER_II, TIER_III, TIER_IV } from '../models/Stats.ts'
 
 export const statsCalculator = {
     methods: {
@@ -43,7 +44,7 @@ export const statsCalculator = {
             morale += TYPE_STATS_MAP.get(unit.type)?.morale || 0;
             return morale;
         },
-        calculateCost(unit: Unit) {
+        calculateCost(unit: Unit, governingStyle: GoverningStyle = GoverningStyle.NONE, civilization: Civilization = Civilization.CIVILIZED) {
             let cost = 0;
 
             cost += this.calculateAttack(unit);
@@ -64,6 +65,21 @@ export const statsCalculator = {
             });
 
             cost += 30;
+
+            if (governingStyle == GoverningStyle.NOBLE) {
+                // For Noble Governing Style, the cost of troops is 10% less.
+                cost *= 0.9;
+            }
+
+            if (civilization == Civilization.BARBARIC) {
+                // For Barbaric Civilization, the cost of recruiting units is 30% less.
+                cost *= 0.7;
+            }
+
+            if (civilization == Civilization.NOMADIC) {
+                // For Nomadic Civilization, the cost of recruiting units is 20% less.
+                cost *= 0.8;
+            }
 
             return Math.round(cost);
         },

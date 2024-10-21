@@ -31,16 +31,16 @@ export class Domain {
     realm: Realm;
 
     constructor(
-        name: string = "Kingdom",
+        name?: string,
         size: Size = Size.TINY,
         powerDie: PowerDie = PowerDie.D4,
         stats: Stats = new Stats(),
         relations: Relation[] = [],
         features: Feature[] = [],
         units: Unit[] = [],
-        realm: Realm
+        realm?: Realm
     ) {
-        this.name = name;
+        this.name = name || "Kingdom";
         this.size = size;
         this.powerDie = powerDie;
         this.stats = stats;

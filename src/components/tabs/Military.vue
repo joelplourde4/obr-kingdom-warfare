@@ -177,7 +177,7 @@ export default defineComponent({
     },
     methods: {
         updateUnit(unit: Unit) {
-            const cost = this.calculateCost(unit);
+            const cost = this.calculateCost(unit, this.domain?.realm?.governingStyle, this.domain?.realm?.civilization);
             unit.cost = cost;
             unit.tier = this.calculateTier(unit);
             this.onUpdate();
@@ -262,7 +262,7 @@ export default defineComponent({
         },
         openModal(unit: Unit) {
             this.preventPropagation(event);
-            const queryParams = `name=${unit.name}&equipment=${unit.equipment}&experience=${unit.experience}&type=${unit.type}&ancestry=${unit.ancestry}&tier=${unit.tier}&size=${unit.size}&traits=${unit.traits}`
+            const queryParams = `name=${unit.name}&equipment=${unit.equipment}&experience=${unit.experience}&type=${unit.type}&ancestry=${unit.ancestry}&tier=${unit.tier}&size=${unit.size}&traits=${unit.traits}&governingStyle=${this.domain?.realm?.governingStyle}&civilization=${this.domain?.realm?.civilization}`
 
             const url = `/unit/?${queryParams}`.replace(/ /g, "_");
 

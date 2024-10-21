@@ -109,6 +109,7 @@ export class Unit {
         tier?: Tier,
         size?: Size,
         traits?: Trait[],
+        // @ts-ignore
         cost?: number,
     ) {
         this.name = name || "Default";
