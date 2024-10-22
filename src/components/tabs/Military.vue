@@ -149,13 +149,14 @@ import BaseTab from './BaseTab.ts'
 import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait, Size  } from '../../models/Unit.js';
 import OBR from '@owlbear-rodeo/sdk';
 import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';
+import { UNIT_UPKEEP_FACTOR } from '../../models/Realm.ts'
     
 export default defineComponent({
     mixins: [utils, statsCalculator],
     extends: BaseTab,
     name: 'Military',
     data() {
-        const debouncedUpdate = useDebounceFn((unit) => { 
+        const debouncedUpdate = useDebounceFn((_) => { 
             // @ts-ignore
             this.onUpdate();
         }, 500)
@@ -272,6 +273,7 @@ export default defineComponent({
         computeUnitCost(unit: Unit) {
             const cost = this.calculateCost(unit, this.domain?.realm?.governingStyle, this.domain?.realm?.civilization);
             unit.cost = cost;
+            unit.upkeep = Math.round(UNIT_UPKEEP_FACTOR * cost);
             unit.tier = this.calculateTier(unit);
             return unit.cost;
         }

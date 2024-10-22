@@ -118,7 +118,6 @@ option {
 /* Tooltip container */
 .tooltip {
   position: relative;
-  display: table;
 }
 
 /* Tooltip text */
@@ -205,9 +204,14 @@ p {
   color: var(--text-secondary);
 }
 
+h3 {
+  color: var(--text-secondary);
+}
+
 .collapsible {
   display: inline-flex;
   background-color: var(--background);
+  border-radius: 5px;
   cursor: pointer;
   padding: 0.25rem;
   width: 100%;

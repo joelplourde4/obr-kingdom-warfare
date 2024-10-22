@@ -33,6 +33,7 @@
         <div v-if="config.header">
         <Header
             :domain="domain"
+            :config="config"
             :isGM="hasPermission"
             :isEditMode="editMode"
             @update:model-value="onUpdate"
