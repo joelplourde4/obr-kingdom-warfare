@@ -73,7 +73,6 @@ a.is-active {
 
 .container {
   display: grid;
-  width: 100%;
 }
 
 input, textarea {

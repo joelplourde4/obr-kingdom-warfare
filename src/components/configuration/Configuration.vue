@@ -1,5 +1,5 @@
 <template>
-    <div class="tooltip row" :style="{ 'margin-left': isChild ? '50px' : '0px'}">
+    <div class="tooltip row container" :style="{ 'margin-left': isChild ? '50px' : '0px'}">
         <div class="row">
             <input
                 v-if="isBoolean"
