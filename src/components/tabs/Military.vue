@@ -119,7 +119,7 @@
                     <div class="tooltip">
                         <div class="row">
                             <span class="cost-label">Cost</span>
-                            <p class="cost dropdown">{{ unit.cost }}</p>
+                            <p class="cost dropdown">{{ computeUnitCost(unit) }}</p>
                         </div>
                         <span class="tooltiptext">Cost: Indicates both the initial hiring fee for the unit and its ongoing upkeep expense.</span>
                     </div>
@@ -157,7 +157,7 @@ export default defineComponent({
     data() {
         const debouncedUpdate = useDebounceFn((unit) => { 
             // @ts-ignore
-            this.updateUnit(unit);
+            this.onUpdate();
         }, 500)
         return {
             debouncedUpdate,
@@ -176,12 +176,6 @@ export default defineComponent({
         }
     },
     methods: {
-        updateUnit(unit: Unit) {
-            const cost = this.calculateCost(unit, this.domain?.realm?.governingStyle, this.domain?.realm?.civilization);
-            unit.cost = cost;
-            unit.tier = this.calculateTier(unit);
-            this.onUpdate();
-        },
         onChanges(unit: Unit) {
             this.debouncedUpdate(unit);
         },
@@ -274,6 +268,12 @@ export default defineComponent({
             } as Modal
 
             OBR.modal.open(modal);
+        },
+        computeUnitCost(unit: Unit) {
+            const cost = this.calculateCost(unit, this.domain?.realm?.governingStyle, this.domain?.realm?.civilization);
+            unit.cost = cost;
+            unit.tier = this.calculateTier(unit);
+            return unit.cost;
         }
     }
 })  
