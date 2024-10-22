@@ -1,4 +1,4 @@
-import { Civilization, GoverningStyle } from '../../src/models/Realm.ts';
+import { Civilization, GoverningStyle, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER } from '../../src/models/Realm.ts';
 import { Tier, Type, Unit } from '../../src/models/Unit.ts';
 import { ANCESTRY_STATS_MAP, EXPERIENCE_STATS_MAP, EQUIPMENT_STATS_MAP, TYPE_STATS_MAP, TYPE_COST_MODIFIER_MAP, SIZE_COST_MODIFIER_MAP, TRAIT_COST_MAP, INFANTRY_ATTACK_MAP, CAVALRY_AERIAL_ATTACK_MAP, ARTILLERY_ATTACK_MAP, INFANTRY_DAMAGE_MAP, CAVALRY_AERIAL_DAMAGE_MAP, TIER_I, TIER_II, TIER_III, TIER_IV } from '../models/Stats.ts'
 
@@ -68,17 +68,17 @@ export const statsCalculator = {
 
             if (governingStyle == GoverningStyle.NOBLE) {
                 // For Noble Governing Style, the cost of troops is 10% less.
-                cost *= 0.9;
+                cost *= UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER;
             }
 
             if (civilization == Civilization.BARBARIC) {
                 // For Barbaric Civilization, the cost of recruiting units is 30% less.
-                cost *= 0.7;
+                cost *= UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER;
             }
 
             if (civilization == Civilization.NOMADIC) {
                 // For Nomadic Civilization, the cost of recruiting units is 20% less.
-                cost *= 0.8;
+                cost *= UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER;
             }
 
             return Math.round(cost);

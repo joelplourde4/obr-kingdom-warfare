@@ -63,7 +63,7 @@
                 <td class="center-align">
                     <div class="tooltip">
                         <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
-                            <option v-for="populationCenter in PopulationCenter" :value="populationCenter">
+                            <option v-for="populationCenter in availablePopulationCenter" :value="populationCenter">
                                 {{ populationCenter }}
                             </option>
                         </select>
@@ -99,7 +99,7 @@ import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
 import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
-import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER } from '../../models/Realm.ts';
+import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_UPKEEP_FACTOR } from '../../models/Realm.ts';
 import { useDebounceFn } from '@vueuse/core';
 import { Config } from '../../models/Config.ts';
 
@@ -225,10 +225,23 @@ export default defineComponent({
             let upkeep = 0;
             for (let unit of this.domain.units) {
                 // A unit’s upkeep is equal to 25% of the cost of the unit’s current value
-                upkeep += Math.round(0.25 * unit.cost);
+                upkeep += Math.round(UNIT_UPKEEP_FACTOR * unit.cost);
             }
 
             return profit - upkeep;
+        },
+        /**
+         * Compute what are the available population center based on the Kingdom's civilization
+         */
+        availablePopulationCenter() {
+            const nomads = [PopulationCenter.SMALL_CAMP, PopulationCenter.MEDIUM_CAMP, PopulationCenter.LARGE_CAMP]
+            if (this.domain.realm.civilization == Civilization.NOMADIC) {
+                return nomads;
+            }
+
+            return Object.values(PopulationCenter).filter(
+                (center) => !nomads.includes(center)
+            );
         }
     },
     methods: {

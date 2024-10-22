@@ -58,7 +58,11 @@ export enum PopulationCenter {
     LARGE_TOWN = "Large Town",
     SMALL_CITY = "Small City",
     LARGE_CITY = "Large City",
-    METROPOLIS = "Metropolis"
+    METROPOLIS = "Metropolis",
+    /** Nomadic Civilization */
+    SMALL_CAMP = "Small Camp",
+    MEDIUM_CAMP = "Medium Camp",
+    LARGE_CAMP = "Large Camp"
 }
 
 export enum Heritage {
@@ -83,6 +87,14 @@ export enum GoverningStyle {
     NEUTRAL = "Neutral"
 }
 
+/** Constant */
+// A unit’s upkeep is equal to 25% of the cost of the unit’s current value
+export const UNIT_UPKEEP_FACTOR = 0.25;
+
+export const UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER = 0.9;
+export const UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER = 0.7;
+export const UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER = 0.8;
+
 /** Data Map */
 export const POPULATION_CENTER_PRODUCTION_MODIFIER = new Map<PopulationCenter, number>([
     [PopulationCenter.NONE, 0],
@@ -93,7 +105,11 @@ export const POPULATION_CENTER_PRODUCTION_MODIFIER = new Map<PopulationCenter, n
     [PopulationCenter.LARGE_TOWN, 2.5],
     [PopulationCenter.SMALL_CITY, 3],
     [PopulationCenter.LARGE_CITY, 4],
-    [PopulationCenter.METROPOLIS, 5]
+    [PopulationCenter.METROPOLIS, 5],
+    /** Nomadic Civilization */
+    [PopulationCenter.SMALL_CAMP, 1],
+    [PopulationCenter.MEDIUM_CAMP, 1.5],
+    [PopulationCenter.LARGE_CAMP, 2]
 ]);
 
 export const POPULATION_CENTER_UPKEEP = new Map<PopulationCenter, number>([
@@ -104,7 +120,11 @@ export const POPULATION_CENTER_UPKEEP = new Map<PopulationCenter, number>([
     [PopulationCenter.LARGE_TOWN, 1500],
     [PopulationCenter.SMALL_CITY, 2000],
     [PopulationCenter.LARGE_CITY, 3600],
-    [PopulationCenter.METROPOLIS, 5500]
+    [PopulationCenter.METROPOLIS, 5500],
+    /** Nomadic Civilization */
+    [PopulationCenter.SMALL_CAMP, 0],
+    [PopulationCenter.MEDIUM_CAMP, 0],
+    [PopulationCenter.LARGE_CAMP, 0]
 ]);
 
 export const CIVILIZATION_PRODUCTION_MODIFIER = new Map<Civilization, number>([
