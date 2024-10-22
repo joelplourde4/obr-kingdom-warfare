@@ -9,7 +9,7 @@
                             <p class="tier">{{ unit.tier }}</p>
                             <span class="tooltiptext">Tier: Measure of the unit's overall power or nastiness.</span>
                         </div>
-                        <input class="name" v-model="unit.name" @input="onChanges(unit)" @click="preventPropagation" :disabled="isDisabled">
+                        <input class="name" v-model="unit.name" @input="debouncedUpdate(unit)" @click="preventPropagation" :disabled="isDisabled">
                         <div class="option-container tooltip">
                             <input type="button" class="icon-button external-link-button" @click="openModal(unit)">
                             <span class="tooltiptext">
@@ -178,7 +178,7 @@ export default defineComponent({
     },
     methods: {
         onChanges(unit: Unit) {
-            this.debouncedUpdate(unit);
+            this.onUpdate();
         },
         openCollapsible($event: any, unit: Unit) {
             if ($event.detail === 0) {

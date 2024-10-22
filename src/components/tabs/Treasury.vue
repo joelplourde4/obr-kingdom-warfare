@@ -149,10 +149,6 @@ export default defineComponent({
         }
     },
     data() {
-        const debouncedUpdate = useDebounceFn((realm) => { 
-            // @ts-ignore
-            this.updateRealm(realm);
-        }, 500)
         let sceneItemChangeCallback = () => {};
         let sceneMetadataCallback = () => {};
         return {
@@ -179,7 +175,6 @@ export default defineComponent({
             PopulationCenter,
 
             /** Functions */
-            debouncedUpdate: debouncedUpdate,
             sceneItemChangeCallback,
             sceneMetadataCallback
         }
@@ -279,7 +274,7 @@ export default defineComponent({
     },
     methods: {
         onChanges() {
-            this.debouncedUpdate(this.domain.realm);
+            this.onUpdate();
         },
         /**
          * Update the realm
