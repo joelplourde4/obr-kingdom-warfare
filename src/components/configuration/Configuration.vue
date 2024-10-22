@@ -15,8 +15,8 @@
                 class="number"
                 type="number"
                 :disabled="disabled"
-                :value="valueAsNumber"
-                @click="onChanged"
+                :value="value"
+                @input="onChanged($event, value)"
             />
             <span class="tooltiptext">
                 {{ tooltip }}
@@ -82,8 +82,12 @@ export default defineComponent({
         }
     },
     methods: {
-        onChanged() {
-            this.configuration = !this.configuration;
+        onChanged(event: any) {
+            if (this.isBoolean) {
+                this.configuration = !this.configuration;
+            } else {
+                this.configuration = event.target.valueAsNumber
+            }
             this.$emit('update:modelValue', this.configuration)
         }
     },
