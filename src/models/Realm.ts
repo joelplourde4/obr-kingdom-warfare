@@ -91,6 +91,9 @@ export enum GoverningStyle {
 // A unit’s upkeep is equal to 25% of the cost of the unit’s current value
 export const UNIT_UPKEEP_FACTOR = 0.25;
 
+// Experimental, no upkeep is too powerful.
+export const GOVERNING_STYLE_NONE_PROVINCE_UPKEEP_MODIFIER = 0.9;
+
 export const UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER = 0.9;
 export const UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER = 0.7;
 export const UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER = 0.8;
@@ -128,7 +131,7 @@ export const POPULATION_CENTER_UPKEEP = new Map<PopulationCenter, number>([
 ]);
 
 export const CIVILIZATION_PRODUCTION_MODIFIER = new Map<Civilization, number>([
-    [Civilization.NOMADIC, 0.0],
+    [Civilization.NOMADIC, 1.0],
     [Civilization.BARBARIC, 0.75],
     [Civilization.CULTURED, 1.0],
     [Civilization.CIVILIZED, 1.25]
@@ -139,6 +142,15 @@ export const CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER = new Map<Civilizati
     [Civilization.BARBARIC, 0.75],
     [Civilization.CULTURED, 1.0],
     [Civilization.CIVILIZED, 1.0]
+]);
+
+export const GOVERNING_STYLE_PROVINCE_UPKEEP = new Map<GoverningStyle, number>([
+    [GoverningStyle.DESPOTIC, 1.25],
+    [GoverningStyle.WARLORD, 1.15],
+    [GoverningStyle.NOBLE, 1.1],
+    [GoverningStyle.NONE, 0.8],
+    [GoverningStyle.NEUTRAL, 0.9]
+
 ]);
 
 export const GOVERNING_STYLE_PRODUCTION_MODIFIER = new Map<GoverningStyle, number>([

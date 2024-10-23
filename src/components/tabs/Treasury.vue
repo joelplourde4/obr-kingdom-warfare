@@ -8,7 +8,7 @@
                 <span class="tooltiptext">The present amount in the Kingdom's Treasury.</span>
             </div>
             <div class="tooltip">
-            <h3 :style=" { 'color': forecast >= 0 ? 'green': 'red'} ">({{ forecast }})</h3>
+            <h3 :style=" { 'color': forecast >= 0 ? 'var(--text-accent)': 'red'} ">({{ forecast }})</h3>
                 <span class="tooltiptext">The resources that will be added to or subtracted from the treasury during the next domain turn.</span>
             </div>
         </div>
@@ -28,54 +28,72 @@
                 </div>
             </div>
         </button>
-        <table v-show="showProvinces" class="province-table">
-            <tr v-if="domain.realm.provinces.length > 0">
-                <th>Terrain</th>
-                <th>Population</th>
-                <th>Production</th>
-                <th>Profit</th>
-            </tr>
-            <tr v-for="province in domain.realm.provinces">
-                <td>
-                    <div class="tooltip">
-                        <select class="dropdown" v-model="province.terrain" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
-                            <option v-for="terrain in Terrain" :value="terrain">
-                                {{ terrain }}
-                            </option>
-                        </select>
-                        <span class="tooltiptext">Terrain refers to the kind of land found in the province.</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="tooltip">
-                        <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
-                            <option v-for="populationCenter in availablePopulationCenter" :value="populationCenter">
-                                {{ populationCenter }}
-                            </option>
-                        </select>
-                        <span class="tooltiptext">Population centers are settlements ranging from small thorpes to large metropolises. Each province can have one population center, which enables resource extraction.</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="production-container">
+        <div v-show="showProvinces">
+            <table class="province-table">
+                <tr v-if="domain.realm.provinces.length > 0">
+                    <th>Terrain</th>
+                    <th>Population</th>
+                    <th>Production</th>
+                    <th>Profit</th>
+                </tr>
+                <tr v-for="province in domain.realm.provinces">
+                    <td>
                         <div class="tooltip">
-                            <p class="production">+{{ computeProvinceProduction(domain.realm, province) }}</p>
-                            <span class="tooltiptext">Larger population centers generate more resources by effectively utilizing the land.</span>
+                            <select class="dropdown" v-model="province.terrain" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+                                <option v-for="terrain in Terrain" :value="terrain">
+                                    {{ terrain }}
+                                </option>
+                            </select>
+                            <span class="tooltiptext">Terrain refers to the kind of land found in the province.</span>
                         </div>
+                    </td>
+                    <td>
                         <div class="tooltip">
-                        <p class="upkeep">({{ computeProvinceUpkeep(domain.realm, province) }})</p>
-                            <span class="tooltiptext">Population centers require upkeep for maintenance, services, and salaries.</span>
+                            <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+                                <option v-for="populationCenter in availablePopulationCenter" :value="populationCenter">
+                                    {{ populationCenter }}
+                                </option>
+                            </select>
+                            <span class="tooltiptext">Population centers are settlements ranging from small thorpes to large metropolises. Each province can have one population center, which enables resource extraction.</span>
                         </div>
-                    </div>
-                </td>
-                <td>
-                    <div class="tooltip">
-                        <p>{{ computeProvinceProfit(province) }}</p>
-                        <span class="tooltiptext">Profit is calculated by subtracting the province's upkeep costs from its total revenue.</span>
-                    </div>
-                </td>
-            </tr>
-        </table>
+                    </td>
+                    <td>
+                        <div class="production-container">
+                            <div class="tooltip">
+                                <p class="production">+{{ computeProvinceProduction(domain.realm, province) }}</p>
+                                <span class="tooltiptext">Larger population centers generate more resources by effectively utilizing the land.</span>
+                            </div>
+                            <div class="tooltip">
+                            <p class="upkeep">({{ computeProvinceUpkeep(domain.realm, province) }})</p>
+                                <span class="tooltiptext">Population centers require upkeep for maintenance, services, and salaries.</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tooltip">
+                            <p>{{ computeProvinceProfit(province) }}</p>
+                            <span class="tooltiptext">Profit is calculated by subtracting the province's upkeep costs from its total revenue.</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="modifier">
+                <p>Governance Production Modifier:</p>
+                <p class="production modifier-number">{{ governingStyleProductionModifier }}%</p>
+            </div>
+            <div class="modifier">
+                <p>Governance Upkeep Modifier:</p>
+                <p class="production modifier-number">{{ governingStyleUpkeepModifier }}%</p>
+            </div>
+            <div class="modifier">
+                <p>Civilization Production Modifier:</p>
+                <p class="production modifier-number">{{ civilizationProductionModifier }}%</p>
+            </div>
+            <div class="modifier">
+                <p>Civilization Upkeep Modifier:</p>
+                <p class="production modifier-number">{{ civilizationUpkeepModifier }}%</p>
+            </div>
+        </div>
         <button v-if="domain.units.length > 0" type="button" class="collapsible column" @click="openUnitCollapsible">
             <div class="label">
                 <h3 v-if="domain.units.length > 0">Units</h3>
@@ -92,26 +110,32 @@
                 </div>
             </div>
         </button>
-        <table v-show="showUnits" class="unit-table">
-            <tr v-if="domain.units.length > 0">
-                <th>Name</th>
-                <th>Upkeep</th>
-            </tr>
-            <tr v-for="unit in domain.units">
-                <td>
-                    <div class="tooltip">
-                        <p>{{ unit.name }}</p>
-                        <span class="tooltiptext">The name of the unit.</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="tooltip">
-                        <p>{{ unit.upkeep }}</p>
-                        <span class="tooltiptext">The upkeep is 25% of its current total cost of the unit, which includes the base cost plus any added value from experience, type, traits, and equipment.</span>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div v-show="showUnits">
+            <table class="unit-table">
+                <tr v-if="domain.units.length > 0">
+                    <th>Name</th>
+                    <th>Upkeep</th>
+                </tr>
+                <tr v-for="unit in domain.units">
+                    <td>
+                        <div class="tooltip">
+                            <p>{{ unit.name }}</p>
+                            <span class="tooltiptext">The name of the unit.</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="tooltip">
+                            <p>{{ unit.upkeep }}</p>
+                            <span class="tooltiptext">The upkeep is 25% of its current total cost of the unit, which includes the base cost plus any added value from experience, type, traits, and equipment.</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="modifier">
+                <p>Unit Cost Reduction:</p>
+                <p class="production modifier-number">{{ unitCostModifier }}%</p>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -121,8 +145,7 @@ import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
 import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
-import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_UPKEEP_FACTOR } from '../../models/Realm.ts';
-import { useDebounceFn } from '@vueuse/core';
+import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, GOVERNING_STYLE_NONE_PROVINCE_UPKEEP_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP } from '../../models/Realm.ts';
 import { Config } from '../../models/Config.ts';
 
 const ID = "com.obr.domain-sheet/treasury"
@@ -159,6 +182,11 @@ export default defineComponent({
             /** In-between data */
             provinceTotal: 0,
             unitTotal: 0,
+            civilizationProductionModifier: 0,
+            governingStyleProductionModifier: 0,
+            civilizationUpkeepModifier: 0,
+            governingStyleUpkeepModifier: 0,
+            unitCostModifier: 0,
 
             /** Data Map */
             POPULATION_CENTER_UPKEEP,
@@ -239,11 +267,14 @@ export default defineComponent({
             return this.domain.realm.treasury || 0;
         },
         forecast() {
-            const governingStyleModifier = GOVERNING_STYLE_PRODUCTION_MODIFIER.get(this.domain.realm.governingStyle) || 1.0;
+            const governingStyleProductionModifier = GOVERNING_STYLE_PRODUCTION_MODIFIER.get(this.domain.realm.governingStyle) || 1.0;
+            const governingStyleUpkeepModifier = GOVERNING_STYLE_PROVINCE_UPKEEP.get(this.domain.realm.governingStyle) || 1.0;
+            const civilizationUpkeepModifier = CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER.get(this.domain.realm.civilization) || 1.0;
+            const civilizationProductionModifier = CIVILIZATION_PRODUCTION_MODIFIER.get(this.domain.realm.civilization) || 1.0;
 
             let profit = 0;
             for (let province of this.domain.realm.provinces) {
-                profit += province.profit * governingStyleModifier;
+                profit += province.profit;
             }
             
             // Upkeep from the Units.
@@ -253,10 +284,29 @@ export default defineComponent({
                 upkeep += unit.upkeep;
             }
 
-            this.provinceTotal = profit;
-            this.unitTotal = upkeep;
+            let unitCostMod = 1;
+            if (this.domain.realm.governingStyle == GoverningStyle.NOBLE) {
+                unitCostMod *= UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER;
+            }
 
-            return profit - upkeep;
+            if (this.domain.realm.civilization == Civilization.BARBARIC) {
+                unitCostMod *= UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER;
+            }
+
+            if (this.domain.realm.civilization == Civilization.NOMADIC) {
+                unitCostMod *=  UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER;
+            }
+
+            this.provinceTotal = Math.round(profit);
+            this.unitTotal = Math.round(upkeep);
+
+            this.governingStyleProductionModifier = -Math.round((1 - governingStyleProductionModifier) * 100);
+            this.governingStyleUpkeepModifier = -Math.round((1 - governingStyleUpkeepModifier) * 100);
+            this.civilizationProductionModifier = - Math.round((1 - civilizationProductionModifier) * 100);
+            this.civilizationUpkeepModifier = -Math.round((1 - civilizationUpkeepModifier) * 100);
+            this.unitCostModifier = Math.round((1 - unitCostMod) * 100);
+
+            return Math.round(profit - upkeep);
         },
         /**
          * Compute what are the available population center based on the Kingdom's civilization
@@ -387,16 +437,11 @@ export default defineComponent({
             }
         },
         computeProvinceUpkeep(realm: Realm, province: Province): number {
-            if (realm.governingStyle == GoverningStyle.NONE) {
-                province.upkeep = 0;
-                return province.upkeep;
-            }
-
+            // Base upkeep.
             let upkeep =  POPULATION_CENTER_UPKEEP.get(province.populationCenter) || 0;
-
             upkeep *= CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER.get(realm.civilization) || 1.0;
-
-            province.upkeep = upkeep;
+            upkeep *= GOVERNING_STYLE_PROVINCE_UPKEEP.get(realm.governingStyle) || 1.0;
+            province.upkeep = Math.round(upkeep);
             return province.upkeep;
         },
         computeProvinceProduction(realm: Realm, province: Province): number {
@@ -410,11 +455,14 @@ export default defineComponent({
             // Based on the Civilization, adjust the production.
             const civiliationModifier = CIVILIZATION_PRODUCTION_MODIFIER.get(realm.civilization) || 1.0;
 
+            const governingStyleProductionModifier = GOVERNING_STYLE_PRODUCTION_MODIFIER.get(this.domain.realm.governingStyle) || 1.0;
+
             // Calculate the raw values
             let revenue = terrainModifier * productionModifier * this.config.multiplier;
 
             // Adjust the final modifier
             revenue *= civiliationModifier;
+            revenue *= governingStyleProductionModifier;
 
             province.production = revenue;
             return province.production;
@@ -459,6 +507,16 @@ p {
     display: inline-table;
 }
 
+.modifier {
+    display: flex;
+    justify-content: flex-end;
+
+    .modifier-number {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
 .treasury {
     justify-content: center;
 
@@ -469,7 +527,7 @@ p {
 }
 
 .production {
-    color: green;
+    color: var(--text-accent);
 }
 
 .upkeep {

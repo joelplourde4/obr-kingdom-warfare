@@ -37,7 +37,7 @@
     <div v-if="config.treasury" class="row centered-header">
         <div class="tooltip">
             <p class="subtitle">Heritage</p>
-            <select class="dropdown" v-model="domain.realm.heritage" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+            <select class="dropdown" v-model="domain.realm.heritage" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                 <option v-for="heritage in Heritage" :value="heritage">
                     {{ heritage }}
                 </option>
@@ -46,7 +46,7 @@
         </div>
         <div class="tooltip">
             <p class="subtitle">Civilization</p>
-            <select class="dropdown" v-model="domain.realm.civilization" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+            <select class="dropdown" v-model="domain.realm.civilization" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                 <option v-for="civilization in Civilization" :value="civilization">
                     {{ civilization }}
                 </option>
@@ -55,7 +55,7 @@
         </div>
         <div class="tooltip">
             <p class="subtitle">Governance</p>
-            <select class="dropdown" v-model="domain.realm.governingStyle" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+            <select class="dropdown" v-model="domain.realm.governingStyle" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                 <option v-for="governingStyle in GoverningStyle" :value="governingStyle">
                     {{ governingStyle }}
                 </option>
