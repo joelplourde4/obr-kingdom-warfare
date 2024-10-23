@@ -66,20 +66,23 @@ export const statsCalculator = {
 
             cost += 30;
 
+            let bonusGoverningStyle = 0;
+            let bonusCivilization = 0;
+
             if (governingStyle == GoverningStyle.NOBLE) {
                 // For Noble Governing Style, the cost of troops is 10% less.
-                cost *= UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER;
+                bonusGoverningStyle = cost * (1 - UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER);
             }
 
             if (civilization == Civilization.BARBARIC) {
                 // For Barbaric Civilization, the cost of recruiting units is 30% less.
-                cost *= UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER;
+                bonusCivilization = cost * (1 - UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER);
+            } else if (civilization == Civilization.NOMADIC) {
+                // For Nomadic Civilization, the cost of recruiting units is 20% less.
+                bonusCivilization = cost * (1 - UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER);
             }
 
-            if (civilization == Civilization.NOMADIC) {
-                // For Nomadic Civilization, the cost of recruiting units is 20% less.
-                cost *= UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER;
-            }
+            cost = cost - bonusGoverningStyle - bonusCivilization;
 
             return Math.round(cost);
         },
