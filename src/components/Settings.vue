@@ -11,14 +11,14 @@
             :title="'Shared Mode'"
             :description="'This extension offers two Domain Sheet options: a shared sheet for all players or individual sheets for each player, including the GM.'"
             :tooltip="'When unchecked, each player will have their own Domain Sheet.'"
-            @update:model-value="onChanged('sharedMode')"
+            @update:model-value="onChanged($event, 'sharedMode')"
         />
         <Configuration
             :value="config.warfare"
             :title="'Warfare'"
             :description="'This extension provides the ability to track your units on the battlefield when using warfare rules.'"
             :tooltip="'When unchecked, the \'Warfare\' functionality will be disabled.'"
-            @update:model-value="onChanged('warfare')"
+            @update:model-value="onChanged($event, 'warfare')"
         />
         <div class="tooltip">
             <h3 class="title">Functionality</h3>
@@ -30,37 +30,37 @@
             :value="config.header"
             :title="'Toggle Header'"
             :tooltip="'When unchecked, the \'Header\' section of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('header')"
+            @update:model-value="onChanged($event, 'header')"
         />
         <Configuration
             :value="config.stats"
             :title="'Toggle Stats Tab'"
             :tooltip="'When unchecked, the \'Stats\' tab of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('stats')"
+            @update:model-value="onChanged($event, 'stats')"
         />
         <Configuration
             :value="config.relations"
             :title="'Toggle Relations Tab'"
             :tooltip="'When unchecked, the \'Relations\' tab of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('relations')"
+            @update:model-value="onChanged($event, 'relations')"
         />
         <Configuration
             :value="config.features"
             :title="'Toggle Features Tab'"
             :tooltip="'When unchecked, the \'Features\' tab of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('features')"
+            @update:model-value="onChanged($event, 'features')"
         />
         <Configuration
             :value="config.military"
             :title="'Toggle Military Tab'"
             :tooltip="'When unchecked, the \'Military\' tab of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('military')"
+            @update:model-value="onChanged($event, 'military')"
         />
         <Configuration
             :value="config.treasury"
             :title="'Toggle Treasury Tab'"
             :tooltip="'When unchecked, the \'Treasury\' tab of the Domain Sheet will be hidden.'"
-            @update:model-value="onChanged('treasury')"
+            @update:model-value="onChanged($event, 'treasury')"
         />
         <Configuration
             :value="config.multiplier"
@@ -69,7 +69,7 @@
             :description="'Adjust the resource generation rate each domain turn.'"
             :disabled="!config.treasury"
             :isChild="true"
-            @update:model-value="onChanged('multiplier')"
+            @update:model-value="onChanged($event, 'multiplier')"
         />
     </div>
 </template>
@@ -101,14 +101,14 @@ export default defineComponent({
     },
     computed: {},
     methods: {
-        onChanged(setting: string) {
+        onChanged($event: number | boolean, setting: string) {
             const key = setting as SettingKey;
             if (typeof this.config[key] === 'boolean') {
                 // @ts-ignore
                 this.config[key] = !this.config[key] as Boolean
             } else {
                 // @ts-ignore
-                this.config[key] = this.config[key];
+                this.config[key] = $event;
             }
             this.$emit('update:configuration', this.config);
         }

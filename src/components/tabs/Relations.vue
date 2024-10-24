@@ -1,5 +1,6 @@
 <template>
     <div class="content">
+        <p v-if="domain.relations.length === 0 && !isEditMode">There are no known relations at this time.</p>
         <div class="relation" v-for="relation in domain.relations">
             <div class="row">  
                 <div v-if="isShown(relation)" class="group">

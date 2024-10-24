@@ -1,5 +1,6 @@
 <template>
     <div class="content">
+        <p v-if="domain.features.length === 0 && !isEditMode">No features are available at this time.</p>
         <div class="feature row" v-for="feature in domain.features">
             <div class="row">
                 <div v-if="isShown(feature)" class="container">

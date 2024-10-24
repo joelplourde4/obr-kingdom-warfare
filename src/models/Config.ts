@@ -17,7 +17,7 @@ export class Config {
             military: boolean = true,
             warfare: boolean = true,
             treasury: boolean = false,
-            multiplier: number = 100,
+            multiplier: number = 250,
             sharedMode: boolean = true
     ){
         this.header = header;

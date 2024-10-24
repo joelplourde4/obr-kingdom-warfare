@@ -2,6 +2,7 @@ import { Stats } from './Stats.ts'
 import { Relation } from './Relation.ts';
 import { Feature } from './Feature.ts';
 import { Unit } from './Unit.ts';
+import { Realm } from './Realm.ts';
 
 export enum Size {
     TINY = "Tiny",
@@ -27,23 +28,26 @@ export class Domain {
     relations: Relation[];
     features: Feature[];
     units: Unit[];
+    realm: Realm;
 
     constructor(
-        name: string = "Kingdom",
+        name?: string,
         size: Size = Size.TINY,
         powerDie: PowerDie = PowerDie.D4,
         stats: Stats = new Stats(),
         relations: Relation[] = [],
         features: Feature[] = [],
-        units: Unit[] = []
+        units: Unit[] = [],
+        realm?: Realm
     ) {
-        this.name = name;
+        this.name = name || "Kingdom";
         this.size = size;
         this.powerDie = powerDie;
         this.stats = stats;
         this.relations = relations;
         this.features = features;
         this.units = units;
+        this.realm = realm || new Realm();
     }
 
     static fromJson(domain: any): Domain {
@@ -54,7 +58,8 @@ export class Domain {
             domain.stats,
             domain.relations,
             domain.features,
-            domain.units
+            domain.units,
+            domain.realm
         )
     }
 };

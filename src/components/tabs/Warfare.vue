@@ -1,5 +1,6 @@
 <template>
     <div class="content">
+        <p v-if="units.length === 0">To get started, right-click on a character and select the option to add it as a unit.</p>
         <table>
             <tr v-if="units.length > 0">
                 <th class="left-align">Name</th>
@@ -648,7 +649,7 @@ export default defineComponent({
 
 table {
     overflow-y: auto;
-    height: 500px;
+    height: 100%;
     display: block;
 
     .left-align {

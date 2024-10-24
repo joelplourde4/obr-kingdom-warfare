@@ -101,13 +101,14 @@
 import { useRoute } from 'vue-router';
 import html2canvas from 'html2canvas';
 import { defineComponent } from 'vue'
-import { Trait, Type, Unit } from '../src/models/Unit';
+import { Trait, Unit } from '../src/models/Unit';
 
 import { TRAIT_DESCRIPTION_MAP } from '../src/models/Trait.ts'
 
-import { ANCESTRY_STATS_MAP, EXPERIENCE_STATS_MAP, EQUIPMENT_STATS_MAP, TYPE_STATS_MAP, TYPE_COST_MODIFIER_MAP, SIZE_COST_MODIFIER_MAP, TRAIT_COST_MAP, ANCESTRY_COLOR_MAP, INFANTRY_ATTACK_MAP, CAVALRY_AERIAL_ATTACK_MAP, ARTILLERY_ATTACK_MAP, INFANTRY_DAMAGE_MAP, CAVALRY_AERIAL_DAMAGE_MAP } from './models/Stats.ts'
-import OBR, { ImageGrid, ImageUpload, Vector2 } from '@owlbear-rodeo/sdk';
+import OBR, { ImageGrid, ImageUpload } from '@owlbear-rodeo/sdk';
 import { statsCalculator } from './mixins/statsCalculator.ts';
+import { Civilization, GoverningStyle } from '../src/models/Realm.ts';
+import { ANCESTRY_COLOR_MAP } from './models/Stats.ts';
 
 export default defineComponent({
     mixins: [statsCalculator],
@@ -115,6 +116,7 @@ export default defineComponent({
         const route = useRoute();
         return {
             initialized: false,
+            governingStyle: GoverningStyle.NONE,
             unit: new Unit(),
             route,
             error: ""
@@ -135,6 +137,9 @@ export default defineComponent({
                 this.formatString(q.size),
                 this.formatString(q.traits).split(',') as Trait[]
             );
+
+            this.governingStyle = this.formatString(q.governingStyle) as GoverningStyle;
+            this.civilization = this.formatString(q.civilization) as Civilization;
 
             setTimeout(() => {
                 this.initialized = true;
@@ -161,7 +166,7 @@ export default defineComponent({
             return this.calculateMorale(this.unit);
         },
         getCost() {
-            return this.calculateCost(this.unit);
+            return this.calculateCost(this.unit, this.governingStyle, this.civilization);
         },
         getNumberAttacks() {
             return this.calculateNumberAttacks(this.unit);

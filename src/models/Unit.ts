@@ -99,6 +99,7 @@ export class Unit {
 
     // Computed value
     cost: number;
+    upkeep: number;
 
     constructor(
         name?: string,
@@ -109,7 +110,10 @@ export class Unit {
         tier?: Tier,
         size?: Size,
         traits?: Trait[],
+        // @ts-ignore
         cost?: number,
+        // @ts-ignore
+        upkeep?: number
     ) {
         this.name = name || "Default";
         this.experience = experience || Experience.GREEN;
@@ -121,5 +125,6 @@ export class Unit {
         this.traits = traits || [];
         this.show = false;
         this.cost = 0;
+        this.upkeep = 0;
     }
 }

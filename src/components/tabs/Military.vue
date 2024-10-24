@@ -1,5 +1,6 @@
 <template>
     <div class="content military">
+        <p v-if="domain.units.length === 0 && !isEditMode">No units have been recruited yet.</p>
         <div class="unit" v-for="unit in domain.units">
             <button type="button" class="collapsible column" @click="openCollapsible($event, unit)">
                 <div class="column">
@@ -8,7 +9,7 @@
                             <p class="tier">{{ unit.tier }}</p>
                             <span class="tooltiptext">Tier: Measure of the unit's overall power or nastiness.</span>
                         </div>
-                        <input class="name" v-model="unit.name" @input="onChanges(unit)" @click="preventPropagation" :disabled="isDisabled">
+                        <input class="name" v-model="unit.name" @input="debouncedUpdate(unit)" @click="preventPropagation" :disabled="isDisabled">
                         <div class="option-container tooltip">
                             <input type="button" class="icon-button external-link-button" @click="openModal(unit)">
                             <span class="tooltiptext">
@@ -118,7 +119,7 @@
                     <div class="tooltip">
                         <div class="row">
                             <span class="cost-label">Cost</span>
-                            <p class="cost dropdown">{{ unit.cost }}</p>
+                            <p class="cost dropdown">{{ computeUnitCost(unit) }}</p>
                         </div>
                         <span class="tooltiptext">Cost: Indicates both the initial hiring fee for the unit and its ongoing upkeep expense.</span>
                     </div>
@@ -148,15 +149,16 @@ import BaseTab from './BaseTab.ts'
 import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait, Size  } from '../../models/Unit.js';
 import OBR from '@owlbear-rodeo/sdk';
 import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';
+import { UNIT_UPKEEP_FACTOR } from '../../models/Realm.ts'
     
 export default defineComponent({
     mixins: [utils, statsCalculator],
     extends: BaseTab,
     name: 'Military',
     data() {
-        const debouncedUpdate = useDebounceFn((unit) => { 
+        const debouncedUpdate = useDebounceFn((_) => { 
             // @ts-ignore
-            this.updateUnit(unit);
+            this.onUpdate();
         }, 500)
         return {
             debouncedUpdate,
@@ -175,14 +177,8 @@ export default defineComponent({
         }
     },
     methods: {
-        updateUnit(unit: Unit) {
-            const cost = this.calculateCost(unit);
-            unit.cost = cost;
-            unit.tier = this.calculateTier(unit);
-            this.onUpdate();
-        },
         onChanges(unit: Unit) {
-            this.debouncedUpdate(unit);
+            this.onUpdate();
         },
         openCollapsible($event: any, unit: Unit) {
             if ($event.detail === 0) {
@@ -261,7 +257,7 @@ export default defineComponent({
         },
         openModal(unit: Unit) {
             this.preventPropagation(event);
-            const queryParams = `name=${unit.name}&equipment=${unit.equipment}&experience=${unit.experience}&type=${unit.type}&ancestry=${unit.ancestry}&tier=${unit.tier}&size=${unit.size}&traits=${unit.traits}`
+            const queryParams = `name=${unit.name}&equipment=${unit.equipment}&experience=${unit.experience}&type=${unit.type}&ancestry=${unit.ancestry}&tier=${unit.tier}&size=${unit.size}&traits=${unit.traits}&governingStyle=${this.domain?.realm?.governingStyle}&civilization=${this.domain?.realm?.civilization}`
 
             const url = `/unit/?${queryParams}`.replace(/ /g, "_");
 
@@ -273,6 +269,13 @@ export default defineComponent({
             } as Modal
 
             OBR.modal.open(modal);
+        },
+        computeUnitCost(unit: Unit) {
+            const cost = this.calculateCost(unit, this.domain?.realm?.governingStyle, this.domain?.realm?.civilization);
+            unit.cost = cost;
+            unit.upkeep = Math.round(UNIT_UPKEEP_FACTOR * cost);
+            unit.tier = this.calculateTier(unit);
+            return unit.cost;
         }
     }
 })  

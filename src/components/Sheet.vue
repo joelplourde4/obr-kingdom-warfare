@@ -33,6 +33,7 @@
         <div v-if="config.header">
         <Header
             :domain="domain"
+            :config="config"
             :isGM="hasPermission"
             :isEditMode="editMode"
             @update:model-value="onUpdate"
@@ -73,7 +74,10 @@
             </tab>
             <tab v-if="config.treasury" name="Treasury">
                 <Treasury
+                    :config="config"
                     :domain="domain"
+                    :currentPlayer="currentPlayer"
+                    :players="players"
                     :isGM="hasPermission"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
@@ -110,6 +114,10 @@ export default defineComponent({
         },
         hasPermission: {
             type: Boolean,
+            required: true
+        },
+        currentPlayer: {
+            type: Object as PropType<Player>,
             required: true
         },
         players: {
