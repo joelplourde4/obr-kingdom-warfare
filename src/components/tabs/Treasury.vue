@@ -8,7 +8,7 @@
                 <span class="tooltiptext">The present amount in the Kingdom's Treasury.</span>
             </div>
             <div class="tooltip">
-            <h3 :style=" { 'color': forecast >= 0 ? 'var(--text-accent)': 'red'} ">({{ forecast }})</h3>
+            <h3 :style="{ 'color': forecast >= 0 ? 'var(--text-accent)': 'red'}">({{ forecast }})</h3>
                 <span class="tooltiptext">The resources that will be added to or subtracted from the treasury during the next domain turn.</span>
             </div>
         </div>
@@ -77,13 +77,15 @@
                     </td>
                 </tr>
             </table>
-            <div class="modifier">
-                <p>Production Modifier:</p>
-                <p class="production modifier-number">{{ productionModifier }}%</p>
+            <div class="tooltip modifier">
+                <p>Production Bonus</p>
+                <p class="production modifier-number" :style="{ 'color': productionModifier >= 0 ? 'var(--text-accent)': 'red'}">{{ productionModifier }}%</p>
+                <span class="tooltiptext">Overall bonus granted by the civilization's traits and governance policies.</span>
             </div>
-            <div class="modifier">
-                <p>Upkeep Modifier:</p>
-                <p class="production modifier-number">{{ upkeepModifier }}%</p>
+            <div class="tooltip modifier">
+                <p>Upkeep Bonus</p>
+                <p class="production modifier-number" :style="{ 'color': upkeepModifier >= 0 ? 'var(--text-accent)': 'red'}">{{ upkeepModifier }}%</p>
+                <span class="tooltiptext">Overall bonus in upkeep costs provided by the civilization's traits and governance policies.</span>
             </div>
         </div>
         <button v-if="domain.units.length > 0" type="button" class="collapsible column" @click="openUnitCollapsible">
@@ -118,14 +120,15 @@
                     <td>
                         <div class="tooltip">
                             <p>{{ unit.upkeep }}</p>
-                            <span class="tooltiptext">The upkeep is 25% of its current total cost of the unit, which includes the base cost plus any added value from experience, type, traits, and equipment.</span>
+                            <span class="tooltiptext">The upkeep is 25% of its current total cost of the unit.</span>
                         </div>
                     </td>
                 </tr>
             </table>
-            <div class="modifier">
+            <div class="tooltip modifier">
                 <p>Unit Cost Reduction:</p>
                 <p class="production modifier-number">{{ unitCostModifier }}%</p>
+                <span class="tooltiptext">Overall </span>
             </div>
         </div>
     </div>
@@ -285,8 +288,9 @@ export default defineComponent({
          * Compute what are the available population center based on the Kingdom's civilization
          */
         availablePopulationCenter() {
-            const nomads = [PopulationCenter.SMALL_CAMP, PopulationCenter.MEDIUM_CAMP, PopulationCenter.LARGE_CAMP]
+            let nomads = [PopulationCenter.SMALL_CAMP, PopulationCenter.MEDIUM_CAMP, PopulationCenter.LARGE_CAMP]
             if (this.domain.realm.civilization == Civilization.NOMADIC) {
+                nomads.unshift(PopulationCenter.NONE);
                 return nomads;
             }
 

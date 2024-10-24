@@ -1,9 +1,29 @@
 import { Config } from "../models/Config";
-import { Civilization, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, GOVERNING_STYLE_PRODUCTION_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP, GoverningStyle, HERITAGE_TERRAIN_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, POPULATION_CENTER_UPKEEP, Province, Realm, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER } from "../models/Realm";
+import { Civilization, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, GOVERNING_STYLE_PRODUCTION_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP, GoverningStyle, HERITAGE_TERRAIN_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, POPULATION_CENTER_UPKEEP, PopulationCenter, Province, Realm, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER } from "../models/Realm";
 import { Unit } from "../models/Unit";
 
 export const treasuryCalculator = {
     methods: {
+        validatePopulationCenter(realm: Realm, populationCenter: PopulationCenter): PopulationCenter {
+            const nomadicCenter = [
+                PopulationCenter.NONE, 
+                PopulationCenter.SMALL_CAMP,
+                PopulationCenter.MEDIUM_CAMP,
+                PopulationCenter.LARGE_CAMP
+            ]
+
+            const index = nomadicCenter.findIndex(x => x == populationCenter);
+            if (realm.civilization == Civilization.NOMADIC) {
+                if (index < 0) {
+                    return PopulationCenter.NONE;
+                } 
+            } else {
+                if (index >= 0) {
+                    return PopulationCenter.NONE;
+                }
+            }
+            return populationCenter;
+        },
         /**
          * Calculate the production of a province based on the province as well as realm's heritage, civilization, and governing style.
          */
@@ -11,6 +31,9 @@ export const treasuryCalculator = {
             // Based on the Terrain, get the base production of the province.
             const terrainModifiers = HERITAGE_TERRAIN_MODIFIER.get(realm.heritage);
             const terrainModifier = terrainModifiers?.get(province.terrain) || 0;
+
+            province.populationCenter = this.validatePopulationCenter(realm, province.populationCenter);
+
             const productionModifier = POPULATION_CENTER_PRODUCTION_MODIFIER.get(province.populationCenter) || 0;
 
             // Calculate the base value
@@ -18,7 +41,9 @@ export const treasuryCalculator = {
 
             const modifier = this.getProvinceProductionModifier(realm);
             revenue = revenue + (revenue * modifier);
-            return Math.round(revenue);
+
+            province.production = Math.round(revenue);
+            return province.production;
         },
         getUnitCostModifier(governingStyle: GoverningStyle, civilization: Civilization): number {
             let bonusGoverningStyle = 0;
@@ -59,13 +84,15 @@ export const treasuryCalculator = {
             let upkeep =  POPULATION_CENTER_UPKEEP.get(province.populationCenter) || 0;
             let discount = this.getProvinceUpkeepDiscount(realm);
             upkeep = upkeep - (upkeep * discount);
-            return Math.round(upkeep);
+            province.upkeep = Math.round(upkeep);
+            return province.upkeep;
         },
         /**
          * Calculate the profit of a province based on the production and upkeep of the province.
          */
         calculateProvinceProfit(province: Province): number {
-            return Math.round(province.production - province.upkeep);
+            province.profit = Math.round(province.production - province.upkeep);
+            return province.profit;
         },
         /**
          * Calculate the total profit of a list of provinces.

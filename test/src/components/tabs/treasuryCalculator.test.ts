@@ -17,9 +17,7 @@ const realm = {
 
 const province = {
     terrain: Terrain.FOREST,
-    populationCenter: PopulationCenter.VILLAGE,
-    production: 1000,
-    upkeep: 248
+    populationCenter: PopulationCenter.VILLAGE
 } as Province;
 
 test ('calculateProvinceModifier should work as expected', () => {
@@ -53,6 +51,19 @@ test ('calculateProvinceUpkeep should calculate civilization bonus independently
 });
 
 test ('calculateProvinceProfit should work as expected', () => {
+    const realm = {
+        heritage: Heritage.ELVES,
+        civilization: Civilization.CIVILIZED,
+        governingStyle: GoverningStyle.NOBLE,
+    } as Realm
+    
+    const province = {
+        terrain: Terrain.FOREST,
+        populationCenter: PopulationCenter.VILLAGE
+    } as Province;
+
+    expect(treasuryCalculator.methods.calculateProvinceProduction(config, realm, province)).toBe(1000);
+    expect(treasuryCalculator.methods.calculateProvinceUpkeep(realm, province)).toBe(248);
     expect(treasuryCalculator.methods.calculateProvinceProfit(province)).toBe(752);
 });
 
@@ -78,4 +89,35 @@ test ('calculateUnitsUpkeep should work as expected', () => {
 
 test ('calculateForecast should work as expected', () => {
     expect(treasuryCalculator.methods.calculateForecast(1165, 63)).toBe(1102);
+});
+
+/**
+ * Nomads
+ */
+test ('Switching civilization should reset province production', () => {
+    const nomadicRealm = {
+        heritage: Heritage.ELVES,
+        civilization: Civilization.NOMADIC,
+        governingStyle: GoverningStyle.NONE,
+    } as Realm
+
+    const province1 = {
+        terrain: Terrain.FOREST,
+        populationCenter: PopulationCenter.VILLAGE, // Village is not a valid NOMADIC population
+    } as Province;
+
+    expect(treasuryCalculator.methods.calculateProvinceProduction(config, nomadicRealm, province1)).toBe(0);
+
+    const barbaricRealm = {
+        heritage: Heritage.ELVES,
+        civilization: Civilization.BARBARIC,
+        governingStyle: GoverningStyle.NONE,
+    } as Realm
+
+    const province2 = {
+        terrain: Terrain.FOREST,
+        populationCenter: PopulationCenter.SMALL_CAMP, // Small Camp is not a valid BARBARIC population
+    } as Province;
+
+    expect(treasuryCalculator.methods.calculateProvinceProduction(config, barbaricRealm, province2)).toBe(0);
 });
