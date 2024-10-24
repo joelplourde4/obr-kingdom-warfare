@@ -23,7 +23,7 @@ const province = {
 } as Province;
 
 test ('calculateProvinceModifier should work as expected', () => {
-    expect(treasuryCalculator.methods.calculateProvinceProductionModifier(realm)).toBe(0.25);
+    expect(treasuryCalculator.methods.getProvinceProductionModifier(realm)).toBe(0.25);
 });
 
 test ('calculateProvinceProduction should calculate civilization bonus independently than governing style bonus.', () => {
@@ -44,8 +44,8 @@ test ('calculateProvinceUpkeepDiscount should work as expected', () => {
         governingStyle: GoverningStyle.DESPOTIC,
     } as Realm
     
-    expect(treasuryCalculator.methods.calculateProvinceUpkeepDiscount(realm)).toBe(-0.1);
-    expect(treasuryCalculator.methods.calculateProvinceUpkeepDiscount(realm2)).toBe(0);
+    expect(treasuryCalculator.methods.getProvinceUpkeepDiscount(realm)).toBe(-0.1);
+    expect(treasuryCalculator.methods.getProvinceUpkeepDiscount(realm2)).toBe(0);
 });
 
 test ('calculateProvinceUpkeep should calculate civilization bonus independently than governing style bonus.', () => {

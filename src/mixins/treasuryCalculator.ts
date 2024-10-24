@@ -1,5 +1,5 @@
 import { Config } from "../models/Config";
-import { CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, GOVERNING_STYLE_PRODUCTION_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP, HERITAGE_TERRAIN_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, POPULATION_CENTER_UPKEEP, Province, Realm } from "../models/Realm";
+import { Civilization, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, GOVERNING_STYLE_PRODUCTION_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP, GoverningStyle, HERITAGE_TERRAIN_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, POPULATION_CENTER_UPKEEP, Province, Realm, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER } from "../models/Realm";
 import { Unit } from "../models/Unit";
 
 export const treasuryCalculator = {
@@ -16,11 +16,27 @@ export const treasuryCalculator = {
             // Calculate the base value
             let revenue = terrainModifier * productionModifier * config.multiplier;
 
-            const modifier = this.calculateProvinceProductionModifier(realm);
+            const modifier = this.getProvinceProductionModifier(realm);
             revenue = revenue + (revenue * modifier);
             return Math.round(revenue);
         },
-        calculateProvinceProductionModifier(realm: Realm): number {
+        getUnitCostModifier(governingStyle: GoverningStyle, civilization: Civilization): number {
+            let bonusGoverningStyle = 0;
+            let bonusCivilization = 0;
+
+            if (governingStyle == GoverningStyle.NOBLE) {
+                bonusGoverningStyle = 1 - UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER;
+            }
+
+            if (civilization == Civilization.BARBARIC) {
+                bonusCivilization = 1 - UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER;
+            } else if (civilization == Civilization.NOMADIC) {
+                bonusCivilization = 1 - UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER;
+            }
+
+            return - bonusGoverningStyle - bonusCivilization;
+        },
+        getProvinceProductionModifier(realm: Realm): number {
             let modifier = 0;
             modifier += (CIVILIZATION_PRODUCTION_MODIFIER.get(realm.civilization) || 1.0) - 1;
             modifier += (GOVERNING_STYLE_PRODUCTION_MODIFIER.get(realm.governingStyle) || 1.0) - 1;
@@ -29,7 +45,7 @@ export const treasuryCalculator = {
         /**
          * Calculate the discount of a province's upkeep based on the realm's civilization and governing style.
          */
-        calculateProvinceUpkeepDiscount(realm: Realm): number {
+        getProvinceUpkeepDiscount(realm: Realm): number {
             let discount = 0;
             discount += 1 - (CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER.get(realm.civilization) || 1.0);
             discount += 1 - (GOVERNING_STYLE_PROVINCE_UPKEEP.get(realm.governingStyle) || 1.0);
@@ -41,7 +57,7 @@ export const treasuryCalculator = {
         calculateProvinceUpkeep(realm: Realm, province: Province): number {
             // Get the base value
             let upkeep =  POPULATION_CENTER_UPKEEP.get(province.populationCenter) || 0;
-            let discount = this.calculateProvinceUpkeepDiscount(realm);
+            let discount = this.getProvinceUpkeepDiscount(realm);
             upkeep = upkeep - (upkeep * discount);
             return Math.round(upkeep);
         },
