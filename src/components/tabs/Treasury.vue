@@ -2,6 +2,7 @@
     <div class="content">
         <Time
             :isGM="isGM"
+            :hasScene="hasScene"
             :config="config"
             :realm="domain.realm"
             @update:time="onChangeTimeEvent"
@@ -201,6 +202,9 @@ export default defineComponent({
         let sceneItemChangeCallback = () => {};
         let broadcastCallback = () => {};
         return {
+            /** OBR */
+            hasScene: false,
+
             /** Collapsible */
             showProvinces: false,
             showUnits: false,
@@ -258,6 +262,7 @@ export default defineComponent({
         const sceneIntervalId = window.setInterval(async () => {
             const isReady = await OBR.scene.isReady();
             if (isReady) {
+                this.hasScene = true;
                 this.sceneItemChangeCallback = OBR.scene.items.onChange((items) => {
                     if (this.config.sharedMode) {
                         return;

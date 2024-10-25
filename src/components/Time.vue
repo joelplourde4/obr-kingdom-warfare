@@ -27,6 +27,10 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        hasScene: {
+            type: Boolean,
+            required: true
+        },
         config: {
             type: Object as PropType<Config>,
             required: true
@@ -39,6 +43,10 @@ export default defineComponent({
     emit: ['update:time'],
     computed: {
         isDecrementShown() {
+            if (!this.hasScene) {
+                return false;
+            }
+
             if (!this.isGM) {
                 return false;
             }
@@ -50,6 +58,10 @@ export default defineComponent({
             return this.realm.forecasts.length != 0;
         },
         isIncrementShown() {
+            if (!this.hasScene) {
+                return false;
+            }
+
             if (!this.isGM) {
                 return false;
             }
