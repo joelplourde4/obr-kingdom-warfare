@@ -1,5 +1,5 @@
 import { Config } from "../models/Config";
-import { Civilization, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, GOVERNING_STYLE_PRODUCTION_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP, GoverningStyle, HERITAGE_TERRAIN_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, POPULATION_CENTER_UPKEEP, PopulationCenter, Province, Realm, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER } from "../models/Realm";
+import { Calendar, Civilization, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, GOVERNING_STYLE_PRODUCTION_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP, GoverningStyle, HERITAGE_TERRAIN_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, POPULATION_CENTER_UPKEEP, PopulationCenter, Province, Realm, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER } from "../models/Realm";
 import { Unit } from "../models/Unit";
 
 export const treasuryCalculator = {
@@ -119,6 +119,83 @@ export const treasuryCalculator = {
          */
         calculateForecast(totalProfit: number, totalUpkeep: number) {
             return Math.round(totalProfit - totalUpkeep);
+        },
+        /**
+         * ----------------- Time Section --------------------------
+         */
+        /**
+         * Incrementing the time of the Realm from the settings in the Config.
+         */
+        incrementTime(config: Config, realm: Realm) {
+            if (realm.calendar == undefined) {
+                realm.calendar = new Calendar();
+            }
+
+            realm.calendar.week++;
+
+            if (realm.calendar.week > config.time.weekCount) {
+                realm.calendar.week = 1;
+                realm.calendar.month++;
+
+                if (realm.calendar.month > config.time.monthCount) {
+                    realm.calendar.month = 1;
+                    realm.calendar.year++;
+                }
+            }
+        },
+        /**
+         * Deincrementing the time of the Realm from the settings in the Config.
+         */
+        deincrementTime(config: Config, realm: Realm) {
+            realm.calendar.week--;
+
+            if (realm.calendar.week <= 0) {
+                realm.calendar.week = config.time.weekCount;
+                realm.calendar.month--;
+
+                if (realm.calendar.month <= 0) {
+                    realm.calendar.month = config.time.monthCount;
+                    realm.calendar.year--;
+                }
+            }
+        },
+        /**
+         * Add a value to the treasury
+         * @param realm The realm
+         * @param forecast The value that was forecasted.
+         */
+        addForecastToTreasury(realm: Realm, forecast: number) {
+            realm.treasury += forecast;
+
+            if (realm.forecasts === undefined) {
+                realm.forecasts = [];
+            }
+            realm.forecasts.push(forecast);
+
+            // We only keep the previous 5 turns for simplicity sake
+            if (realm.forecasts.length > 5) {
+                realm.forecasts.shift();
+            }
+        },
+        /**
+         * Remove from the Treasury based on the previous turns.
+         * @param realm The realm
+         */
+        removeFromTreasury(realm: Realm) {
+            if (realm.forecasts.length !== 0) {
+                const previousValue = realm.forecasts.pop() || 0;
+                realm.treasury -= previousValue;
+            }
+        },
+        /**
+         * Evaluate an Expression
+         */
+        evaluateExpression(expression: string, value: number): number {
+            try {
+                return Function(`'use strict'; return (${expression})`)()
+            } catch (error) {
+                return value;
+            }
         }
     }
 };

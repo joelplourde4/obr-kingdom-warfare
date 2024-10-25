@@ -78,7 +78,7 @@
                     :domain="domain"
                     :currentPlayer="currentPlayer"
                     :players="players"
-                    :isGM="hasPermission"
+                    :isGM="isGM"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
                 />

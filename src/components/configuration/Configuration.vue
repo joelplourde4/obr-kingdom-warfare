@@ -16,7 +16,7 @@
                 type="number"
                 :disabled="disabled"
                 :value="value"
-                @input="onChanged($event, value)"
+                @input="onChanged($event)"
             />
             <span class="tooltiptext">
                 {{ tooltip }}

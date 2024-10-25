@@ -7,6 +7,12 @@ export class Realm {
     civilization: Civilization;
     governingStyle: GoverningStyle;
     treasury: number;
+    forecasts: number[] = []
+
+    /**
+     * Time-related variable
+     */
+    calendar: Calendar
 
     constructor () {
         this.provinces = [];
@@ -14,6 +20,8 @@ export class Realm {
         this.civilization = Civilization.CULTURED;
         this.governingStyle = GoverningStyle.NONE;
         this.treasury = 0;
+        this.forecasts = [];
+        this.calendar = new Calendar()
     }
 }
 
@@ -34,6 +42,22 @@ export class Province {
         this.upkeep = 0;
         this.profit = 0;
         this.color = "#000000";
+    }
+}
+
+export class Calendar {
+    week: number;
+    month: number;
+    year: number
+
+    constructor (
+        week: number = 1,
+        month: number = 1,
+        year: number = 1,
+    ) {
+        this.week = week;
+        this.month = month;
+        this.year = year;
     }
 }
 

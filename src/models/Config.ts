@@ -8,6 +8,7 @@ export class Config {
     treasury: boolean;
     multiplier: number;
     sharedMode: boolean;
+    time: Time;
 
     constructor(
             header: boolean = true,
@@ -18,7 +19,8 @@ export class Config {
             warfare: boolean = true,
             treasury: boolean = false,
             multiplier: number = 250,
-            sharedMode: boolean = true
+            sharedMode: boolean = true,
+            time: Time = new Time()
     ){
         this.header = header;
         this.stats = stats;
@@ -29,6 +31,7 @@ export class Config {
         this.treasury = treasury;
         this.multiplier = multiplier;
         this.sharedMode = sharedMode;
+        this.time = time;
     }
 
     static fromJson(config: any): Config {
@@ -45,3 +48,18 @@ export class Config {
         )
     } 
 };
+
+/**
+ * This extension makes no assumption on the time in your setting.
+ */
+export class Time {
+    /**
+     * Number of weeks in a month
+     */
+    weekCount: number = 4;
+
+    /**
+     * Number of month in a year;
+     */
+    monthCount: number = 12;
+}

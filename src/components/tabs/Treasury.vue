@@ -1,20 +1,34 @@
 <template>
-    <p v-if="domain.realm.provinces.length === 0">To get started, right-click on a drawing and select the option to add it as a province.</p>
     <div class="content">
-        <div class="treasury row">
-            <h3>Treasury:</h3>
-            <div class="tooltip">
-                <h3>{{ treasury }}</h3>
-                <span class="tooltiptext">The present amount in the Kingdom's Treasury.</span>
-            </div>
-            <div class="tooltip">
-            <h3 :style="{ 'color': forecast >= 0 ? 'var(--text-accent)': 'red'}">({{ forecast }})</h3>
-                <span class="tooltiptext">The resources that will be added to or subtracted from the treasury during the next domain turn.</span>
+        <Time
+            :isGM="isGM"
+            :config="config"
+            :realm="domain.realm"
+            @update:time="onChangeTimeEvent"
+        />
+        <hr>
+        <div class="treasury column">
+            <h3>Treasury</h3>
+            <div class="row">
+                <div class="treasury-amount row">
+                    <input 
+                        class="treasury-input input-number-value"
+                        type="text"
+                        v-model="domain.realm.treasury"
+                        :disabled="!isEditMode"
+                        @change="onTreasuryChanged"
+                        @keyup="onTreasuryEnter"
+                    />
+                    <div class="tooltip">
+                        <h3 :style="{ 'color': forecast >= 0 ? 'var(--text-accent)': 'red'}">({{ forecast }})</h3>
+                        <span class="tooltiptext">The resources that will be added to or subtracted from the treasury during the next domain turn.</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <button v-if="domain.realm.provinces.length > 0" type="button" class="collapsible column" @click="openProvinceCollapsible">
+        <button type="button" class="collapsible column" @click="openProvinceCollapsible">
             <div class="label">
-                <h3 v-if="domain.realm.provinces.length > 0">Provinces</h3>
+                <h3>Provinces</h3>
                 <h3 class="number">({{ domain.realm.provinces.length }})</h3>
             </div>
             <div class="sub-total">
@@ -29,6 +43,7 @@
             </div>
         </button>
         <div v-show="showProvinces">
+            <p v-if="domain.realm.provinces.length === 0">To get started, right-click on a drawing and select the option to add it as a province.</p>
             <table class="province-table">
                 <tr v-if="domain.realm.provinces.length > 0">
                     <th>Terrain</th>
@@ -77,20 +92,21 @@
                     </td>
                 </tr>
             </table>
-            <div class="tooltip modifier">
+            <hr>
+            <div  v-if="domain.realm.provinces.length > 0" class="tooltip modifier">
                 <p>Production Bonus</p>
                 <p class="production modifier-number" :style="{ 'color': productionModifier >= 0 ? 'var(--text-accent)': 'red'}">{{ productionModifier }}%</p>
                 <span class="tooltiptext">Overall bonus granted by the civilization's traits and governance policies.</span>
             </div>
-            <div class="tooltip modifier">
+            <div  v-if="domain.realm.provinces.length > 0" class="tooltip modifier">
                 <p>Upkeep Bonus</p>
                 <p class="production modifier-number" :style="{ 'color': upkeepModifier >= 0 ? 'var(--text-accent)': 'red'}">{{ upkeepModifier }}%</p>
                 <span class="tooltiptext">Overall bonus in upkeep costs provided by the civilization's traits and governance policies.</span>
             </div>
         </div>
-        <button v-if="domain.units.length > 0" type="button" class="collapsible column" @click="openUnitCollapsible">
+        <button type="button" class="collapsible column" @click="openUnitCollapsible">
             <div class="label">
-                <h3 v-if="domain.units.length > 0">Units</h3>
+                <h3>Units</h3>
                 <h3 class="number">({{ domain.units.length }})</h3>
             </div>
             <div class="sub-total">
@@ -105,6 +121,7 @@
             </div>
         </button>
         <div v-show="showUnits">
+            <p v-if="domain.units.length === 0">To get started, recruit some units in the Military tab.</p>
             <table class="unit-table">
                 <tr v-if="domain.units.length > 0">
                     <th>Name</th>
@@ -125,10 +142,11 @@
                     </td>
                 </tr>
             </table>
-            <div class="tooltip modifier">
+            <hr>
+            <div v-if="domain.units.length > 0" class="tooltip modifier">
                 <p>Unit Cost Reduction:</p>
                 <p class="production modifier-number">{{ unitCostModifier }}%</p>
-                <span class="tooltiptext">Overall </span>
+                <span class="tooltiptext">Overall bonus in unit costs provided by the civilization's traits and governance policies.</span>
             </div>
         </div>
     </div>
@@ -140,20 +158,28 @@ import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
 import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
-import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, POPULATION_CENTER_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, GOVERNING_STYLE_NONE_PROVINCE_UPKEEP_MODIFIER, GOVERNING_STYLE_PROVINCE_UPKEEP } from '../../models/Realm.ts';
+import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, Calendar } from '../../models/Realm.ts';
 import { Config } from '../../models/Config.ts';
 import { treasuryCalculator } from '../../mixins/treasuryCalculator.ts';
+
+import Time from '../Time.vue';
 
 const ID = "com.obr.domain-sheet/treasury"
 
 const TREASURY_METADATA_KEY = ID + "/metadata";
 const OWNER_METADATA_KEY = ID + "/owner";
+const CALENDAR_METADATA_KEY = ID + "/calendar";
 
 export default defineComponent({
+    components: { Time },
     mixins: [utils, treasuryCalculator],
     extends: BaseTab,
     name: 'Treasury',
     props: {
+        isGM: {
+            type: Boolean,
+            required: true
+        },
         config: {
             type: Config,
             required: true
@@ -191,7 +217,7 @@ export default defineComponent({
 
             /** Functions */
             sceneItemChangeCallback,
-            sceneMetadataCallback
+            sceneMetadataCallback,
         }
     },
     created() {
@@ -241,6 +267,27 @@ export default defineComponent({
                     }
                 });
 
+                // Load the calendar from the Scene metadata.
+                OBR.scene.getMetadata().then(metadata => {
+                    if (metadata[CALENDAR_METADATA_KEY] == undefined) {
+                        OBR.scene.setMetadata({
+                            [CALENDAR_METADATA_KEY]: {
+                                week: 1,
+                                month: 1,
+                                year: 1
+                            } as Calendar
+                        });
+                    } else {
+                        this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
+                    }
+                });
+
+                this.sceneMetadataCallback = OBR.scene.onMetadataChange((metadata) => {
+                    if (metadata[CALENDAR_METADATA_KEY]) {
+                        this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
+                    }
+                });
+
                 clearInterval(sceneIntervalId);
             }
         }, 200);
@@ -250,9 +297,6 @@ export default defineComponent({
         this.sceneMetadataCallback();
     },
     computed: {
-        treasury() {
-            return this.domain.realm.treasury || 0;
-        },
         provinceProfits() {
             return this.calculateProvinceProfits(this.domain.realm.provinces);
         },
@@ -300,6 +344,39 @@ export default defineComponent({
         }
     },
     methods: {
+        onTreasuryChanged($event: any) {
+            const result = this.evaluateExpression($event.target.value, this.domain.realm.treasury);
+            if (typeof(result) == 'number') {
+                this.domain.realm.treasury = result as number;
+                this.onUpdate();
+            }
+        },
+        onTreasuryEnter($event: any) {
+            if ($event.key === "Enter") {
+                this.domain.realm.treasury = this.evaluateExpression($event.target.value, this.domain.realm.treasury);
+            }
+        },
+        onChangeTimeEvent(forward: boolean) {
+            if (forward) {
+                this.addForecastToTreasury(this.domain.realm, this.forecast);
+                this.incrementTime(this.config, this.domain.realm);
+                this.saveCalendar(this.domain.realm.calendar);
+            } else {
+                this.removeFromTreasury(this.domain.realm);
+                this.deincrementTime(this.config, this.domain.realm);
+                this.saveCalendar(this.domain.realm.calendar);
+            }
+        },
+        /**
+         * Save the calendar to the scene metadata
+         * 
+         * @param calendar the Calendar
+         */
+        saveCalendar(calendar: Calendar) {
+            OBR.scene.setMetadata({
+                    [CALENDAR_METADATA_KEY]: JSON.parse(JSON.stringify(calendar))
+            });
+        },
         onChanges() {
             this.onUpdate();
         },
@@ -450,6 +527,11 @@ p {
 }
 
 .modifier {
+
+    p {
+        font-size: 0.75rem;
+    }
+
     display: flex;
     justify-content: flex-end;
 
@@ -457,6 +539,16 @@ p {
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
+}
+
+.treasury-input {
+    width: 100px;
+    text-align: center;
+    margin-left: 3.5rem;
+}
+
+.treasury-amount {
+    margin: auto;
 }
 
 .treasury {

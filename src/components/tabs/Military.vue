@@ -44,7 +44,7 @@
                     </div>
                     <div class="attribute-selector row">
                         <div class="tooltip">
-                            <select class="dropdown" v-model="unit.experience" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
+                            <select class="dropdown" v-model="unit.experience" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                                 <option v-for="experience in Experience" :value="experience">
                                     {{ experience }}
                                 </option>
@@ -52,7 +52,7 @@
                             <span class="tooltiptext">Experience is a combination of how much training a unit has and how much fighting it's seen.</span>
                         </div>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="unit.equipment" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
+                            <select class="dropdown" v-model="unit.equipment" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                                 <option v-for="equipment in Equipment" :value="equipment">
                                     {{ equipment }}
                                 </option>
@@ -60,7 +60,7 @@
                             <span class="tooltiptext">Describes a unit's arms and armor, heavier units have better weapons and armor, granting them bonuses to Power, Toughness and Damage.</span>
                         </div>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="unit.type" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
+                            <select class="dropdown" v-model="unit.type" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                                 <option v-for="type in Type" :value="type">
                                     {{ type }}
                                 </option>
@@ -109,7 +109,7 @@
                 <div class="column advanced-section">
                     <div class="tooltip">
                         <span>Size</span>
-                        <select class="dropdown" v-model="unit.size" @click="preventPropagation" @change="onChanges(unit)" :disabled="isDisabled">
+                        <select class="dropdown" v-model="unit.size" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                             <option v-for="size in Size" :value="size">
                                 {{ size }}
                             </option>
@@ -177,9 +177,6 @@ export default defineComponent({
         }
     },
     methods: {
-        onChanges(unit: Unit) {
-            this.onUpdate();
-        },
         openCollapsible($event: any, unit: Unit) {
             if ($event.detail === 0) {
                 // Ignore spacebar press
@@ -191,28 +188,28 @@ export default defineComponent({
             const unit = new Unit();
             unit.traits = [...ANCESTRY_TRAIT_MAP.get(unit.ancestry) || []];
             this.domain.units.push(unit);
-            this.onChanges(unit);
+            this.onUpdate();
         },
         onRemoveUnit(unit: Unit) {
             this.domain.units = this.domain.units.filter((x: Unit) => {
                 return x !== unit
             });
-            this.onChanges(unit);
+            this.onUpdate();
         },
         onDuplicateUnit(unit: Unit) {
             const newUnit = JSON.parse(JSON.stringify(unit))
             this.domain.units.push(newUnit);
-            this.onChanges(newUnit);
+            this.onUpdate();
         },
         onAddTrait(unit: Unit) {
             unit.traits.push(Trait.ADAPTABLE);
-            this.onChanges(unit);
+            this.onUpdate();
         },
         onRemoveTrait(unit: Unit, traitDefinition: TraitDefinition) {
             unit.traits = unit.traits.filter((x) => {
                 return x !== traitDefinition.name
             });
-            this.onChanges(unit);
+            this.onUpdate();
         },
         getAvailableTraits(unit: Unit): Trait[] {
             return Object.values(Trait).filter((trait) => {
@@ -245,7 +242,7 @@ export default defineComponent({
         /* On Change Events*/
         onAncestryChange(unit: Unit) {
             unit.traits = [...ANCESTRY_TRAIT_MAP.get(unit.ancestry) || []];
-            this.onChanges(unit);
+            this.onUpdate();
         },
         onTraitChange(unit: Unit, traitDefinition: TraitDefinition) {
             // Find the index where the trait is.
@@ -253,7 +250,7 @@ export default defineComponent({
 
             // Replace at index, the new trait.
             unit.traits[index] = traitDefinition.newTrait || Trait.AAAUUUGH;
-            this.onChanges(unit);
+            this.onUpdate();
         },
         openModal(unit: Unit) {
             this.preventPropagation(event);
