@@ -96,11 +96,13 @@ export default defineComponent({
 }
 
 .left-arrow {
+    margin-top: 0.25rem;
     transform: rotate(0deg);
 }
 
 .right-arrow {
     margin-right: auto;
+    margin-top: 0.25rem;
     transform: rotate(180deg);
 }
 

@@ -34,35 +34,13 @@
                 </select>
             </div>
     </div>
-    <div v-if="config.treasury" class="row centered-header">
-        <div class="tooltip">
-            <p class="subtitle">Heritage</p>
-            <select class="dropdown" v-model="domain.realm.heritage" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
-                <option v-for="heritage in Heritage" :value="heritage">
-                    {{ heritage }}
-                </option>
-            </select>
-            <span class="tooltiptext">Heritage exploit terrain differently: Elves excel in forests, Dwarves in mountains, and Humans on plains, etc.</span>
-        </div>
-        <div class="tooltip">
-            <p class="subtitle">Civilization</p>
-            <select class="dropdown" v-model="domain.realm.civilization" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
-                <option v-for="civilization in Civilization" :value="civilization">
-                    {{ civilization }}
-                </option>
-            </select>
-            <span class="tooltiptext">A realm's civilization dictates population center types, production, and troop mustering costs.</span>
-        </div>
-        <div class="tooltip">
-            <p class="subtitle">Governance</p>
-            <select class="dropdown" v-model="domain.realm.governingStyle" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
-                <option v-for="governingStyle in GoverningStyle" :value="governingStyle">
-                    {{ governingStyle }}
-                </option>
-            </select>
-            <span class="tooltiptext">Governing style affects maintenance costs and the realm's efficient size limit.</span>
-        </div>
-    </div> 
+    <Time v-if="config.treasury"
+        :isGM="isGM"
+        :hasScene="hasScene"
+        :config="config"
+        :realm="domain.realm"
+        @update:time="onChangeTime"
+    />
     <hr/>
 </template>
 
@@ -70,12 +48,19 @@
 import { defineComponent, PropType } from 'vue'
 
 import { Domain, Size, PowerDie } from '../models/Domain'
-import { Civilization, GoverningStyle, Heritage } from '../models/Realm';
+import { Calendar, Civilization, GoverningStyle, Heritage } from '../models/Realm';
 import { utils } from '../mixins/utils';
 import { Config } from '../models/Config';
 
+import Time from './Time.vue';
+import OBR from '@owlbear-rodeo/sdk';
+import { timeUtils } from '../mixins/timeUtils';
+
+export const CALENDAR_METADATA_KEY = "com.obr.domain-sheet/treasury/calendar"
+
 export default defineComponent({
-    mixins: [utils],
+    components: { Time },
+    mixins: [utils, timeUtils],
     name: 'Header',
     props: {
         isGM: {
@@ -96,7 +81,10 @@ export default defineComponent({
         },
     },
     data() {
+        let sceneMetadataCallback = () => {};
         return {
+            sceneMetadataCallback,
+            hasScene: false,
             Heritage,
             Civilization,
             GoverningStyle,
@@ -105,6 +93,28 @@ export default defineComponent({
         }
     },
     emits: ['update:modelValue', 'update:editMode'],
+    mounted() {
+        const sceneIntervalId = window.setInterval(async () => {
+            const isReady = await OBR.scene.isReady();
+            if (isReady) {
+                this.hasScene = true;
+
+                // Load the calendar from the Scene metadata.
+                OBR.scene.getMetadata().then(metadata => {
+                    this.loadCalendar(metadata);
+                });
+
+                this.sceneMetadataCallback = OBR.scene.onMetadataChange((metadata) => {
+                    this.loadCalendar(metadata);
+                })
+
+                clearInterval(sceneIntervalId);
+            }
+        }, 200);
+    },
+    unmounted() {
+        this.sceneMetadataCallback();
+    },
     computed: {
         isDisabled() {
             if (!this.isGM) {
@@ -115,6 +125,47 @@ export default defineComponent({
         }
     },
     methods: {
+        onChangeTime(forward: boolean) {
+            if (forward) {
+                this.domain.realm = this.incrementTime(this.config, this.domain.realm);
+            } else {
+                this.domain.realm = this.deincrementTime(this.config, this.domain.realm)
+            }
+
+            const data = {
+                calendar: this.domain.realm.calendar,
+                forward: forward
+            }
+
+            OBR.broadcast.sendMessage(CALENDAR_METADATA_KEY, JSON.stringify(data), { destination: "ALL" });
+
+            this.saveCalendar(this.domain.realm.calendar);
+        },
+        /**
+         * Save the calendar to the scene metadata
+         * 
+         * @param calendar the Calendar
+         */
+        saveCalendar(calendar: Calendar) {
+            OBR.scene.setMetadata({
+                    [CALENDAR_METADATA_KEY]: JSON.parse(JSON.stringify(calendar))
+            });
+        },
+        /**
+         * Load the calendar from the scene metadata.
+         * @param metadata The metadata
+         */
+        loadCalendar(metadata: any) {
+            if (metadata[CALENDAR_METADATA_KEY] == undefined) {
+                this.saveCalendar({
+                    week: 1,
+                    month: 1,
+                    year: 1
+                } as Calendar);
+            } else {
+                this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
+            }
+        },
         onUpdate() {
             const json = JSON.parse(JSON.stringify(this.domain));
             this.$emit('update:modelValue', json);
@@ -130,11 +181,6 @@ export default defineComponent({
     font-size: x-large;
     width: 100%;
     text-align: center;
-}
-
-.centered-header {
-    justify-content: space-around;
-    align-items: center;
 }
 
 .descriptor {

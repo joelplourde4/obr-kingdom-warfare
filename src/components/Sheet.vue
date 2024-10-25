@@ -34,7 +34,7 @@
         <Header
             :domain="domain"
             :config="config"
-            :isGM="hasPermission"
+            :isGM="isGM"
             :isEditMode="editMode"
             @update:model-value="onUpdate"
         />

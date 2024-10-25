@@ -1,13 +1,5 @@
 <template>
     <div class="content">
-        <Time
-            :isGM="isGM"
-            :hasScene="hasScene"
-            :config="config"
-            :realm="domain.realm"
-            @update:time="onChangeTimeEvent"
-        />
-        <hr>
         <div class="treasury column">
             <h3>Treasury</h3>
             <div class="row">
@@ -16,7 +8,7 @@
                         class="treasury-input input-number-value"
                         type="text"
                         v-model="domain.realm.treasury"
-                        :disabled="!isEditMode"
+                        :disabled="disableField"
                         @change="onTreasuryChanged"
                         @keyup="onTreasuryEnter"
                     />
@@ -26,6 +18,49 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <hr>
+        <button type="button" class="collapsible column" @click="openGeneralCollapsible">
+            <div class="label">
+                <h3>General</h3>
+            </div>
+            <div class="sub-total">
+                <div class="caret">
+                    <img v-if="showGeneral" src="/caret-up.svg">
+                    <img v-if="!showGeneral" src="/caret-down.svg">
+                </div>
+            </div>
+        </button>
+        <div v-show="showGeneral">
+            <div v-if="config.treasury" class="row centered-header">
+                <div class="tooltip">
+                    <p class="subtitle">Heritage</p>
+                    <select class="dropdown" v-model="domain.realm.heritage" @click="preventPropagation" @change="onUpdate" :disabled="disableField">
+                        <option v-for="heritage in Heritage" :value="heritage">
+                            {{ heritage }}
+                        </option>
+                    </select>
+                    <span class="tooltiptext">Heritage exploit terrain differently: Elves excel in forests, Dwarves in mountains, and Humans on plains, etc.</span>
+                </div>
+                <div class="tooltip">
+                    <p class="subtitle">Civilization</p>
+                    <select class="dropdown" v-model="domain.realm.civilization" @click="preventPropagation" @change="onUpdate" :disabled="disableField">
+                        <option v-for="civilization in Civilization" :value="civilization">
+                            {{ civilization }}
+                        </option>
+                    </select>
+                    <span class="tooltiptext">A realm's civilization dictates population center types, production, and troop mustering costs.</span>
+                </div>
+                <div class="tooltip">
+                    <p class="subtitle">Governance</p>
+                    <select class="dropdown" v-model="domain.realm.governingStyle" @click="preventPropagation" @change="onUpdate" :disabled="disableField">
+                        <option v-for="governingStyle in GoverningStyle" :value="governingStyle">
+                            {{ governingStyle }}
+                        </option>
+                    </select>
+                    <span class="tooltiptext">Governing style affects maintenance costs and the realm's efficient size limit.</span>
+                </div>
+            </div> 
         </div>
         <button type="button" class="collapsible column" @click="openProvinceCollapsible">
             <div class="label">
@@ -55,7 +90,7 @@
                 <tr v-for="province in domain.realm.provinces">
                     <td>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="province.terrain" @click="preventPropagation" @change="onChanges" :disabled="!hasPermission">
+                            <select class="dropdown" v-model="province.terrain" @click="preventPropagation" @change="onUpdate" :disabled="disableField">
                                 <option v-for="terrain in Terrain" :value="terrain">
                                     {{ terrain }}
                                 </option>
@@ -65,7 +100,7 @@
                     </td>
                     <td>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onChanges" :disabled="!hasPermission">
+                            <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onUpdate" :disabled="disableField">
                                 <option v-for="populationCenter in availablePopulationCenter" :value="populationCenter">
                                     {{ populationCenter }}
                                 </option>
@@ -159,20 +194,17 @@ import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
 import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
-import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER, Calendar } from '../../models/Realm.ts';
+import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER } from '../../models/Realm.ts';
 import { Config } from '../../models/Config.ts';
 import { treasuryCalculator } from '../../mixins/treasuryCalculator.ts';
-
-import Time from '../Time.vue';
 
 const ID = "com.obr.domain-sheet/treasury"
 
 const TREASURY_METADATA_KEY = ID + "/metadata";
 const OWNER_METADATA_KEY = ID + "/owner";
-const CALENDAR_METADATA_KEY = ID + "/calendar";
 
 export default defineComponent({
-    components: { Time },
+    // components: { Time },
     mixins: [utils, treasuryCalculator],
     extends: BaseTab,
     name: 'Treasury',
@@ -206,6 +238,7 @@ export default defineComponent({
             hasScene: false,
 
             /** Collapsible */
+            showGeneral: false,
             showProvinces: false,
             showUnits: false,
 
@@ -239,20 +272,10 @@ export default defineComponent({
             if (OBR.isReady) {
                 OBR.contextMenu.create(this.buildContextMenu());
 
-                this.broadcastCallback = OBR.broadcast.onMessage(CALENDAR_METADATA_KEY, (event) => {
-                    const before = this.domain.realm.calendar;
-                    const after = JSON.parse(event.data as string) as Calendar;
-                    const compare = this.compareCalendar(before, after);
-
-                    if (compare == 0) {
-                        return;
-                    }
-
-                    if (compare > 0) {
-                        this.onChangeTimeEvent(true);
-                    } else {
-                        this.onChangeTimeEvent(false);
-                    }
+                this.broadcastCallback = OBR.broadcast.onMessage("com.obr.domain-sheet/treasury/calendar", (event) => {
+                    const json = event.data as any;
+                    const data = JSON.parse(json);
+                    this.onChangeTimeEvent(data.forward);
                 });
 
                 clearInterval(obrIntervalId);
@@ -293,21 +316,6 @@ export default defineComponent({
                     }
                 });
 
-                // Load the calendar from the Scene metadata.
-                OBR.scene.getMetadata().then(metadata => {
-                    if (metadata[CALENDAR_METADATA_KEY] == undefined) {
-                        OBR.scene.setMetadata({
-                            [CALENDAR_METADATA_KEY]: {
-                                week: 1,
-                                month: 1,
-                                year: 1
-                            } as Calendar
-                        });
-                    } else {
-                        this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
-                    }
-                });
-
                 clearInterval(sceneIntervalId);
             }
         }, 200);
@@ -317,6 +325,12 @@ export default defineComponent({
         this.broadcastCallback();
     },
     computed: {
+        disableField() {
+            if (!this.isEditMode) {
+                return true;
+            }
+            return !this.hasPermission;
+        },
         provinceProfits() {
             return this.calculateProvinceProfits(this.domain.realm.provinces);
         },
@@ -378,43 +392,11 @@ export default defineComponent({
         },
         onChangeTimeEvent(forward: boolean) {
             if (forward) {
-                let realm = this.addForecastToTreasury(this.domain.realm, this.forecast);
-                realm = this.incrementTime(this.config, realm);
-                this.domain.realm = realm;
-                if (this.isGM) {
-                    this.saveCalendar(this.domain.realm.calendar);
-                    this.broadcastCalendar(this.domain.realm.calendar);
-                }
+                this.domain.realm = this.addForecastToTreasury(this.domain.realm, this.forecast);
             } else {
-                let realm = this.removeFromTreasury(this.domain.realm);
-                realm = this.deincrementTime(this.config, realm);
-                this.domain.realm = realm;
-                if (this.isGM) {
-                    this.saveCalendar(this.domain.realm.calendar);
-                    this.broadcastCalendar(this.domain.realm.calendar);
-                }
+                this.domain.realm = this.removeFromTreasury(this.domain.realm);
             }
 
-            this.onUpdate();
-        },
-        /**
-         * Broadcast the calendar to the other players.
-         * @param calendar The calendar
-         */
-        broadcastCalendar(calendar: Calendar) {
-            OBR.broadcast.sendMessage(CALENDAR_METADATA_KEY, JSON.stringify(calendar), { destination: "REMOTE" });
-        },
-        /**
-         * Save the calendar to the scene metadata
-         * 
-         * @param calendar the Calendar
-         */
-        saveCalendar(calendar: Calendar) {
-            OBR.scene.setMetadata({
-                    [CALENDAR_METADATA_KEY]: JSON.parse(JSON.stringify(calendar))
-            });
-        },
-        onChanges() {
             this.onUpdate();
         },
         /**
@@ -527,6 +509,9 @@ export default defineComponent({
                 onClick: this.onContextMenuClick
             }
         },
+        openGeneralCollapsible() {
+            this.showGeneral = !this.showGeneral;
+        },
         openProvinceCollapsible() {
             this.showProvinces = !this.showProvinces;
         },
@@ -545,6 +530,11 @@ p {
 
 .header {
     justify-content: space-around;
+}
+
+.centered-header {
+    justify-content: space-around;
+    align-items: center;
 }
 
 .province-table {
@@ -609,8 +599,8 @@ p {
 .collapsible {
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
-    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    margin-top: 0.25rem;
 
     .label {
         padding-left: 1rem;
