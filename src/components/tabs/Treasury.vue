@@ -599,8 +599,8 @@ p {
 .collapsible {
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
-    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    margin-top: 0.25rem;
 
     .label {
         padding-left: 1rem;
