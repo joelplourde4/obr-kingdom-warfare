@@ -3,8 +3,8 @@ export class Casuality {
     total: number;
 
     constructor() {
-        this.current = -1;
-        this.total = -1;
+        this.current = 0;
+        this.total = 0;
     }
 }
 

@@ -34,6 +34,35 @@
                 </select>
             </div>
     </div>
+    <div v-if="config.treasury" class="row centered-header">
+        <div class="tooltip">
+            <p class="subtitle">Heritage</p>
+            <select class="dropdown" v-model="domain.realm.heritage" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                <option v-for="heritage in Heritage" :value="heritage">
+                    {{ heritage }}
+                </option>
+            </select>
+            <span class="tooltiptext">Heritage exploit terrain differently: Elves excel in forests, Dwarves in mountains, and Humans on plains, etc.</span>
+        </div>
+        <div class="tooltip">
+            <p class="subtitle">Civilization</p>
+            <select class="dropdown" v-model="domain.realm.civilization" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                <option v-for="civilization in Civilization" :value="civilization">
+                    {{ civilization }}
+                </option>
+            </select>
+            <span class="tooltiptext">A realm's civilization dictates population center types, production, and troop mustering costs.</span>
+        </div>
+        <div class="tooltip">
+            <p class="subtitle">Governance</p>
+            <select class="dropdown" v-model="domain.realm.governingStyle" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                <option v-for="governingStyle in GoverningStyle" :value="governingStyle">
+                    {{ governingStyle }}
+                </option>
+            </select>
+            <span class="tooltiptext">Governing style affects maintenance costs and the realm's efficient size limit.</span>
+        </div>
+    </div> 
     <hr/>
 </template>
 
@@ -41,8 +70,12 @@
 import { defineComponent, PropType } from 'vue'
 
 import { Domain, Size, PowerDie } from '../models/Domain'
+import { Civilization, GoverningStyle, Heritage } from '../models/Realm';
+import { utils } from '../mixins/utils';
+import { Config } from '../models/Config';
 
 export default defineComponent({
+    mixins: [utils],
     name: 'Header',
     props: {
         isGM: {
@@ -56,10 +89,17 @@ export default defineComponent({
         domain: {
             type: Object as PropType<Domain>,
             required: true
-        }
+        },
+        config: {
+            type: Object as PropType<Config>,
+            required: true
+        },
     },
     data() {
         return {
+            Heritage,
+            Civilization,
+            GoverningStyle,
             Size,
             PowerDie
         }
@@ -92,8 +132,17 @@ export default defineComponent({
     text-align: center;
 }
 
+.centered-header {
+    justify-content: space-around;
+    align-items: center;
+}
+
 .descriptor {
     margin-left: 1.25rem;
+}
+
+.subtitle {
+    margin: 0;
 }
 
 .dropdown {

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="hasPermission" class="row header">
+    <div class="row header">
       <div v-if="displaySheetSelector" class="sheet-selector">
         <span>Sheet:</span>
         <select class="dropdown" v-model="selectedPlayer" @change="onPlayerSelected">
@@ -73,6 +73,10 @@ export default defineComponent({
             return !this.editMode;
         },
         displaySheetSelector() {
+          if (!this.hasPermission) {
+            return false;
+          }
+
           if (this.isSettings) {
             return false;
           }
@@ -84,6 +88,10 @@ export default defineComponent({
           return !this.isSharedMode;
         },
         displayEditMode() {
+          if (!this.hasPermission) {
+            return false;
+          }
+
           if (this.isSettings) {
             return false;
           }
@@ -104,6 +112,10 @@ export default defineComponent({
           return true;
         },
         displaySettingsIcon() {
+          if (!this.hasPermission) {
+            return false;
+          }
+
           if (this.warfare) {
             return false;
           }

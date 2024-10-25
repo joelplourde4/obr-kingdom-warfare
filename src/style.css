@@ -46,7 +46,7 @@ ol {
   display: block;
   color: var(--text);
   text-align: center;
-  padding: 10px;
+  padding: 8px;
   text-decoration: none;
 }
 
@@ -73,7 +73,6 @@ a.is-active {
 
 .container {
   display: grid;
-  width: 100%;
 }
 
 input, textarea {
@@ -118,7 +117,6 @@ option {
 /* Tooltip container */
 .tooltip {
   position: relative;
-  display: table;
 }
 
 /* Tooltip text */
@@ -205,9 +203,14 @@ p {
   color: var(--text-secondary);
 }
 
+h3 {
+  color: var(--text-secondary);
+}
+
 .collapsible {
   display: inline-flex;
   background-color: var(--background);
+  border-radius: 5px;
   cursor: pointer;
   padding: 0.25rem;
   width: 100%;
@@ -313,4 +316,21 @@ input[type="checkbox"]:checked::after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+table {
+  overflow-y: auto;
+  display: block;
+
+  .left-align {
+      text-align: left;
+  }
+
+  .center-align {
+      text-align: center;
+  }
+
+  .right-align {
+    text-align: right;
+  }
 }
