@@ -132,7 +132,7 @@ test ('incrementing time (weeks) should work as expected', () => {
     } as Config
 
     // The game starts at any point in time
-    const realm = {
+    let realm = {
         calendar: {
             week: 1,
             month: 1,
@@ -140,23 +140,23 @@ test ('incrementing time (weeks) should work as expected', () => {
         } as Calendar
     } as Realm
 
-    treasuryCalculator.methods.incrementTime(config, realm);
+    realm = treasuryCalculator.methods.incrementTime(config, realm);
     expect(realm.calendar.week).toBe(2);
-    treasuryCalculator.methods.incrementTime(config, realm);
+    realm = treasuryCalculator.methods.incrementTime(config, realm);
     expect(realm.calendar.week).toBe(3);
-    treasuryCalculator.methods.incrementTime(config, realm);
+    realm = treasuryCalculator.methods.incrementTime(config, realm);
     expect(realm.calendar.week).toBe(4);
-    treasuryCalculator.methods.incrementTime(config, realm);
+    realm = treasuryCalculator.methods.incrementTime(config, realm);
     expect(realm.calendar.week).toBe(1);
     expect(realm.calendar.month).toBe(2);
-    treasuryCalculator.methods.deincrementTime(config, realm);
+    realm = treasuryCalculator.methods.deincrementTime(config, realm);
     expect(realm.calendar.week).toBe(4);
     expect(realm.calendar.month).toBe(1);
-    treasuryCalculator.methods.deincrementTime(config, realm);
+    realm = treasuryCalculator.methods.deincrementTime(config, realm);
     expect(realm.calendar.week).toBe(3);
-    treasuryCalculator.methods.deincrementTime(config, realm);
+    realm = treasuryCalculator.methods.deincrementTime(config, realm);
     expect(realm.calendar.week).toBe(2);
-    treasuryCalculator.methods.deincrementTime(config, realm);
+    realm = treasuryCalculator.methods.deincrementTime(config, realm);
     expect(realm.calendar.week).toBe(1);
 });
 
@@ -170,7 +170,7 @@ test ('incrementing/deincrementing time should work as expected', () => {
     } as Config
 
     // The game starts at any point in time
-    const realm = {
+    let realm = {
         calendar: {
             week: 1,
             month: 1,
@@ -179,17 +179,15 @@ test ('incrementing/deincrementing time should work as expected', () => {
     } as Realm
 
     for (let i = 0; i < 48; i++) {
-        treasuryCalculator.methods.incrementTime(config, realm);
+        realm = treasuryCalculator.methods.incrementTime(config, realm);
     }
 
     expect(realm.calendar.week).toBe(1);
     expect(realm.calendar.month).toBe(1);
     expect(realm.calendar.year).toBe(2);
 
-    // console.log('Week: ' + realm.week + " Month: " + realm.month + " Year: " + realm.year);
-
     for (let i = 0; i < 48; i++) {
-        treasuryCalculator.methods.deincrementTime(config, realm);
+        realm = treasuryCalculator.methods.deincrementTime(config, realm);
     }
 
     expect(realm.calendar.week).toBe(1);
@@ -199,53 +197,53 @@ test ('incrementing/deincrementing time should work as expected', () => {
 
 test ('adding to treasury should work as expected', () => {
     // The game starts every player have 0 in there treasury
-    const realm = {
+    let realm = {
         treasury: 0
     } as Realm
 
-    treasuryCalculator.methods.addForecastToTreasury(realm, 100);
+    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 100);
     expect(realm.treasury).toBe(100);
     expect(realm.forecasts).toStrictEqual([100]);
 
-    treasuryCalculator.methods.addForecastToTreasury(realm, 100);
+    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 100);
     expect(realm.treasury).toBe(200);
     expect(realm.forecasts).toStrictEqual([100, 100]);
 })
 
 test ('should be able to go back in time for a player to re-make a turn', () => {
     // The game starts every player have 0 in there treasury
-    const realm = {
+    let realm = {
         treasury: 0
     } as Realm
 
-    treasuryCalculator.methods.addForecastToTreasury(realm, 500);
+    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 500);
     expect(realm.treasury).toBe(500);
     expect(realm.forecasts).toStrictEqual([500]);
 
-    treasuryCalculator.methods.addForecastToTreasury(realm, 300);
+    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 300);
     expect(realm.treasury).toBe(800);
     expect(realm.forecasts).toStrictEqual([500, 300]);
 
     // Now one of the player wasn't ready before we proceeded.
-    treasuryCalculator.methods.removeFromTreasury(realm);
+    realm = treasuryCalculator.methods.removeFromTreasury(realm);
     expect(realm.treasury).toBe(500);
     expect(realm.forecasts).toStrictEqual([500]);
 
     // We can now proceed after the player made an adjustment.
-    treasuryCalculator.methods.addForecastToTreasury(realm, 400);
+    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 400);
     expect(realm.treasury).toBe(900);
     expect(realm.forecasts).toStrictEqual([500, 400]);
 });
 
 test ('should only be able to go back in time up to 5 turns', () => {
     // The game starts every player have 0 in there treasury
-    const realm = {
+    let realm = {
         treasury: 0
     } as Realm
 
     // The game goes on for 10 rounds
     for (let i = 0; i < 10; i++) {
-        treasuryCalculator.methods.addForecastToTreasury(realm, 100);
+        realm = treasuryCalculator.methods.addForecastToTreasury(realm, 100);
     }
 
     expect(realm.treasury).toBe(1000);
@@ -253,7 +251,7 @@ test ('should only be able to go back in time up to 5 turns', () => {
 
     // You should only be able to go back 5 turns, further attempts won't do anything.
     for (let i = 0; i < 10; i++) {
-        treasuryCalculator.methods.removeFromTreasury(realm);
+        realm = treasuryCalculator.methods.removeFromTreasury(realm);
     }
 
     expect(realm.treasury).toBe(500);

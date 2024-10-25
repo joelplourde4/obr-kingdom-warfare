@@ -31,10 +31,10 @@ export default defineComponent({
     components: { Sheet },
     name: 'App',
     data() {
-      const debouncedSaveDomain = useDebounceFn((domain) => { this.saveDomain(domain) }, 500)
       const debouncedSaveConfig = useDebounceFn((config) => { this.saveConfig(config) }, 500)
+      let roomMetadataCallback = () => {};
       return {
-        debouncedSaveDomain,
+        roomMetadataCallback,
         debouncedSaveConfig,
         isGM: false,
         hasPermission: false,
@@ -62,7 +62,7 @@ export default defineComponent({
             await this.loadMetadata();
 
             // Listen for changes to the metadata of the room.
-            OBR.room.onMetadataChange((metadata) => {
+            this.roomMetadataCallback = OBR.room.onMetadataChange((metadata) => {
               this.loadConfig(metadata);
               this.loadDomain(metadata);
               this.loadPermission();
@@ -105,6 +105,9 @@ export default defineComponent({
           }
         }, 200);
     },
+    unmounted() {
+      this.roomMetadataCallback();
+    },
     computed: {
       getDomainId() {
         return this.config.sharedMode ? DM_ID : this.selectedPlayerId;
@@ -134,7 +137,7 @@ export default defineComponent({
         }
       },
       updateDomain(domain: Domain) {
-        this.debouncedSaveDomain(domain);
+        this.saveDomain(domain);
       },
       /**
        * Load a Domain from the metadata.
@@ -143,7 +146,11 @@ export default defineComponent({
       loadDomain(metadata: Metadata) {
         const domain = metadata[DOMAIN_METADATA_KEY + this.getDomainId] as Domain;
         if (domain) {
-          this.domain = domain;
+          const newVersion = domain.version;
+          const currentVersion = this.domain.version;
+          if (newVersion > currentVersion) {
+            this.domain = domain;
+          }
         } else {
           this.domain = new Domain();
         }
@@ -153,6 +160,7 @@ export default defineComponent({
        * @param domain the domain
        */
       saveDomain(domain: Domain) {
+        domain.version = (domain.version || 0) + 1;
         OBR.room.setMetadata({
           [DOMAIN_METADATA_KEY + this.getDomainId]: JSON.parse(JSON.stringify(domain))
         });

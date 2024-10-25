@@ -127,37 +127,43 @@ export const treasuryCalculator = {
          * Incrementing the time of the Realm from the settings in the Config.
          */
         incrementTime(config: Config, realm: Realm) {
-            if (realm.calendar == undefined) {
-                realm.calendar = new Calendar();
+            const copy = JSON.parse(JSON.stringify(realm));
+
+            if (copy.calendar == undefined) {
+                copy.calendar = new Calendar();
             }
 
-            realm.calendar.week++;
+            copy.calendar.week++;
 
-            if (realm.calendar.week > config.time.weekCount) {
-                realm.calendar.week = 1;
-                realm.calendar.month++;
+            if (copy.calendar.week > config.time.weekCount) {
+                copy.calendar.week = 1;
+                copy.calendar.month++;
 
-                if (realm.calendar.month > config.time.monthCount) {
-                    realm.calendar.month = 1;
-                    realm.calendar.year++;
+                if (copy.calendar.month > config.time.monthCount) {
+                    copy.calendar.month = 1;
+                    copy.calendar.year++;
                 }
             }
+            return copy;
         },
         /**
          * Deincrementing the time of the Realm from the settings in the Config.
          */
         deincrementTime(config: Config, realm: Realm) {
-            realm.calendar.week--;
+            const copy = JSON.parse(JSON.stringify(realm));
 
-            if (realm.calendar.week <= 0) {
-                realm.calendar.week = config.time.weekCount;
-                realm.calendar.month--;
+            copy.calendar.week--;
 
-                if (realm.calendar.month <= 0) {
-                    realm.calendar.month = config.time.monthCount;
-                    realm.calendar.year--;
+            if (copy.calendar.week <= 0) {
+                copy.calendar.week = config.time.weekCount;
+                copy.calendar.month--;
+
+                if (copy.calendar.month <= 0) {
+                    copy.calendar.month = config.time.monthCount;
+                    copy.calendar.year--;
                 }
             }
+            return copy;
         },
         /**
          * Compare two calendar to determine whether it has advanced or not.
@@ -200,27 +206,32 @@ export const treasuryCalculator = {
          * @param forecast The value that was forecasted.
          */
         addForecastToTreasury(realm: Realm, forecast: number) {
-            realm.treasury += forecast;
+            const copy = JSON.parse(JSON.stringify(realm));
 
-            if (realm.forecasts === undefined) {
-                realm.forecasts = [];
+            copy.treasury += forecast;
+            if (copy.forecasts === undefined) {
+                copy.forecasts = [];
             }
-            realm.forecasts.push(forecast);
+            copy.forecasts.push(forecast);
 
             // We only keep the previous 5 turns for simplicity sake
-            if (realm.forecasts.length > 5) {
-                realm.forecasts.shift();
+            if (copy.forecasts.length > 5) {
+                copy.forecasts.shift();
             }
+            return copy;
         },
         /**
          * Remove from the Treasury based on the previous turns.
          * @param realm The realm
          */
         removeFromTreasury(realm: Realm) {
-            if (realm.forecasts.length !== 0) {
-                const previousValue = realm.forecasts.pop() || 0;
-                realm.treasury -= previousValue;
+            const copy = JSON.parse(JSON.stringify(realm));
+
+            if (copy.forecasts.length !== 0) {
+                const previousValue = copy.forecasts.pop() || 0;
+                copy.treasury -= previousValue;
             }
+            return copy;
         },
         /**
          * Evaluate an Expression

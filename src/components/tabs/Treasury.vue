@@ -199,7 +199,7 @@ export default defineComponent({
     },
     data() {
         let sceneItemChangeCallback = () => {};
-        let sceneMetadataCallback = () => {};
+        let broadcastCallback = () => {};
         return {
             /** Collapsible */
             showProvinces: false,
@@ -221,7 +221,7 @@ export default defineComponent({
 
             /** Functions */
             sceneItemChangeCallback,
-            sceneMetadataCallback,
+            broadcastCallback,
         }
     },
     created() {
@@ -234,6 +234,23 @@ export default defineComponent({
         const obrIntervalId = window.setInterval(async () => {
             if (OBR.isReady) {
                 OBR.contextMenu.create(this.buildContextMenu());
+
+                this.broadcastCallback = OBR.broadcast.onMessage(CALENDAR_METADATA_KEY, (event) => {
+                    const before = this.domain.realm.calendar;
+                    const after = JSON.parse(event.data as string) as Calendar;
+                    const compare = this.compareCalendar(before, after);
+
+                    if (compare == 0) {
+                        return;
+                    }
+
+                    if (compare > 0) {
+                        this.onChangeTimeEvent(true);
+                    } else {
+                        this.onChangeTimeEvent(false);
+                    }
+                });
+
                 clearInterval(obrIntervalId);
             }
         }, 200);
@@ -286,31 +303,13 @@ export default defineComponent({
                     }
                 });
 
-                this.sceneMetadataCallback = OBR.scene.onMetadataChange((metadata) => {
-                    if (metadata[CALENDAR_METADATA_KEY]) {
-                        const before = this.domain.realm.calendar;
-                        const after = metadata[CALENDAR_METADATA_KEY] as Calendar;
-                        const compare = this.compareCalendar(before, after);
-
-                        if (compare == 0) {
-                            return;
-                        }
-
-                        if (compare > 0) {
-                            this.onChangeTimeEvent(true, true);
-                        } else {
-                            this.onChangeTimeEvent(false, true);
-                        }
-                    }
-                });
-
                 clearInterval(sceneIntervalId);
             }
         }, 200);
     },
     unmounted() {
         this.sceneItemChangeCallback();
-        this.sceneMetadataCallback();
+        this.broadcastCallback();
     },
     computed: {
         provinceProfits() {
@@ -372,20 +371,33 @@ export default defineComponent({
                 this.domain.realm.treasury = this.evaluateExpression($event.target.value, this.domain.realm.treasury);
             }
         },
-        onChangeTimeEvent(forward: boolean, skipSave: boolean = false) {
+        onChangeTimeEvent(forward: boolean) {
             if (forward) {
-                this.addForecastToTreasury(this.domain.realm, this.forecast);
-                this.incrementTime(this.config, this.domain.realm);
-                if (!skipSave) {
+                let realm = this.addForecastToTreasury(this.domain.realm, this.forecast);
+                realm = this.incrementTime(this.config, realm);
+                this.domain.realm = realm;
+                if (this.isGM) {
                     this.saveCalendar(this.domain.realm.calendar);
+                    this.broadcastCalendar(this.domain.realm.calendar);
                 }
             } else {
-                this.removeFromTreasury(this.domain.realm);
-                this.deincrementTime(this.config, this.domain.realm);
-                if (!skipSave) {
+                let realm = this.removeFromTreasury(this.domain.realm);
+                realm = this.deincrementTime(this.config, realm);
+                this.domain.realm = realm;
+                if (this.isGM) {
                     this.saveCalendar(this.domain.realm.calendar);
+                    this.broadcastCalendar(this.domain.realm.calendar);
                 }
             }
+
+            this.onUpdate();
+        },
+        /**
+         * Broadcast the calendar to the other players.
+         * @param calendar The calendar
+         */
+        broadcastCalendar(calendar: Calendar) {
+            OBR.broadcast.sendMessage(CALENDAR_METADATA_KEY, JSON.stringify(calendar), { destination: "REMOTE" });
         },
         /**
          * Save the calendar to the scene metadata

@@ -30,6 +30,9 @@ export class Domain {
     units: Unit[];
     realm: Realm;
 
+    // For versioning purposes.
+    version: number;
+
     constructor(
         name?: string,
         size: Size = Size.TINY,
@@ -38,7 +41,9 @@ export class Domain {
         relations: Relation[] = [],
         features: Feature[] = [],
         units: Unit[] = [],
-        realm?: Realm
+        realm?: Realm,
+        // @ts-ignore
+        version: number = 0
     ) {
         this.name = name || "Kingdom";
         this.size = size;
@@ -48,6 +53,7 @@ export class Domain {
         this.features = features;
         this.units = units;
         this.realm = realm || new Realm();
+        this.version = 0;
     }
 
     static fromJson(domain: any): Domain {
