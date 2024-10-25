@@ -156,12 +156,12 @@ export default defineComponent({
          * @param metadata The metadata
          */
         loadCalendar(metadata: any) {
-            if (metadata[CALENDAR_METADATA_KEY] == undefined) {
-                this.saveCalendar({
+            if (metadata[CALENDAR_METADATA_KEY] === undefined) {
+                this.domain.realm.calendar = {
                     week: 1,
                     month: 1,
                     year: 1
-                } as Calendar);
+                } as Calendar;
             } else {
                 this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
             }
