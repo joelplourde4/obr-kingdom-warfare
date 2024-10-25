@@ -61,7 +61,7 @@ export default defineComponent({
             if (!this.hasScene) {
                 return false;
             }
-
+            
             if (!this.isGM) {
                 return false;
             }

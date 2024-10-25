@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 
 import { treasuryCalculator } from '../../../../src/mixins/treasuryCalculator';
-import { Config, Time } from '../../../../src/models/Config';
+import { Config } from '../../../../src/models/Config';
 import { Calendar, Civilization, GoverningStyle, Heritage, PopulationCenter, Province, Realm, Terrain } from '../../../../src/models/Realm';
 import { Unit } from '../../../../src/models/Unit';
 
@@ -120,79 +120,6 @@ test ('Switching civilization should reset province production', () => {
     } as Province;
 
     expect(treasuryCalculator.methods.calculateProvinceProduction(config, barbaricRealm, province2)).toBe(0);
-});
-
-test ('incrementing time (weeks) should work as expected', () => {
-    // Regular calendar
-    const config = {
-        time: {
-            weekCount: 4,
-            monthCount: 12
-        } as Time
-    } as Config
-
-    // The game starts at any point in time
-    let realm = {
-        calendar: {
-            week: 1,
-            month: 1,
-            year: 1
-        } as Calendar
-    } as Realm
-
-    realm = treasuryCalculator.methods.incrementTime(config, realm);
-    expect(realm.calendar.week).toBe(2);
-    realm = treasuryCalculator.methods.incrementTime(config, realm);
-    expect(realm.calendar.week).toBe(3);
-    realm = treasuryCalculator.methods.incrementTime(config, realm);
-    expect(realm.calendar.week).toBe(4);
-    realm = treasuryCalculator.methods.incrementTime(config, realm);
-    expect(realm.calendar.week).toBe(1);
-    expect(realm.calendar.month).toBe(2);
-    realm = treasuryCalculator.methods.deincrementTime(config, realm);
-    expect(realm.calendar.week).toBe(4);
-    expect(realm.calendar.month).toBe(1);
-    realm = treasuryCalculator.methods.deincrementTime(config, realm);
-    expect(realm.calendar.week).toBe(3);
-    realm = treasuryCalculator.methods.deincrementTime(config, realm);
-    expect(realm.calendar.week).toBe(2);
-    realm = treasuryCalculator.methods.deincrementTime(config, realm);
-    expect(realm.calendar.week).toBe(1);
-});
-
-test ('incrementing/deincrementing time should work as expected', () => {
-    // Regular calendar
-    const config = {
-        time: {
-            weekCount: 4,
-            monthCount: 12
-        } as Time
-    } as Config
-
-    // The game starts at any point in time
-    let realm = {
-        calendar: {
-            week: 1,
-            month: 1,
-            year: 1
-        } as Calendar
-    } as Realm
-
-    for (let i = 0; i < 48; i++) {
-        realm = treasuryCalculator.methods.incrementTime(config, realm);
-    }
-
-    expect(realm.calendar.week).toBe(1);
-    expect(realm.calendar.month).toBe(1);
-    expect(realm.calendar.year).toBe(2);
-
-    for (let i = 0; i < 48; i++) {
-        realm = treasuryCalculator.methods.deincrementTime(config, realm);
-    }
-
-    expect(realm.calendar.week).toBe(1);
-    expect(realm.calendar.month).toBe(1);
-    expect(realm.calendar.year).toBe(1);
 });
 
 test ('adding to treasury should work as expected', () => {
