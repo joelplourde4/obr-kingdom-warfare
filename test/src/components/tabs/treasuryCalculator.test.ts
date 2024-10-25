@@ -267,3 +267,22 @@ test ('evaluate an expression should work as expected', () => {
     expect(treasuryCalculator.methods.evaluateExpression('9500/2', 9500)).toBe(4750)
     expect(treasuryCalculator.methods.evaluateExpression('9500 allo 2', 9500)).toBe(9500)
 });
+
+test ('compareCalendar should work as expected', () => {
+    const before = {
+        week: 3,
+        month: 2,
+        year: 1
+    } as Calendar;
+
+    const after = {
+        week: 4,
+        month: 2,
+        year: 1
+    } as Calendar;
+
+    expect(treasuryCalculator.methods.compareCalendar(before, after)).toBe(1);
+    expect(treasuryCalculator.methods.compareCalendar(before, before)).toBe(0);
+    expect(treasuryCalculator.methods.compareCalendar(after, after)).toBe(0);
+    expect(treasuryCalculator.methods.compareCalendar(after, before)).toBe(-1);
+});

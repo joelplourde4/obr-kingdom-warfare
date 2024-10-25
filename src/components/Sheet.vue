@@ -79,6 +79,7 @@
                     :currentPlayer="currentPlayer"
                     :players="players"
                     :isGM="isGM"
+                    :hasPermission="hasPermission"
                     :isEditMode="editMode"
                     @update:model-value="onUpdate"
                 />

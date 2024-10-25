@@ -160,6 +160,41 @@ export const treasuryCalculator = {
             }
         },
         /**
+         * Compare two calendar to determine whether it has advanced or not.
+         * @param source The source calendar
+         * @param next The next calendar
+         */
+        compareCalendar(before: Calendar, after: Calendar) {
+            if (before.year < after.year) {
+                return 1;
+            }
+
+            if (before.year > after.year) {
+                return -1;
+            }
+
+            if (before.month < after.month) {
+                return 1;
+            }
+        
+            if (before.month > after.month) {
+                return -1;
+            }
+
+            if (before.week < after.week) {
+                return 1;
+            }
+        
+            if (before.week > after.week) {
+                return -1;
+            }
+
+            return 0;
+        },
+        /**
+         * ----------------- Treasury Section --------------------------
+         */
+        /**
          * Add a value to the treasury
          * @param realm The realm
          * @param forecast The value that was forecasted.

@@ -54,7 +54,7 @@
                 <tr v-for="province in domain.realm.provinces">
                     <td>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="province.terrain" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+                            <select class="dropdown" v-model="province.terrain" @click="preventPropagation" @change="onChanges" :disabled="!hasPermission">
                                 <option v-for="terrain in Terrain" :value="terrain">
                                     {{ terrain }}
                                 </option>
@@ -64,7 +64,7 @@
                     </td>
                     <td>
                         <div class="tooltip">
-                            <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onChanges" :disabled="isDisabled">
+                            <select class="dropdown" v-model="province.populationCenter" @click="preventPropagation" @change="onChanges" :disabled="!hasPermission">
                                 <option v-for="populationCenter in availablePopulationCenter" :value="populationCenter">
                                     {{ populationCenter }}
                                 </option>
@@ -180,6 +180,10 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        hasPermission: {
+            type: Boolean,
+            required: true
+        },
         config: {
             type: Config,
             required: true
@@ -284,7 +288,19 @@ export default defineComponent({
 
                 this.sceneMetadataCallback = OBR.scene.onMetadataChange((metadata) => {
                     if (metadata[CALENDAR_METADATA_KEY]) {
-                        this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
+                        const before = this.domain.realm.calendar;
+                        const after = metadata[CALENDAR_METADATA_KEY] as Calendar;
+                        const compare = this.compareCalendar(before, after);
+
+                        if (compare == 0) {
+                            return;
+                        }
+
+                        if (compare > 0) {
+                            this.onChangeTimeEvent(true, true);
+                        } else {
+                            this.onChangeTimeEvent(false, true);
+                        }
                     }
                 });
 
@@ -356,15 +372,19 @@ export default defineComponent({
                 this.domain.realm.treasury = this.evaluateExpression($event.target.value, this.domain.realm.treasury);
             }
         },
-        onChangeTimeEvent(forward: boolean) {
+        onChangeTimeEvent(forward: boolean, skipSave: boolean = false) {
             if (forward) {
                 this.addForecastToTreasury(this.domain.realm, this.forecast);
                 this.incrementTime(this.config, this.domain.realm);
-                this.saveCalendar(this.domain.realm.calendar);
+                if (!skipSave) {
+                    this.saveCalendar(this.domain.realm.calendar);
+                }
             } else {
                 this.removeFromTreasury(this.domain.realm);
                 this.deincrementTime(this.config, this.domain.realm);
-                this.saveCalendar(this.domain.realm.calendar);
+                if (!skipSave) {
+                    this.saveCalendar(this.domain.realm.calendar);
+                }
             }
         },
         /**
