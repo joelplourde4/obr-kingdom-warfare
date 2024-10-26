@@ -128,11 +128,11 @@ test ('adding to treasury should work as expected', () => {
         treasury: 0
     } as Realm
 
-    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 100);
+    treasuryCalculator.methods.addForecastToTreasury(realm, 100);
     expect(realm.treasury).toBe(100);
     expect(realm.forecasts).toStrictEqual([100]);
 
-    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 100);
+    treasuryCalculator.methods.addForecastToTreasury(realm, 100);
     expect(realm.treasury).toBe(200);
     expect(realm.forecasts).toStrictEqual([100, 100]);
 })
@@ -143,21 +143,21 @@ test ('should be able to go back in time for a player to re-make a turn', () => 
         treasury: 0
     } as Realm
 
-    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 500);
+    treasuryCalculator.methods.addForecastToTreasury(realm, 500);
     expect(realm.treasury).toBe(500);
     expect(realm.forecasts).toStrictEqual([500]);
 
-    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 300);
+    treasuryCalculator.methods.addForecastToTreasury(realm, 300);
     expect(realm.treasury).toBe(800);
     expect(realm.forecasts).toStrictEqual([500, 300]);
 
     // Now one of the player wasn't ready before we proceeded.
-    realm = treasuryCalculator.methods.removeFromTreasury(realm);
+    treasuryCalculator.methods.removeFromTreasury(realm);
     expect(realm.treasury).toBe(500);
     expect(realm.forecasts).toStrictEqual([500]);
 
     // We can now proceed after the player made an adjustment.
-    realm = treasuryCalculator.methods.addForecastToTreasury(realm, 400);
+    treasuryCalculator.methods.addForecastToTreasury(realm, 400);
     expect(realm.treasury).toBe(900);
     expect(realm.forecasts).toStrictEqual([500, 400]);
 });
@@ -170,7 +170,7 @@ test ('should only be able to go back in time up to 5 turns', () => {
 
     // The game goes on for 10 rounds
     for (let i = 0; i < 10; i++) {
-        realm = treasuryCalculator.methods.addForecastToTreasury(realm, 100);
+        treasuryCalculator.methods.addForecastToTreasury(realm, 100);
     }
 
     expect(realm.treasury).toBe(1000);
@@ -178,7 +178,7 @@ test ('should only be able to go back in time up to 5 turns', () => {
 
     // You should only be able to go back 5 turns, further attempts won't do anything.
     for (let i = 0; i < 10; i++) {
-        realm = treasuryCalculator.methods.removeFromTreasury(realm);
+        treasuryCalculator.methods.removeFromTreasury(realm);
     }
 
     expect(realm.treasury).toBe(500);

@@ -3,9 +3,9 @@
         <button v-if="isDecrementShown" type="button" class="borderless-button" @click="changeTime(false)">
             <img class="left-arrow" src="/arrow.svg">
         </button>
-        <span>Week {{ realm.calendar?.week }}, </span>
-        <span>Month {{ realm.calendar?.month }}, </span>
-        <span>Year {{ realm.calendar?.year }}</span>
+        <span>Week {{ week }}, </span>
+        <span>Month {{ month }}, </span>
+        <span>Year {{ year }}</span>
         <button v-if="isIncrementShown" type="button" class="borderless-button" @click="changeTime(true)">
             <img class="right-arrow" src="/arrow.svg">
         </button>
@@ -27,10 +27,6 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
-        hasScene: {
-            type: Boolean,
-            required: true
-        },
         config: {
             type: Object as PropType<Config>,
             required: true
@@ -42,26 +38,27 @@ export default defineComponent({
     },
     emit: ['update:time'],
     computed: {
+        week() {
+            return this.realm?.calendar?.week || 1;
+        },
+        month() {
+            return this.realm?.calendar?.month || 1;
+        },
+        year() {
+            return this.realm?.calendar?.year || 1;
+        },
         isDecrementShown() {
-            if (!this.hasScene) {
-                return false;
-            }
-
             if (!this.isGM) {
                 return false;
             }
 
-            if (!this.realm.forecasts) {
+            if (!this.realm?.forecasts) {
                 return false;
             }
 
-            return this.realm.forecasts.length != 0;
+            return this.realm?.forecasts.length != 0;
         },
         isIncrementShown() {
-            if (!this.hasScene) {
-                return false;
-            }
-
             if (!this.isGM) {
                 return false;
             }
