@@ -36,7 +36,6 @@
     </div>
     <Time v-if="config.treasury"
         :isGM="isGM"
-        :hasScene="hasScene"
         :config="config"
         :realm="domain.realm"
         @update:time="onChangeTime"
@@ -48,7 +47,7 @@
 import { defineComponent, PropType } from 'vue'
 
 import { Domain, Size, PowerDie } from '../models/Domain'
-import { Calendar, Civilization, GoverningStyle, Heritage } from '../models/Realm';
+import { Civilization, GoverningStyle, Heritage } from '../models/Realm';
 import { utils } from '../mixins/utils';
 import { Config } from '../models/Config';
 
@@ -81,10 +80,7 @@ export default defineComponent({
         },
     },
     data() {
-        let sceneMetadataCallback = () => {};
         return {
-            sceneMetadataCallback,
-            hasScene: false,
             Heritage,
             Civilization,
             GoverningStyle,
@@ -93,28 +89,6 @@ export default defineComponent({
         }
     },
     emits: ['update:modelValue', 'update:editMode'],
-    mounted() {
-        const sceneIntervalId = window.setInterval(async () => {
-            const isReady = await OBR.scene.isReady();
-            if (isReady) {
-                this.hasScene = true;
-
-                // Load the calendar from the Scene metadata.
-                OBR.scene.getMetadata().then(metadata => {
-                    this.loadCalendar(metadata);
-                });
-
-                this.sceneMetadataCallback = OBR.scene.onMetadataChange((metadata) => {
-                    this.loadCalendar(metadata);
-                })
-
-                clearInterval(sceneIntervalId);
-            }
-        }, 200);
-    },
-    unmounted() {
-        this.sceneMetadataCallback();
-    },
     computed: {
         isDisabled() {
             if (!this.isGM) {
@@ -127,9 +101,9 @@ export default defineComponent({
     methods: {
         onChangeTime(forward: boolean) {
             if (forward) {
-                this.domain.realm = this.incrementTime(this.config, this.domain.realm);
+                this.incrementTime(this.config, this.domain.realm);
             } else {
-                this.domain.realm = this.deincrementTime(this.config, this.domain.realm)
+                this.deincrementTime(this.config, this.domain.realm)
             }
 
             const data = {
@@ -139,31 +113,11 @@ export default defineComponent({
 
             OBR.broadcast.sendMessage(CALENDAR_METADATA_KEY, JSON.stringify(data), { destination: "ALL" });
 
-            this.saveCalendar(this.domain.realm.calendar);
-        },
-        /**
-         * Save the calendar to the scene metadata
-         * 
-         * @param calendar the Calendar
-         */
-        saveCalendar(calendar: Calendar) {
-            OBR.scene.setMetadata({
-                    [CALENDAR_METADATA_KEY]: JSON.parse(JSON.stringify(calendar))
-            });
-        },
-        /**
-         * Load the calendar from the scene metadata.
-         * @param metadata The metadata
-         */
-        loadCalendar(metadata: any) {
-            if (metadata[CALENDAR_METADATA_KEY] === undefined) {
-                this.domain.realm.calendar = {
-                    week: 1,
-                    month: 1,
-                    year: 1
-                } as Calendar;
-            } else {
-                this.domain.realm.calendar = metadata[CALENDAR_METADATA_KEY] as Calendar;
+            if (this.isGM) {
+                const intervalId = window.setInterval(() => {
+                    this.onUpdate();
+                    clearInterval(intervalId);
+                }, 1500);
             }
         },
         onUpdate() {

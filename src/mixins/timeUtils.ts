@@ -10,43 +10,41 @@ export const timeUtils = {
          * Incrementing the time of the Realm from the settings in the Config.
          */
         incrementTime(config: Config, realm: Realm) {
-            const copy = JSON.parse(JSON.stringify(realm));
-
-            if (copy.calendar == undefined) {
-                copy.calendar = new Calendar();
+            if (realm.calendar == undefined) {
+                realm.calendar = new Calendar();
             }
 
-            copy.calendar.week++;
+            realm.calendar.week++;
 
-            if (copy.calendar.week > config.time.weekCount) {
-                copy.calendar.week = 1;
-                copy.calendar.month++;
+            if (realm.calendar.week > config.time.weekCount) {
+                realm.calendar.week = 1;
+                realm.calendar.month++;
 
-                if (copy.calendar.month > config.time.monthCount) {
-                    copy.calendar.month = 1;
-                    copy.calendar.year++;
+                if (realm.calendar.month > config.time.monthCount) {
+                    realm.calendar.month = 1;
+                    realm.calendar.year++;
                 }
             }
-            return copy;
         },
         /**
          * Deincrementing the time of the Realm from the settings in the Config.
          */
         deincrementTime(config: Config, realm: Realm) {
-            const copy = JSON.parse(JSON.stringify(realm));
+            if (realm.calendar == undefined) {
+                realm.calendar = new Calendar();
+            }
 
-            copy.calendar.week--;
+            realm.calendar.week--;
 
-            if (copy.calendar.week <= 0) {
-                copy.calendar.week = config.time.weekCount;
-                copy.calendar.month--;
+            if (realm.calendar.week <= 0) {
+                realm.calendar.week = config.time.weekCount;
+                realm.calendar.month--;
 
-                if (copy.calendar.month <= 0) {
-                    copy.calendar.month = config.time.monthCount;
-                    copy.calendar.year--;
+                if (realm.calendar.month <= 0) {
+                    realm.calendar.month = config.time.monthCount;
+                    realm.calendar.year--;
                 }
             }
-            return copy;
         }
     }
 };

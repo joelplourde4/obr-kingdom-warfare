@@ -161,32 +161,26 @@ export const treasuryCalculator = {
          * @param forecast The value that was forecasted.
          */
         addForecastToTreasury(realm: Realm, forecast: number) {
-            const copy = JSON.parse(JSON.stringify(realm));
-
-            copy.treasury += forecast;
-            if (copy.forecasts === undefined) {
-                copy.forecasts = [];
+            realm.treasury += forecast;
+            if (realm.forecasts === undefined) {
+                realm.forecasts = [];
             }
-            copy.forecasts.push(forecast);
+            realm.forecasts.push(forecast);
 
             // We only keep the previous 5 turns for simplicity sake
-            if (copy.forecasts.length > 5) {
-                copy.forecasts.shift();
+            if (realm.forecasts.length > 5) {
+                realm.forecasts.shift();
             }
-            return copy;
         },
         /**
          * Remove from the Treasury based on the previous turns.
          * @param realm The realm
          */
         removeFromTreasury(realm: Realm) {
-            const copy = JSON.parse(JSON.stringify(realm));
-
-            if (copy.forecasts.length !== 0) {
-                const previousValue = copy.forecasts.pop() || 0;
-                copy.treasury -= previousValue;
+            if (realm.forecasts.length !== 0) {
+                const previousValue = realm.forecasts.pop() || 0;
+                realm.treasury -= previousValue;
             }
-            return copy;
         },
         /**
          * Evaluate an Expression

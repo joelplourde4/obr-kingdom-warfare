@@ -275,6 +275,9 @@ export default defineComponent({
                 this.broadcastCallback = OBR.broadcast.onMessage("com.obr.domain-sheet/treasury/calendar", (event) => {
                     const json = event.data as any;
                     const data = JSON.parse(json);
+                    if (!this.isGM) {
+                        this.domain.realm.calendar = data.calendar;
+                    }
                     this.onChangeTimeEvent(data.forward);
                 });
 
@@ -392,9 +395,9 @@ export default defineComponent({
         },
         onChangeTimeEvent(forward: boolean) {
             if (forward) {
-                this.domain.realm = this.addForecastToTreasury(this.domain.realm, this.forecast);
+                this.addForecastToTreasury(this.domain.realm, this.forecast);
             } else {
-                this.domain.realm = this.removeFromTreasury(this.domain.realm);
+                this.removeFromTreasury(this.domain.realm);
             }
 
             this.onUpdate();

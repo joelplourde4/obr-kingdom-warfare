@@ -48,12 +48,12 @@ export class Province {
 export class Calendar {
     week: number;
     month: number;
-    year: number
+    year: number;
 
     constructor (
         week: number = 1,
         month: number = 1,
-        year: number = 1,
+        year: number = 1
     ) {
         this.week = week;
         this.month = month;
