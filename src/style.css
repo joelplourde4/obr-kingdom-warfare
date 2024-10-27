@@ -217,6 +217,20 @@ h3 {
   border: none;
   text-align: left;
   outline: none;
+
+  .label {
+      padding-left: 1rem;
+      display: inline-flex;
+      align-items: center;
+
+      .number {
+          margin-left: 0.25rem;
+      }
+  }
+
+  .caret {
+      filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
+  }
 }
 
 /** Scrollbar **/
@@ -279,6 +293,10 @@ hr {
 
 .add-button-container {
   margin: auto;
+}
+
+.add-regiment-container {
+  display: flex;
 }
 
 .dropdown {

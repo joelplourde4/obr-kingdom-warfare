@@ -124,14 +124,22 @@ export default defineComponent({
     },
     methods: {
         toggleEditMode() {
-            this.editMode = !this.editMode;
-            this.$emit('update:editMode', this.editMode);
+          this.editMode = !this.editMode;
+          this.$emit('update:editMode', this.editMode);
         },
         toggleSettings() {
-            this.settings = !this.settings;
-            this.$emit('update:settings', this.settings);
+          // Reset Edit mode when toggling settings.
+          this.editMode = false;
+          this.$emit('update:editMode', false);
+
+          this.settings = !this.settings;
+          this.$emit('update:settings', this.settings);
         },
         toggleWarfare() {
+          // Reset Edit mode when toggling warfare.
+          this.editMode = false;
+          this.$emit('update:editMode', false);
+
           this.warfare = !this.warfare;
           this.$emit('update:warfare', this.warfare);
         },

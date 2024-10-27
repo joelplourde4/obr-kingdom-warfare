@@ -143,7 +143,7 @@
         <button type="button" class="collapsible column" @click="openUnitCollapsible">
             <div class="label">
                 <h3>Units</h3>
-                <h3 class="number">({{ domain.units.length }})</h3>
+                <h3 class="number">({{ getUnitsLength }})</h3>
             </div>
             <div class="sub-total">
                 <div class="tooltip">
@@ -157,13 +157,13 @@
             </div>
         </button>
         <div v-show="showUnits">
-            <p v-if="domain.units.length === 0">To get started, recruit some units in the Military tab.</p>
+            <p v-if="getUnitsLength === 0">To get started, recruit some units in the Military tab.</p>
             <table class="unit-table">
-                <tr v-if="domain.units.length > 0">
+                <tr v-if="getUnitsLength > 0">
                     <th>Name</th>
                     <th>Upkeep</th>
                 </tr>
-                <tr v-for="unit in domain.units">
+                <tr v-for="unit in (getUnits as Unit[])">
                     <td>
                         <div class="tooltip">
                             <p>{{ unit.name }}</p>
@@ -179,7 +179,7 @@
                 </tr>
             </table>
             <hr>
-            <div v-if="domain.units.length > 0" class="tooltip modifier">
+            <div v-if="getUnitsLength > 0" class="tooltip modifier">
                 <p>Unit Cost Reduction:</p>
                 <p class="production modifier-number">{{ unitCostModifier }}%</p>
                 <span class="tooltiptext">Overall bonus in unit costs provided by the civilization's traits and governance policies.</span>
@@ -197,6 +197,7 @@ import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
 import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER } from '../../models/Realm.ts';
 import { Config } from '../../models/Config.ts';
 import { treasuryCalculator } from '../../mixins/treasuryCalculator.ts';
+import { Unit } from '../../models/Unit.ts';
 
 const ID = "com.obr.domain-sheet/treasury"
 
@@ -328,6 +329,19 @@ export default defineComponent({
         this.broadcastCallback();
     },
     computed: {
+        getUnits(): Unit[] {
+            const units: Unit[] = [];
+
+            this.domain.regiments.forEach((regiment) => {
+                regiment.units.forEach((unit) => {
+                    units.push(unit);
+                });
+            });
+            return units;
+        },
+        getUnitsLength(): number {
+            return this.getUnits.length;
+        },
         disableField() {
             if (!this.isEditMode) {
                 return true;
@@ -338,7 +352,7 @@ export default defineComponent({
             return this.calculateProvinceProfits(this.domain.realm.provinces);
         },
         unitsUpkeep() {
-            return this.calculateUnitsUpkeep(this.domain.units);
+            return this.calculateUnitsUpkeep(this.getUnits);
         },
         productionModifier() {
             return this.getProvinceProductionModifier(this.domain.realm) * 100;
@@ -605,23 +619,9 @@ p {
     margin-bottom: 0.25rem;
     margin-top: 0.25rem;
 
-    .label {
-        padding-left: 1rem;
-        display: inline-flex;
-        align-items: center;
-
-        .number {
-            margin-left: 0.25rem;
-        }
-    }
-
     .sub-total {
         display: inline-flex;
         align-items: center;
-
-        .caret {
-            filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);;
-        }
     }
 }
 
