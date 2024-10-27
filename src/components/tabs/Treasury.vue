@@ -193,11 +193,12 @@ import { defineComponent, PropType } from 'vue'
 import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
-import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
+import OBR, { ContextMenuContext, Player, Tool, ToolMode } from '@owlbear-rodeo/sdk';
 import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER } from '../../models/Realm.ts';
 import { Config } from '../../models/Config.ts';
 import { treasuryCalculator } from '../../mixins/treasuryCalculator.ts';
 import { Unit } from '../../models/Unit.ts';
+import { MovementTool } from '../tools/MovementTool.ts';
 
 const ID = "com.obr.domain-sheet/treasury"
 
@@ -281,6 +282,11 @@ export default defineComponent({
                     }
                     this.onChangeTimeEvent(data.forward);
                 });
+
+                OBR.tool.createMode(new MovementTool());
+
+                // OBR.tool.create(this.buildTool())
+                //OBR.tool.createMode(this.buildToolMode());
 
                 clearInterval(obrIntervalId);
             }
@@ -524,6 +530,28 @@ export default defineComponent({
                     }
                 ],
                 onClick: this.onContextMenuClick
+            }
+        },
+        buildTool(): Tool {
+            return {
+                id: ID + "movement",
+                icons: [
+                    {
+                        icon: "/pin.svg",
+                        label: "Tool?!!?"
+                    }
+                ]
+            }
+        },
+        buildToolMode(): ToolMode {
+            return {
+                id: ID + "movement/cost",
+                icons: [
+                    {
+                        icon: "/kingdom.svg",
+                        label: "Mode ?!!?"
+                    }
+                ]
             }
         },
         openGeneralCollapsible() {
