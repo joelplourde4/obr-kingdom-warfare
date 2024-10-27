@@ -153,7 +153,8 @@ test ('addRegiment should work as expected', () => {
     const regiments = [
         {
             id: 1,
-            units: []
+            units: [],
+            show: false
         }
     ];
 
@@ -162,11 +163,13 @@ test ('addRegiment should work as expected', () => {
     const expectedResult = [
         {
             id: 1,
-            units: []
+            units: [],
+            show: false,
         },
         {
             id: 2,
-            units: []
+            units: [],
+            show: false,
         },
     ]
 
