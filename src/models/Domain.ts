@@ -1,7 +1,7 @@
 import { Stats } from './Stats.ts'
 import { Relation } from './Relation.ts';
 import { Feature } from './Feature.ts';
-import { Unit } from './Unit.ts';
+import { Regiment } from './Unit.ts';
 import { Realm } from './Realm.ts';
 
 export enum Size {
@@ -27,7 +27,7 @@ export class Domain {
     stats: Stats;
     relations: Relation[];
     features: Feature[];
-    units: Unit[];
+    regiments: Regiment[];
     realm: Realm;
 
     // For versioning purposes.
@@ -40,7 +40,7 @@ export class Domain {
         stats: Stats = new Stats(),
         relations: Relation[] = [],
         features: Feature[] = [],
-        units: Unit[] = [],
+        regiments: Regiment[] = [],
         realm?: Realm,
         // @ts-ignore
         version: number = 0
@@ -51,7 +51,7 @@ export class Domain {
         this.stats = stats;
         this.relations = relations;
         this.features = features;
-        this.units = units;
+        this.regiments = regiments;
         this.realm = realm || new Realm();
         this.version = 0;
     }
@@ -64,8 +64,9 @@ export class Domain {
             domain.stats,
             domain.relations,
             domain.features,
-            domain.units,
-            domain.realm
+            domain.regiment,
+            domain.realm,
+            domain.version
         )
     }
 };

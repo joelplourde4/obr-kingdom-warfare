@@ -1,3 +1,6 @@
+// @ts-ignore
+import {v4 as uuidv4} from 'uuid';
+
 export enum Trait {
     AMPHIBIOUS = "Amphibious",
     AAAUUUGH = "Aaauuugh!!",
@@ -87,6 +90,7 @@ export enum Size {
 }
 
 export class Unit {
+    id: string;
     name: string;
     show: boolean;
     experience: Experience;
@@ -102,6 +106,7 @@ export class Unit {
     upkeep: number;
 
     constructor(
+        id?: string,
         name?: string,
         experience?: Experience,
         equipment?: Equipment,
@@ -115,6 +120,7 @@ export class Unit {
         // @ts-ignore
         upkeep?: number
     ) {
+        this.id = id || uuidv4();
         this.name = name || "Default";
         this.experience = experience || Experience.GREEN;
         this.equipment = equipment || Equipment.LIGHT;
@@ -126,5 +132,17 @@ export class Unit {
         this.show = false;
         this.cost = 0;
         this.upkeep = 0;
+    }
+}
+
+export class Regiment {
+    id: number;
+    units: Unit[];
+    show: boolean;
+
+    constructor(id: number) {
+        this.id = id;
+        this.units = [];
+        this.show = false;
     }
 }
