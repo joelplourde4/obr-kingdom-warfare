@@ -27,15 +27,15 @@
                             <div class="cost container">
                                 <div class="icon-container">
                                     <span class="number">{{ getNumberAttacks }}</span>
-                                    <img class ="icon" src="./assets/attack.png">
+                                    <img class ="icon" :src="getAttackIcon">
                                 </div>
                                 <div class="icon-container">
                                     <span class="number">{{ getDamage }}</span>
-                                    <img class ="icon" src="./assets/damage.png">
+                                    <img class ="icon" :src="getDamageIcon">
                                 </div>
                                 <div class="icon-container">
                                     <span class="number">{{ getMovement }}</span>
-                                    <img class ="icon" src="./assets/movement.png">
+                                    <img class ="icon" :src="getMovementIcon">
                                 </div>
                                 <span>Cost: {{ getCost }}</span>
                             </div>
@@ -101,7 +101,7 @@
 import { useRoute } from 'vue-router';
 import html2canvas from 'html2canvas';
 import { defineComponent } from 'vue'
-import { Trait, Type, Unit } from '../src/models/Unit';
+import { Trait, Unit } from '../src/models/Unit';
 
 import { TRAIT_DESCRIPTION_MAP } from '../src/models/Trait.ts'
 
@@ -109,6 +109,8 @@ import OBR, { ImageGrid, ImageUpload } from '@owlbear-rodeo/sdk';
 import { statsCalculator } from './mixins/statsCalculator.ts';
 import { Civilization, GoverningStyle } from '../src/models/Realm.ts';
 import { ANCESTRY_COLOR_MAP } from './models/Stats.ts';
+
+const ROOT = "../assets"
 
 export default defineComponent({
     mixins: [statsCalculator],
@@ -178,21 +180,30 @@ export default defineComponent({
         getMovement() {
             return this.calculateMovement(this.unit);
         },
+        getAttackIcon() {
+            return `${ROOT}/attack.png`;
+        },
+        getDamageIcon() {
+            return `${ROOT}/damage.png`;
+        },
+        getMovementIcon() {
+            return `${ROOT}/movement.png`;
+        },
         getType() {
             const type = this.convertString(this.unit.type);
             if (type === 'levies') {
-                return `./assets/type/${type}/${type}.png`;
+                return `${ROOT}/type/${type}/${type}.png`;
             }
             const equipment = this.convertString(this.unit.equipment);
-            return `./assets/type/${type}/${type}-${equipment}.png`;
+            return `${ROOT}/type/${type}/${type}-${equipment}.png`;
         },
         getAncestry() {
             const ancestry = this.convertString(this.unit.ancestry);
-            return `./assets/ancestry/${ancestry}.png`;
+            return `${ROOT}/ancestry/${ancestry}.png`;
         },
         getExperience() {
             const experience = this.convertString(this.unit.experience);
-            return `./assets/experience/${experience}.png`;
+            return `${ROOT}/experience/${experience}.png`;
         },
         getSize() {
             return this.unit.size;
