@@ -59,6 +59,14 @@
                             </div>
                             <div class="attribute-selector row">
                                 <div class="tooltip">
+                                    <select class="dropdown" v-model="unit.ancestry" @click="preventPropagation" @change="onAncestryChange(unit)" :disabled="isDisabled">
+                                        <option v-for="ancestry in Ancestry" :value="ancestry">
+                                            {{ ancestry }}
+                                        </option>
+                                    </select>
+                                    <span class="tooltiptext">Affects all of a unit' stats, and in many ways is the defining attribute of a unit. Ancestry also determines what traits a unit has.</span>
+                                </div>
+                                <div class="tooltip">
                                     <select class="dropdown" v-model="unit.experience" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
                                         <option v-for="experience in Experience" :value="experience">
                                             {{ experience }}
@@ -81,14 +89,6 @@
                                         </option>
                                     </select>
                                     <span class="tooltiptext">Determines what a unit can do in battle, who it can attack, and who it can be attacked by.</span>
-                                </div>
-                                <div class="tooltip">
-                                    <select class="dropdown" v-model="unit.ancestry" @click="preventPropagation" @change="onAncestryChange(unit)" :disabled="isDisabled">
-                                        <option v-for="ancestry in Ancestry" :value="ancestry">
-                                            {{ ancestry }}
-                                        </option>
-                                    </select>
-                                    <span class="tooltiptext">Affects all of a unit' stats, and in many ways is the defining attribute of a unit. Ancestry also determines what traits a unit has.</span>
                                 </div>
                             </div>
                         </div>
