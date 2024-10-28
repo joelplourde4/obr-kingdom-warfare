@@ -4,7 +4,7 @@
         <div v-for="regiment in getRegiments" class="regiment-content">
             <button type="button" class="regiment collapsible" @click="openRegimentCollapsible($event, regiment)" :id="regiment.id + ''" :ondrop="drop" :ondragover="allowDrop">
                 <div class="label">
-                    <h3>Regiment {{ regiment.id }}</h3>
+                    <h3>Regiment {{ getRegimentName(regiment.id) }}</h3>
                     <h3 class="number">({{ regiment.units.length }})</h3>
                 </div>
                 <div class="row">
@@ -16,6 +16,7 @@
                 </div>
             </button>
             <div v-if="regiment.show" class="collapsible-content">
+                <p v-if="regiment.units.length == 0">No units have been recruited yet.</p>
                 <div class="unit" v-for="unit in regiment.units" :id="unit.id" draggable="true" :ondragstart="drag">
                     <button type="button" class="collapsible column" @click="openUnitCollapsible($event, unit)">
                         <div class="column">
@@ -144,7 +145,7 @@
                 </div>
             </div>
         </div>
-        <div v-show="isVisible" class="add-regiment-container tooltip">
+        <div v-show="isVisible && hasUnit" class="add-regiment-container tooltip">
             <input type="button" class="icon-button add-button" @click="onAddRegiment"/>
             <span>Regiment</span>
             <span class="tooltiptext">
@@ -170,7 +171,7 @@ import { statsCalculator } from '../../../unit/mixins/statsCalculator'
 import { TRAIT_DESCRIPTION_MAP, ANCESTRY_TRAIT_MAP, TraitDefinition } from '../../models/Trait.ts'
 
 import BaseTab from './BaseTab.ts'
-import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait, Size, Regiment  } from '../../models/Unit.js';
+import { Unit, Experience, Equipment, Type, Ancestry, Tier, Trait, Size, Regiment, PhoneticAlphabet  } from '../../models/Unit.js';
 import OBR from '@owlbear-rodeo/sdk';
 import { Modal } from '@owlbear-rodeo/sdk/lib/types/Modal';
 import { UNIT_UPKEEP_FACTOR } from '../../models/Realm.ts'
@@ -197,6 +198,17 @@ export default defineComponent({
         }
     },
     computed: {
+        hasUnit() {
+            // Check all regiments to see if there are any with units.
+            let hasUnit = false;
+            this.domain.regiments.forEach((regiment) => {
+                regiment.units.forEach((_) => {
+                    hasUnit = true;
+                    return;
+                });
+            })
+            return hasUnit;
+        },
         canRemoveRegiment() {
             return this.domain.regiments.length > 1;
         },
@@ -208,6 +220,9 @@ export default defineComponent({
         }
     },
     methods: {
+        getRegimentName(regimentId: number) {
+            return PhoneticAlphabet[regimentId - 1] || "Bruh";
+        },
         openRegimentCollapsible($event: any, regiment: Regiment) {
             if ($event.detail === 0) {
                 // Ignore spacebar press
@@ -249,6 +264,7 @@ export default defineComponent({
             this.onUpdate();
         },
         onRemoveRegiment(regiment: Regiment) {
+            this.preventPropagation(event);
             this.removeRegiment(this.domain.regiments, regiment);
             this.onUpdate();
         },
