@@ -239,6 +239,7 @@ export const ANCESTRY_TRAIT_MAP = new Map<Ancestry, Trait[]>([
     // TODO Finish this
     [Ancestry.FIEND, []],
     [Ancestry.MONSTROUS, []],
+    [Ancestry.SKAVEN, [Trait.PACK_TACTICS]],
     [Ancestry.SPECIAL, []],
     [Ancestry.TREANT, []],
     [Ancestry.TROLL, []]

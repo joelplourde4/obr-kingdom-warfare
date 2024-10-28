@@ -133,6 +133,7 @@ export const ANCESTRY_COLOR_MAP = new Map<Ancestry, string>([
     [Ancestry.UNDEAD, "#1b1c25"],
     [Ancestry.FIEND, "#932205"],
     [Ancestry.MONSTROUS, "#67000c"],
+    [Ancestry.SKAVEN, "#483c32"],
     [Ancestry.SPECIAL, "#2e1f3c"],
     [Ancestry.TREANT, "#5c1c00"],
     [Ancestry.TROLL, "#544000"]

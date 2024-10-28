@@ -101,7 +101,7 @@
 import { useRoute } from 'vue-router';
 import html2canvas from 'html2canvas';
 import { defineComponent } from 'vue'
-import { Trait, Unit } from '../src/models/Unit';
+import { Trait, Type, Unit } from '../src/models/Unit';
 
 import { TRAIT_DESCRIPTION_MAP } from '../src/models/Trait.ts'
 
@@ -128,6 +128,7 @@ export default defineComponent({
             const q = this.route.query;
 
             this.unit = new Unit(
+                "",
                 this.formatString(q.name),
                 this.formatString(q.experience),
                 this.formatString(q.equipment),
@@ -179,6 +180,9 @@ export default defineComponent({
         },
         getType() {
             const type = this.convertString(this.unit.type);
+            if (type === 'levies') {
+                return `./assets/type/${type}/${type}.png`;
+            }
             const equipment = this.convertString(this.unit.equipment);
             return `./assets/type/${type}/${type}-${equipment}.png`;
         },
