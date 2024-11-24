@@ -18,14 +18,11 @@ export class PinTool implements Tool {
         roles: ["PLAYER"]
     }
 
-    onClick?: ((context: ToolContext, elementId: string) => boolean | undefined | void | Promise<boolean | undefined | void>) | undefined;
-    shortcut?: string | undefined;
-    defaultMode?: string | undefined;
-    defaultMetadata?: Metadata | undefined;
+    shortcut = "P";
 }
 
 /**
- * A Pin is an interactive object which the players can see in the scene and on hover, displays a rich text.
+ * A Pin is an interactive object which the players can see in the scene and double-click to display a rich text.
  */
 export class PinMode implements ToolMode {
 
@@ -40,8 +37,6 @@ export class PinMode implements ToolMode {
             },
         }];
     }
-
-    shortcut = "P";
 
     onToolDoubleClick (_: ToolContext, event: ToolEvent) {
         OBR.scene.grid.snapPosition(event.pointerPosition, 1, false, true).then((position) => {
@@ -115,21 +110,4 @@ export class PinMode implements ToolMode {
 
         return;
     }
-
-    disabled?: ToolFilter | undefined;
-    cursors?: ToolCursor[] | undefined;
-    preventDrag?: ToolModeFilter | undefined;
-    onClick?: ((context: ToolContext, elementId: string) => boolean | undefined | void | Promise<boolean | undefined | void>) | undefined;
-    onToolClick?: ((context: ToolContext, event: ToolEvent) => boolean | undefined | void | Promise<boolean | undefined | void>) | undefined;
-    onToolDown?: ((context: ToolContext, event: ToolEvent) => void) | undefined;
-    onToolMove?: ((context: ToolContext, event: ToolEvent) => void) | undefined;
-    onToolUp?: ((context: ToolContext, event: ToolEvent) => void) | undefined;
-    onToolDragStart? (context: ToolContext, event: ToolEvent): void;
-    onToolDragMove? (context: ToolContext, event: ToolEvent): void;
-    onToolDragEnd? (context: ToolContext, event: ToolEvent): void;
-    onToolDragCancel?: ((context: ToolContext, event: ToolEvent) => void) | undefined;
-    onKeyDown?: ((context: ToolContext, event: KeyEvent) => void) | undefined;
-    onKeyUp?: ((context: ToolContext, event: KeyEvent) => void) | undefined;
-    onActivate?: ((context: ToolContext) => void) | undefined;
-    onDeactivate?: ((context: ToolContext) => void) | undefined;
 }
