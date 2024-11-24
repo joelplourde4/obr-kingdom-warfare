@@ -10,6 +10,9 @@
     @update:config="updateConfig"
     @update:switch-sheet="switchSheet"
   />
+  <Tools
+    :currentPlayer="currentPlayer"
+  />
 </template>
 
 <script lang="ts">
@@ -21,6 +24,7 @@ import { Domain } from './models/Domain.ts'
 
 import OBR, { Metadata, Player, Theme } from "@owlbear-rodeo/sdk";
 import { Config } from './models/Config.ts';
+import Tools from '../tool/Tools.vue';
 
 const DM_ID = "000000000-0000-0000-0000-0000000000000";
 
@@ -28,7 +32,7 @@ const DOMAIN_METADATA_KEY = "com.obr.domain-sheet/sheet/metadata/";
 const CONFIG_METADATA_KEY = "com.obr.domain-sheet/config/metadata";
 
 export default defineComponent({
-    components: { Sheet },
+    components: { Sheet, Tools },
     name: 'App',
     data() {
       const debouncedSaveConfig = useDebounceFn((config) => { this.saveConfig(config) }, 500)

@@ -198,7 +198,6 @@ import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Rea
 import { Config } from '../../models/Config.ts';
 import { treasuryCalculator } from '../../mixins/treasuryCalculator.ts';
 import { Unit } from '../../models/Unit.ts';
-import { MovementTool } from '../tools/MovementTool.ts';
 
 const ID = "com.obr.domain-sheet/treasury"
 
@@ -282,11 +281,6 @@ export default defineComponent({
                     }
                     this.onChangeTimeEvent(data.forward);
                 });
-
-                OBR.tool.createMode(new MovementTool());
-
-                // OBR.tool.create(this.buildTool())
-                //OBR.tool.createMode(this.buildToolMode());
 
                 clearInterval(obrIntervalId);
             }
@@ -530,28 +524,6 @@ export default defineComponent({
                     }
                 ],
                 onClick: this.onContextMenuClick
-            }
-        },
-        buildTool(): Tool {
-            return {
-                id: ID + "movement",
-                icons: [
-                    {
-                        icon: "/pin.svg",
-                        label: "Tool?!!?"
-                    }
-                ]
-            }
-        },
-        buildToolMode(): ToolMode {
-            return {
-                id: ID + "movement/cost",
-                icons: [
-                    {
-                        icon: "/kingdom.svg",
-                        label: "Mode ?!!?"
-                    }
-                ]
             }
         },
         openGeneralCollapsible() {
