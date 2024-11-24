@@ -1,4 +1,4 @@
-import OBR, { buildImage, buildLabel, ImageContent, ImageGrid, KeyEvent, Metadata, Tool, ToolAction, ToolContext, ToolCursor, ToolEvent, ToolFilter, ToolIcon, ToolMode, ToolModeFilter } from "@owlbear-rodeo/sdk";
+import OBR, { buildImage, buildLabel, ImageContent, ImageGrid, Tool, ToolContext, ToolEvent, ToolFilter, ToolIcon, ToolMode } from "@owlbear-rodeo/sdk";
 
 const TOOL_ID: string = "obr.kingdom-warfare/tool";
 export const TOOL_METADATA_KEY: string = "com.obr.kingdom-warfare/tool/metadata";
