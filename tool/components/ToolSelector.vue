@@ -23,14 +23,15 @@ import { TOOL_ID } from '../main';
 export default defineComponent({
     name: 'ToolSelector',
     data() {
-        const selectedIcon = "pin";
+        const selectedIcon: string = "pin";
         return {
-            selectedIcon
+            selectedIcon: selectedIcon
         }
     },
     mounted() {
         OBR.onReady(() => {
             OBR.tool.getMetadata(`${TOOL_ID}/tool`).then((metadata) => {
+                // @ts-ignore
                 this.selectedIcon = metadata?.iconKey || "pin";
             });
         });

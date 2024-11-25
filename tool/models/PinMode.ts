@@ -1,4 +1,4 @@
-import OBR, { buildImage, buildLabel, ImageContent, ImageGrid, Metadata, ToolContext, ToolEvent, ToolIcon, ToolMode } from "@owlbear-rodeo/sdk";
+import OBR, { buildImage, buildLabel, ImageContent, ImageGrid, ToolContext, ToolEvent, ToolIcon, ToolMode } from "@owlbear-rodeo/sdk";
 import { TOOL_ID, TOOL_METADATA_KEY } from "../main";
 
 /**
