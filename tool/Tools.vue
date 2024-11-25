@@ -28,6 +28,7 @@ export default defineComponent({
         OBR.onReady(() => {
             this.onPlayerChangeCallback = OBR.player.onChange((player) => {
                 if (!player.selection) {
+                    // @ts-ignore
                     const itemIds = this.playerItemSelection.get(this.currentPlayer.id).map(x => x.id);
                     OBR.scene.items.getItemAttachments(itemIds).then((items) => {
                         const itemToHide: Item[] = [];
