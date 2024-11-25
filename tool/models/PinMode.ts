@@ -48,7 +48,7 @@ export class PinMode implements ToolMode {
             const pin = buildImage(imageContent, imageGrid)
                 .position(position)
                 .disableHit(false)
-                .locked(true)
+                .locked(false)
                 .build();
 
             const textPosition = {
