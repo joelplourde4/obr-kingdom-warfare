@@ -26,29 +26,31 @@ export default defineComponent({
     },
     mounted() {
         OBR.onReady(() => {
-            this.onPlayerChangeCallback = OBR.player.onChange(async (player) => {
+            this.onPlayerChangeCallback = OBR.player.onChange((player) => {
                 if (!player.selection) {
+                    const itemIds = this.playerItemSelection.get(this.currentPlayer.id).map(x => x.id);
+                    OBR.scene.items.getItemAttachments(itemIds).then((items) => {
+                        const itemToHide: Item[] = [];
+                        for (const item of items) {
+                            if (item.metadata[TOOL_METADATA_KEY]) {
+                                itemToHide.push(item);
+                            }
+                        }
+                        this.toggleItems(itemToHide, false);
+                    });
                     return;
                 }
 
                 OBR.scene.items.getItemAttachments(player.selection).then((items) => {
                     this.playerItemSelection.set(this.currentPlayer.id, []);
-
                     for (const item of items) {
                         if (item.metadata[TOOL_METADATA_KEY]) {
                             this.playerItemSelection.get(this.currentPlayer.id)?.push(item);
                         }
                     }
-
                     return this.playerItemSelection.get(this.currentPlayer.id) as Item[];
                 }).then((items) => {
-                    OBR.scene.items.updateItems(
-                        items,    
-                        (texts) => {
-                        for (let text of texts) {
-                            text.visible = !text.visible;
-                        }
-                    });
+                    this.toggleItems(items, true);
                 });
             }),
 
@@ -59,6 +61,17 @@ export default defineComponent({
     },
     unmounted() {
         this.onPlayerChangeCallback();
+    },
+    methods: {
+        async toggleItems(items: Item[], visible: Boolean) {
+            await OBR.scene.items.updateItems(
+                items,    
+                (texts) => {
+                for (let text of texts) {
+                    text.visible = visible;
+                }
+            });
+        }
     }
 });
 </script>
