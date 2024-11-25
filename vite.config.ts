@@ -10,7 +10,8 @@ export default defineConfig({
     rollupOptions: {
       input : {
         main: resolve('index.html'),
-        unit: resolve('unit/index.html')
+        unit: resolve('unit/index.html'),
+        tool: resolve('tool/index.html')
       }
     }
   }

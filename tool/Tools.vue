@@ -4,7 +4,10 @@
 <script lang="ts">
 import OBR, { Item, Player } from '@owlbear-rodeo/sdk';
 import { defineComponent, PropType } from 'vue';
-import { PinMode, PinTool, TOOL_METADATA_KEY } from './main.ts';
+import { PinAction } from './models/PinAction.ts';
+import { PinMode } from './models/PinMode.ts';
+import { PinTool } from './models/PinTool.ts';
+import { TOOL_METADATA_KEY } from './main.ts';
 
 export default defineComponent({
     name: 'Tools',
@@ -49,9 +52,9 @@ export default defineComponent({
                 });
             }),
 
-        
             OBR.tool.create(new PinTool());
             OBR.tool.createMode(new PinMode());
+            OBR.tool.createAction(new PinAction());
         });
     },
     unmounted() {
