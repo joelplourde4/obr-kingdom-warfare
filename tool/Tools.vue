@@ -27,10 +27,10 @@ export default defineComponent({
     mounted() {
         OBR.onReady(() => {
             this.onPlayerChangeCallback = OBR.player.onChange((player) => {
+                const selectedItemIds = (this.playerItemSelection.get(this.currentPlayer.id) || []).map(x => x.id);
+
                 if (!player.selection) {
-                    // @ts-ignore
-                    const itemIds = this.playerItemSelection.get(this.currentPlayer.id).map(x => x.id);
-                    OBR.scene.items.getItemAttachments(itemIds).then((items) => {
+                    OBR.scene.items.getItemAttachments(selectedItemIds).then((items) => {
                         const itemToHide: Item[] = [];
                         for (const item of items) {
                             if (item.metadata[TOOL_METADATA_KEY]) {
@@ -41,6 +41,11 @@ export default defineComponent({
                     });
                     return;
                 }
+
+                // Toggle the differences
+                let difference = selectedItemIds.filter(x => !(player.selection || []).includes(x));
+                // @ts-ignore
+                this.toggleItems(difference, false);
 
                 OBR.scene.items.getItemAttachments(player.selection).then((items) => {
                     this.playerItemSelection.set(this.currentPlayer.id, []);
@@ -65,8 +70,9 @@ export default defineComponent({
     },
     methods: {
         async toggleItems(items: Item[], visible: Boolean) {
+            const json = JSON.parse(JSON.stringify(items)) as Item[];
             await OBR.scene.items.updateItems(
-                items,    
+                json,    
                 (texts) => {
                 for (let text of texts) {
                     text.visible = visible;
