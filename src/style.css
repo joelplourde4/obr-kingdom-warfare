@@ -80,6 +80,7 @@ input, textarea {
   border-radius: 5px;
   color: var(--text);
   background-color: var(--background);
+  min-height: 1rem;
 }
 
 input:disabled, textarea:disabled {
@@ -162,6 +163,16 @@ input.show-button {
 input.hide-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/hidden.svg);
+}
+
+input.arrow-up-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/caret-up.svg);
+}
+
+input.arrow-down-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/caret-down.svg);
 }
 
 input.add-button {

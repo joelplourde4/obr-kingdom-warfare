@@ -56,8 +56,49 @@
                                 </div>
                                 <div class="container">
                                     <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
+                                    <textarea class="description"
+                                        ref="textarea"
+                                        v-model="officer.description"
+                                        @input="onTextAreaChange"
+                                        :disabled="isDisabled"
+                                        :class="isDisabled ? 'disabled read-only' : 'edit-mode'"
+                                    />
                                 </div>
-                                <input v-show="isVisible" type="button" class="icon-button remove-button" @click="onRemoveOfficer(relation, officer)"/>
+                                <div v-if="isVisible" class="more">
+                                    <img class="dot" src="/more.svg">
+                                    <div class="more-options">
+                                        <div v-if="!officer.show" class="option-container tooltip">
+                                            <input type="button" class="icon-button show-button" @click="onToggleOfficer(officer)"/>
+                                            <span class="tooltiptext">
+                                                Is shown to the players, click to hide.
+                                            </span>
+                                        </div>
+                                        <div v-if="officer.show" class="option-container tooltip">
+                                            <input type="button" class="icon-button hide-button" @click="onToggleOfficer(officer)"/>
+                                            <span class="tooltiptext">
+                                                Is hidden from the players, click to show.
+                                            </span>
+                                        </div>
+                                        <div class="option-container tooltip">
+                                            <input type="button" :disabled="officer.id === 0" class="icon-button arrow-up-button" @click="onMoveOfficer(relation, officer, -1)"/>
+                                            <span class="tooltiptext">
+                                                On click, move the Officer up.
+                                            </span>
+                                        </div>
+                                        <div class="option-container tooltip">
+                                            <input type="button" class="icon-button arrow-down-button" :disabled="officer.id === relation.officers.length - 1" @click="onMoveOfficer(relation, officer, 1)"/>
+                                            <span class="tooltiptext">
+                                                On click, move the Officer down.
+                                            </span>
+                                        </div>
+                                        <div class="option-container tooltip">
+                                            <input v-show="isVisible" type="button" class="icon-button remove-button remove-officer" @click="onRemoveOfficer(relation, officer)"/>
+                                            <span class="tooltiptext">
+                                                On click, remove the Officer.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div v-show="isVisible" class="add-button-container tooltip">
@@ -98,6 +139,18 @@ export default defineComponent({
             RelationStatus
         }
     },
+    created() {
+        this.domain.relations.forEach((relation: Relation) => { 
+            relation.officers.forEach((officer: Officer, index: number) => {
+                officer.id = index;
+            })
+        });
+    },
+    updated() {
+        ((this.$refs.textarea || []) as Array<any>).forEach((element: any) => {
+            this.resizeTextArea(element);
+        });
+    },
     methods: {
         isShown(relation: Relation) {
             if (this.isGM) {
@@ -123,6 +176,23 @@ export default defineComponent({
             officer.show = !officer.show;
             this.onUpdate();
         },
+        onMoveOfficer(relation: Relation, officer: Officer, direction: number) {
+            const index = relation.officers.indexOf(officer);
+            const newIndex = index + direction;
+
+            // Invert the position in the Relation array
+            if (newIndex >= 0 && newIndex < relation.officers.length) {
+                relation.officers.splice(index, 1);
+                relation.officers.splice(newIndex, 0, officer);
+            }
+
+            // Re-calculate each index
+            relation.officers.forEach((officer: Officer, index: number) => {
+                officer.id = index;
+            });
+
+            this.onUpdate();
+        },
         onAddRelation() {
             this.domain.relations.push(new Relation());
             this.onUpdate();
@@ -134,7 +204,8 @@ export default defineComponent({
             this.onUpdate();
         },
         onAddOfficer(relation: Relation) {
-            relation.officers.push(new Officer())
+            const officerId = relation.officers.length;
+            relation.officers.push(new Officer(officerId))
             this.onUpdate();
         },
         onRemoveOfficer(relation: Relation, officer: Officer) {
@@ -158,6 +229,15 @@ export default defineComponent({
                 officer.img = images[0].image.url;
                 this.onUpdate();
             }
+        },
+        onTextAreaChange(event: any) {
+            this.resizeTextArea(event.target);
+            return this.onUpdate();
+        },
+        resizeTextArea(target: any) {
+            target.style.resize = "";
+            target.style.height = "auto";
+            target.style.height = `${target.scrollHeight}px`;
         }
     }
 })
@@ -223,5 +303,19 @@ export default defineComponent({
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     padding-left: 1rem;
+
+    .container {
+        width: 100%;
+
+        .read-only {
+            resize: none;
+            min-width: 95%;
+        }
+
+        .edit-mode {
+            max-width: 95%;
+            min-width: 95%;
+        }
+    }
 }
 </style>

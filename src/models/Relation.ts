@@ -1,10 +1,12 @@
 export class Officer {
+    id: number;
     name: string;
     description: string;
     img: string;
     show: boolean;
 
-    constructor() {
+    constructor(id: number) {
+        this.id = id;
         this.name = "Default";
         this.description = "Description";
         this.img = "/person.svg";
