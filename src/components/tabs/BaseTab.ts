@@ -34,6 +34,19 @@ export default defineComponent({
         onUpdate() {
             const json = JSON.parse(JSON.stringify(this.domain));
             this.$emit('update:modelValue', json);
+        },
+        resizeAllTextArea() {
+            ((this.$refs.textarea || []) as Array<any>).forEach((element: any) => {
+                this.resizeTextArea(element);
+            });
+        },
+        resizeTextArea(target: any) {
+            if (target.offsetParent === null) {
+                return;
+            }
+            target.style.resize = "";
+            target.style.height = "auto";
+            target.style.height = `${target.scrollHeight}px`;
         }
     }
 });

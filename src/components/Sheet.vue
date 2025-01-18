@@ -59,6 +59,7 @@
             </tab>
             <tab v-if="config.features" name="Features">
                 <Features
+                    ref="features"
                     :domain="domain"
                     :isGM="hasPermission"
                     :isEditMode="editMode"
