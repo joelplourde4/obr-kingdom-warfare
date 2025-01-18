@@ -234,18 +234,6 @@ export default defineComponent({
         onTextAreaChange(event: any) {
             this.resizeTextArea(event.target);
             return this.onUpdate();
-        },
-        resizeAllTextArea() {
-            ((this.$refs.textarea || []) as Array<any>).forEach((element: any) => {
-                this.resizeTextArea(element);
-            });
-        },
-        resizeTextArea(target: any) {
-            if (target.offsetParent === null) {
-                return;
-            }
-            target.style.resize = "";
-            target.style.height = `${target.scrollHeight}px`;
         }
     }
 })

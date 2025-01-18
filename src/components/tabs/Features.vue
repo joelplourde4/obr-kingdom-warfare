@@ -74,11 +74,12 @@ export default defineComponent({
     extends: BaseTab,
     name: 'Feature',
     updated() {
-        ((this.$refs.textarea || []) as Array<any>).forEach((element: any) => {
-            this.resizeTextArea(element);
-        });
+        this.resizeAllTextArea();
     },
     methods: {
+        onTabSelected() {
+            this.resizeAllTextArea();
+        },
         onAddFeature() {
             this.domain.features.push(new Feature());
             this.onUpdate();
@@ -106,7 +107,7 @@ export default defineComponent({
                 return true;
             }
             return !feature.visible;
-        },
+        }
     }
 })  
 </script>
