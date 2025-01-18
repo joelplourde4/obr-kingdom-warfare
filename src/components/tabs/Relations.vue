@@ -318,8 +318,4 @@ export default defineComponent({
         }
     }
 }
-
-.remove-officer {
-    margin: 10px;
-}
 </style>
