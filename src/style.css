@@ -165,6 +165,16 @@ input.hide-button {
   background-image: url(/hidden.svg);
 }
 
+input.arrow-up-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/caret-up.svg);
+}
+
+input.arrow-down-button {
+  filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
+  background-image: url(/caret-down.svg);
+}
+
 input.add-button {
   filter: invert(80%) sepia(29%) saturate(6341%) hue-rotate(207deg) brightness(100%) contrast(102%);
   background-image: url(/add.svg);
