@@ -39,7 +39,7 @@
             @update:model-value="onUpdate"
         />
         </div>
-        <tabs class="tabs">
+        <tabs class="tabs" @clicked="onTabClicked">
             <tab v-if="config.stats" name="Stats">
                 <Stats
                     :domain="domain"
@@ -50,6 +50,7 @@
             </tab>
             <tab v-if="config.relations" name="Relations">
                 <Relations
+                    ref="relations"
                     :domain="domain"
                     :isGM="hasPermission"
                     :isEditMode="editMode"
@@ -167,6 +168,14 @@ export default defineComponent({
         },
         onSwitchSheet(playerId: string) {
             this.$emit('update:switchSheet', playerId);
+        },
+        onTabClicked(event: any) {
+            const computedId = event.tab.computedId;
+            const ref = this.$refs[computedId];
+            if (ref) {
+                // @ts-ignore
+                ref.onTabSelected();
+            }
         }
     }
 })
