@@ -80,6 +80,7 @@ input, textarea {
   border-radius: 5px;
   color: var(--text);
   background-color: var(--background);
+  min-height: 1rem;
 }
 
 input:disabled, textarea:disabled {

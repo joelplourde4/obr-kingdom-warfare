@@ -56,8 +56,15 @@
                                 </div>
                                 <div class="container">
                                     <input class="name" v-model="officer.name" @input="onUpdate" :disabled="isDisabled">
+                                    <textarea class="description"
+                                        ref="textarea"
+                                        v-model="officer.description"
+                                        @input="onTextAreaChange"
+                                        :disabled="isDisabled"
+                                        :class="isDisabled ? 'disabled read-only' : 'edit-mode'"
+                                    />
                                 </div>
-                                <input v-show="isVisible" type="button" class="icon-button remove-button" @click="onRemoveOfficer(relation, officer)"/>
+                                <input v-show="isVisible" type="button" class="icon-button remove-button remove-officer" @click="onRemoveOfficer(relation, officer)"/>
                             </div>
                         </div>
                         <div v-show="isVisible" class="add-button-container tooltip">
@@ -97,6 +104,11 @@ export default defineComponent({
         return {
             RelationStatus
         }
+    },
+    updated() {
+        ((this.$refs.textarea || []) as Array<any>).forEach((element: any) => {
+            this.resizeTextArea(element);
+        });
     },
     methods: {
         isShown(relation: Relation) {
@@ -158,6 +170,15 @@ export default defineComponent({
                 officer.img = images[0].image.url;
                 this.onUpdate();
             }
+        },
+        onTextAreaChange(event: any) {
+            this.resizeTextArea(event.target);
+            return this.onUpdate();
+        },
+        resizeTextArea(target: any) {
+            target.style.resize = "";
+            target.style.height = "auto";
+            target.style.height = `${target.scrollHeight}px`;
         }
     }
 })
@@ -223,5 +244,23 @@ export default defineComponent({
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     padding-left: 1rem;
+
+    .container {
+        width: 100%;
+
+        .read-only {
+            resize: none;
+            min-width: 95%;
+        }
+
+        .edit-mode {
+            max-width: 95%;
+            min-width: 95%;
+        }
+    }
+}
+
+.remove-officer {
+    margin: 10px;
 }
 </style>
