@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <p v-if="domain.items.length === 0 && !isEditMode">No Items are available at this time.</p>
+        <p v-if="domain.items?.length === 0 && !isEditMode">No Items are available at this time.</p>
         <div class="item row" v-for="item in domain.items">
             <div v-if="isItemShown(item)" class="container">
                 <div class="row">
@@ -27,7 +27,7 @@
                                 </span>
                             </div>
                             <div class="option-container tooltip">
-                                <input type="button" class="icon-button arrow-down-button" :disabled="item.id === domain.items.length - 1" @click="onMoveItem(item, 1)"/>
+                                <input type="button" class="icon-button arrow-down-button" :disabled="item.id === domain.items?.length - 1" @click="onMoveItem(item, 1)"/>
                                 <span class="tooltiptext">
                                     On click, move the Item down.
                                 </span>
@@ -74,6 +74,12 @@ export default defineComponent({
     data() {
         return {}
     },
+    created() {
+        if (this.domain.items === undefined) {
+            this.domain.items = [];
+            this.onUpdate();
+        }
+    },
     methods: {
         onTabSelected() {
             this.resizeAllTextArea();
@@ -101,7 +107,7 @@ export default defineComponent({
             this.onUpdate();
         },
         onAddItem() {
-            const itemId = this.domain.items.length;
+            const itemId = (this.domain.items || []).length;
             this.domain.items.push(new Item(itemId))
             this.onUpdate();
         },
