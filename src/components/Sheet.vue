@@ -39,8 +39,8 @@
             @update:model-value="onUpdate"
         />
         </div>
-        <tabs class="tabs" @clicked="onTabClicked">
-            <tab v-if="config.stats" name="Stats">
+        <tabs ref="tabs" class="tabs" @clicked="onTabClicked">
+            <tab v-if="config.stats" id="stats" name="Stats">
                 <Stats
                     :domain="domain"
                     :isGM="hasPermission"
@@ -48,7 +48,7 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
-            <tab v-if="config.relations" name="Relations">
+            <tab v-if="config.relations" id="relations" name="Relations">
                 <Relations
                     ref="relations"
                     :domain="domain"
@@ -57,7 +57,7 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
-            <tab v-if="config.features" name="Features">
+            <tab v-if="config.features" id="features" name="Features">
                 <Features
                     ref="features"
                     :domain="domain"
@@ -66,7 +66,7 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
-            <tab v-if="config.military" name="Military">
+            <tab v-if="config.military" id="military" name="Military">
                 <Military
                     :domain="domain"
                     :isGM="hasPermission"
@@ -74,7 +74,7 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
-            <tab v-if="config.treasury" name="Treasury">
+            <tab v-if="config.treasury" id="treasury" name="Treasury">
                 <Treasury
                     :config="config"
                     :domain="domain"
@@ -86,7 +86,7 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
-            <tab v-if="config.inventory" name="Inventory">
+            <tab v-if="config.inventory" id="inventory" name="Inventory">
                 <Inventory
                     ref="inventory"
                     :domain="domain"
@@ -115,7 +115,7 @@ import Inventory from './tabs/Inventory.vue';
 
 import { Domain } from '../models/Domain';
 import { Config } from '../models/Config';
-import { Player } from '@owlbear-rodeo/sdk';
+import OBR, { Player } from '@owlbear-rodeo/sdk';
 
 export default defineComponent({
     components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military, Warfare, Treasury, Inventory },
@@ -154,12 +154,52 @@ export default defineComponent({
             warfare: false
         }
     },
+    mounted() {
+        const intervalId = window.setInterval(async () => {
+            if (OBR.isReady) {
+                const tabs = this.$refs.tabs;
+                if (tabs) {
+                    // @ts-ignore
+                    tabs.selectTab('#' + this.getDefaultTab().defaultTabHash);
+                }
+                window.clearInterval(intervalId);
+            }
+        }, 1000);
+    },
     computed: {
         isPage() {
             return this.settings || this.warfare;
         }
     },
     methods: {
+        getDefaultTab() {
+            if (this.config.stats) {
+                return { 
+                    defaultTabHash: 'stats'
+                };
+            } else if (this.config.relations) {
+                return { 
+                    defaultTabHash: 'relations'
+                };
+            } else if (this.config.features) {
+                return { 
+                    defaultTabHash: 'features'
+                };
+            } else if (this.config.military) {
+                return { 
+                    defaultTabHash: 'military'
+                };
+            } else if (this.config.treasury) {
+                return { 
+                    defaultTabHash: 'treasury'
+                };
+            } else if (this.config.inventory) {
+                return { 
+                    defaultTabHash: 'inventory'
+                };
+            }
+            return {};
+        },
         onEditMode(editMode: boolean) {
             this.editMode = editMode;
         },
