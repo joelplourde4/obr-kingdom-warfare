@@ -3,6 +3,7 @@ import { Relation } from './Relation.ts';
 import { Feature } from './Feature.ts';
 import { Regiment } from './Unit.ts';
 import { Realm } from './Realm.ts';
+import { Item } from './Item.ts';
 
 export enum Size {
     TINY = "Tiny",
@@ -28,6 +29,7 @@ export class Domain {
     relations: Relation[];
     features: Feature[];
     regiments: Regiment[];
+    items: Item[];
     realm: Realm;
 
     // For versioning purposes.
@@ -41,6 +43,7 @@ export class Domain {
         relations: Relation[] = [],
         features: Feature[] = [],
         regiments: Regiment[] = [],
+        items: Item[] = [],
         realm?: Realm,
         // @ts-ignore
         version: number = 0
@@ -52,6 +55,7 @@ export class Domain {
         this.relations = relations;
         this.features = features;
         this.regiments = regiments;
+        this.items = items;
         this.realm = realm || new Realm();
         this.version = 0;
     }
@@ -65,6 +69,7 @@ export class Domain {
             domain.relations,
             domain.features,
             domain.regiment,
+            domain.items,
             domain.realm,
             domain.version
         )
