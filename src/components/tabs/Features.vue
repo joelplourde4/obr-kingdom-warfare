@@ -90,10 +90,6 @@ export default defineComponent({
             });
             this.onUpdate();
         },
-        resizeTextArea(target: any) {
-            target.style.height = "auto";
-            target.style.height = `${target.scrollHeight}px`;
-        },
         onTextAreaChange(event: any) {
             this.resizeTextArea(event.target);
             return this.onUpdate();

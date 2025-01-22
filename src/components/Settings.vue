@@ -57,6 +57,12 @@
             @update:model-value="onChanged($event, 'military')"
         />
         <Configuration
+            :value="config.inventory"
+            :title="'Toggle Inventory Tab'"
+            :tooltip="'When unchecked, the \'Inventory\' tab of the Domain Sheet will be hidden.'"
+            @update:model-value="onChanged($event, 'inventory')"
+        />
+        <Configuration
             :value="config.treasury"
             :title="'Toggle Treasury Tab'"
             :tooltip="'When unchecked, the \'Treasury\' tab of the Domain Sheet will be hidden.'"
