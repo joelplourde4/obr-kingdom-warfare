@@ -6,7 +6,7 @@
                 <div v-if="isShown(relation)" class="group">
                     <button type="button" class="collapsible" @click="openCollapsible(relation)">
                     <div>
-                        <img v-if="!isVisible" class="image" :src="relation.img">
+                        <img v-if="!isVisible" class="image not-clickable" :src="relation.img">
                         <img v-if="isVisible" class="image" :src="relation.img" @click="uploadRelationImage(relation)">
                     </div>
                     <input class="name" v-model="relation.name" @input="onUpdate" @click="preventPropagation" :disabled="isDisabled">
@@ -36,6 +36,18 @@
                                 <input type="button" class="icon-button hide-button" @click="onToggleRelation(relation)"/>
                                 <span class="tooltiptext">
                                     Is hidden from the players, click to show.
+                                </span>
+                            </div>
+                            <div class="option-container tooltip">
+                                <input type="button" :disabled="relation.id === 0" class="icon-button arrow-up-button" @click="onMoveRelation(relation, -1)"/>
+                                <span class="tooltiptext">
+                                    On click, move the Relation up.
+                                </span>
+                            </div>
+                            <div class="option-container tooltip">
+                                <input type="button" class="icon-button arrow-down-button" :disabled="relation.id === domain.relations.length - 1" @click="onMoveRelation(relation, 1)"/>
+                                <span class="tooltiptext">
+                                    On click, move the Relation down.
                                 </span>
                             </div>
                             <div class="option-container tooltip">
@@ -140,9 +152,10 @@ export default defineComponent({
         }
     },
     created() {
-        this.domain.relations.forEach((relation: Relation) => { 
-            relation.officers.forEach((officer: Officer, index: number) => {
-                officer.id = index;
+        this.domain.relations.forEach((relation: Relation, i: number) => { 
+            relation.id = i;
+            relation.officers.forEach((officer: Officer, j: number) => {
+                officer.id = j;
             })
         });
     },
@@ -194,8 +207,26 @@ export default defineComponent({
 
             this.onUpdate();
         },
+        onMoveRelation(relation: Relation, direction: number) {
+            const index = this.domain.relations.indexOf(relation);
+            const newIndex = index + direction;
+
+            // Invert the position in the Relation array
+            if (newIndex >= 0 && newIndex < this.domain.relations.length) {
+                this.domain.relations.splice(index, 1);
+                this.domain.relations.splice(newIndex, 0, relation);
+            }
+
+            // Re-calculate each index
+            this.domain.relations.forEach((relation: Relation, index: number) => {
+                relation.id = index;
+            });
+
+            this.onUpdate();
+        },
         onAddRelation() {
-            this.domain.relations.push(new Relation());
+            const relationId = this.domain.relations.length;
+            this.domain.relations.push(new Relation(relationId));
             this.onUpdate();
         },
         onRemoveRelation(relation: Relation) {
@@ -217,7 +248,7 @@ export default defineComponent({
         },
         async uploadRelationImage(relation: Relation) {
             this.preventPropagation(event);
-            const images = await OBR.assets.downloadImages(false, "The Barony of Bloodstone/heraldry/Heraldry - ", "NOTE");
+            const images = await OBR.assets.downloadImages(false, "", "NOTE");
             if (images.length > 0) {
                 relation.img = images[0].image.url;
                 this.onUpdate();
@@ -225,7 +256,7 @@ export default defineComponent({
         },
         async uploadOfficerImage(officer: Officer) {
             this.preventPropagation(event);
-            const images = await OBR.assets.downloadImages(false, "The Barony of Bloodstone", "NOTE");
+            const images = await OBR.assets.downloadImages(false, "", "NOTE");
             if (images.length > 0) {
                 officer.img = images[0].image.url;
                 this.onUpdate();
@@ -263,6 +294,10 @@ export default defineComponent({
         height: 40px;
         width: 40px;
         margin: auto;
+    }
+
+    .not-clickable {
+        cursor: default;
     }
 
     .portrait {
