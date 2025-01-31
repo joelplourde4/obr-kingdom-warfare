@@ -24,6 +24,18 @@
                                     </div>
                                 </div>
                                 <div class="option-container tooltip">
+                                    <input type="button" :disabled="feature.id === 0" class="icon-button arrow-up-button" @click="onMoveFeature(feature, -1)"/>
+                                    <span class="tooltiptext">
+                                        On click, move the Feature up.
+                                    </span>
+                                </div>
+                                <div class="option-container tooltip">
+                                    <input type="button" class="icon-button arrow-down-button" :disabled="feature.id === domain.features.length - 1" @click="onMoveFeature(feature, 1)"/>
+                                    <span class="tooltiptext">
+                                        On click, move the Feature down.
+                                    </span>
+                                </div>
+                                <div class="option-container tooltip">
                                     <input type="button" class="icon-button remove-button" @click="onRemoveFeature(feature)"/>
                                     <span class="tooltiptext">
                                         On click, remove the Feature.
@@ -54,7 +66,7 @@
         <div v-show="isVisible" class="add-button-container tooltip">
             <input type="button" class="icon-button add-button" @click="onAddFeature"/>
             <span>Feature</span>
-            <span class="tooltiptext">
+            <span class="tooltiptext add-feature-button">
                 On click, add a Feature.
             </span>
         </div>
@@ -76,12 +88,18 @@ export default defineComponent({
     updated() {
         this.resizeAllTextArea();
     },
+    created() {
+        this.domain.features.forEach((feature: Feature, i: number) => { 
+            feature.id = i;
+        });
+    },
     methods: {
         onTabSelected() {
             this.resizeAllTextArea();
         },
         onAddFeature() {
-            this.domain.features.push(new Feature());
+            const featureId = this.domain.features.length;
+            this.domain.features.push(new Feature(featureId));
             this.onUpdate();
         },
         onRemoveFeature(feature: Feature) {
@@ -103,7 +121,24 @@ export default defineComponent({
                 return true;
             }
             return !feature.visible;
-        }
+        },
+        onMoveFeature(feature: Feature, direction: number) {
+            const index = this.domain.features.indexOf(feature);
+            const newIndex = index + direction;
+
+            // Invert the position in the Relation array
+            if (newIndex >= 0 && newIndex < this.domain.features.length) {
+                this.domain.features.splice(index, 1);
+                this.domain.features.splice(newIndex, 0, feature);
+            }
+
+            // Re-calculate each index
+            this.domain.features.forEach((feature: Feature, index: number) => {
+                feature.id = index;
+            });
+
+            this.onUpdate();
+        },
     }
 })  
 </script>
