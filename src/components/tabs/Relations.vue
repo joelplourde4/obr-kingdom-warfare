@@ -248,7 +248,7 @@ export default defineComponent({
         },
         async uploadRelationImage(relation: Relation) {
             this.preventPropagation(event);
-            const images = await OBR.assets.downloadImages(false, "", "NOTE");
+            const images = await OBR.assets.downloadImages(false, "Token", "NOTE");
             if (images.length > 0) {
                 relation.img = images[0].image.url;
                 this.onUpdate();
@@ -256,7 +256,7 @@ export default defineComponent({
         },
         async uploadOfficerImage(officer: Officer) {
             this.preventPropagation(event);
-            const images = await OBR.assets.downloadImages(false, "", "NOTE");
+            const images = await OBR.assets.downloadImages(false, "Token", "NOTE");
             if (images.length > 0) {
                 officer.img = images[0].image.url;
                 this.onUpdate();
