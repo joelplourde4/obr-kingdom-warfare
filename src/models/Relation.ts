@@ -23,6 +23,7 @@ export enum RelationStatus {
 } 
 
 export class Relation {
+    id: number;
     name: string;
     img: string;
     relationStatus: RelationStatus
@@ -30,7 +31,8 @@ export class Relation {
     expand: boolean
     show: boolean
 
-    constructor () {
+    constructor (id: number) {
+        this.id = id;
         this.name = "Default"
         this.img = "/kingdom.svg"
         this.relationStatus = RelationStatus.NEUTRAL
