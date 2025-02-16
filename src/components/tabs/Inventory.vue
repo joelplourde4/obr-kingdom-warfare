@@ -2,9 +2,15 @@
     <div class="content">
         <p v-if="domain.items?.length === 0 && !isEditMode">No Items are available at this time.</p>
         <div class="item row" v-for="item in domain.items">
-            <div v-if="isItemShown(item)" class="container">
-                <div class="row">
+            <div v-if="isItemShown(item)" class="container group">
+                <button type="button" class="collapsible" @click="onExpandItem(item)">
                     <input class="name" v-model="item.name" @input="onUpdate" :disabled="isDisabled">
+                    <div v-if="item.expand" class="option-container tooltip">
+                        <input type="button" class="icon-button arrow-up-button"/>
+                    </div>
+                    <div v-if="!item.expand" class="option-container tooltip">
+                        <input type="button" class="icon-button arrow-down-button"/>
+                    </div>
                     <div v-if="isVisible" class="more">
                         <img class="dot" src="/more.svg">
                         <div class="more-options">
@@ -40,14 +46,18 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <textarea class="description"
+                </button>
+                <div class="description-container">
+                    <textarea 
+                        v-if="item.expand"
+                        class="description"
                         ref="textarea"
                         v-model="item.description"
                         @input="onTextAreaChange"
                         :disabled="isDisabled"
                         :class="isDisabled ? 'disabled' : ''"
                     />
+                </div>
             </div>
         </div>
         <div v-show="isVisible" class="add-button-container tooltip">
@@ -91,6 +101,14 @@ export default defineComponent({
             item.show = !item.show;
             this.onUpdate();
         },
+        onExpandItem(item: Item) {
+            item.expand = !item.expand;
+            if (item.expand) {
+                this.$nextTick(() => {
+                    this.resizeTextArea(this.$refs.textarea);
+                });
+            }
+        },
         onMoveItem(item: Item, direction: number) {
             const index = this.domain.items.indexOf(item);
             const newIndex = index + direction;
@@ -129,11 +147,20 @@ export default defineComponent({
 
 .item {
 
+    input {
+        margin-top: 5px;
+    }
+
     .name {
         margin: 0.25rem;
         height: 24px;
         float: left;
         align-self: center;
+        width: 100%;
+    }
+
+    .description-container {
+        margin: 0.25rem;
         width: 100%;
     }
 
@@ -143,8 +170,8 @@ export default defineComponent({
     }
 
     textarea {
-        min-width: 370px;
-        max-width: 370px;
+        min-width: 360px;
+        max-width: 360px;
     }
 
     textarea:disabled {

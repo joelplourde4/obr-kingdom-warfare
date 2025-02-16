@@ -44,6 +44,14 @@ export default defineComponent({
             if (target.offsetParent === null) {
                 return;
             }
+
+            if (target instanceof Array) {
+                target.forEach((element: any) => {
+                    this.resizeTextArea(element);
+                });
+                return;
+            }
+
             target.style.resize = "";
             target.style.height = "auto";
             target.style.height = `${target.scrollHeight}px`;

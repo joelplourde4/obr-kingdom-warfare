@@ -2,10 +2,15 @@
     <div class="content">
         <p v-if="domain.features.length === 0 && !isEditMode">No features are available at this time.</p>
         <div class="feature row" v-for="feature in domain.features">
-            <div class="row">
-                <div v-if="isShown(feature)" class="container">
-                    <div class="row">
+                <div v-if="isShown(feature)" class="container group">
+                    <button type="button" class="collapsible" @click="onExpandFeature(feature)">
                         <input class="name" v-model="feature.name" @input="onUpdate" :disabled="isDisabled">
+                        <div v-if="feature.expand" class="option-container tooltip">
+                            <input type="button" class="icon-button arrow-up-button"/>
+                        </div>
+                        <div v-if="!feature.expand" class="option-container tooltip">
+                            <input type="button" class="icon-button arrow-down-button"/>
+                        </div>
                         <div v-if="isVisible" class="more">
                             <img class="dot" src="/more.svg">
                             <div class="more-options">
@@ -43,24 +48,28 @@
                                 </div>
                             </div>
                         </div>
+                    </button>
+                    <div class="description-container">
+                        <textarea 
+                            v-if="feature.expand"
+                            class="description"
+                            ref="textarea"
+                            v-model="feature.description"
+                            @input="onTextAreaChange"
+                            :disabled="isDisabled"
+                            :class="isDisabled ? 'disabled' : ''"
+                        />
+                        <div 
+                            v-if="feature.expand"
+                            class="source row">
+                            <p class="source-text">Source</p>
+                            <select class="dropdown" v-model="feature.source" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
+                                <option v-for="relation in domain.relations" :value="relation.name">
+                                    {{ relation.name }}
+                                </option>
+                            </select>
+                        </div>
                     </div>
-                    <textarea class="description"
-                        ref="textarea"
-                        v-model="feature.description"
-                        @input="onTextAreaChange"
-                        :disabled="isDisabled"
-                        :class="isDisabled ? 'disabled' : ''"
-                    />
-                    <div class="source row">
-                        <p class="source-text">Source</p>
-                        <select class="dropdown" v-model="feature.source" @click="preventPropagation" @change="onUpdate" :disabled="isDisabled">
-                            <option v-for="relation in domain.relations" :value="relation.name">
-                                {{ relation.name }}
-                            </option>
-                        </select>
-                    </div>
-                    <br>
-                </div>
             </div>
         </div>
         <div v-show="isVisible" class="add-button-container tooltip">
@@ -116,6 +125,14 @@ export default defineComponent({
             feature.visible = !feature.visible;
             this.onUpdate();
         },
+        onExpandFeature(feature: Feature) {
+            feature.expand = !feature.expand;
+            if (feature.expand) {
+                this.$nextTick(() => {
+                    this.resizeTextArea(this.$refs.textarea);
+                });
+            }
+        },
         isShown(feature: Feature) {
             if (this.isGM) {
                 return true;
@@ -153,6 +170,10 @@ export default defineComponent({
         width: 25px;
     }
 
+    input {
+        margin-top: 5px;
+    }
+
     .source {
         height: 24px;
         padding-left: 0.25rem;
@@ -177,14 +198,19 @@ export default defineComponent({
         width: 100%;
     }
 
+    .description-container {
+        margin: 0.25rem;
+        width: 100%;
+    }
+
     .description {
         margin: 0.25rem;
         min-height: 40px;
     }
 
     textarea {
-        min-width: 370px;
-        max-width: 370px;
+        min-width: 350px;
+        max-width: 350px;
     }
 
     textarea:disabled {
