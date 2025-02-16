@@ -4,6 +4,7 @@ export class Feature {
     source: string;
     description: string;
     visible: boolean;
+    expand: boolean;
 
     constructor(id: number) {
         this.id = id;
@@ -11,5 +12,6 @@ export class Feature {
         this.source = ""
         this.description = ""
         this.visible = false
+        this.expand = false
     }
 }
