@@ -243,3 +243,39 @@ export const HERITAGE_TERRAIN_MODIFIER = new Map<Heritage, Map<Terrain, number>>
         ])
     ]
 ]);
+
+export const TERRAIN_ICON = new Map<Terrain, string>([
+    [Terrain.NONE, "/pin.svg"],
+    [Terrain.PLAINS, "/pin.svg"],
+    [Terrain.HILL, "/pin.svg"],
+    [Terrain.MOUNTAIN, "/pin.svg"],
+    [Terrain.MARSH, "/pin.svg"],
+    [Terrain.FOREST, "/pin.svg"],
+    [Terrain.DESERT, "/pin.svg"],
+    [Terrain.AQUATIC, "/pin.svg"],
+    [Terrain.UNDERGROUND, "/pin.svg"]
+]);
+
+export const TERRAIN_NAME = new Map<Terrain, string>([
+    [Terrain.NONE, "None"],
+    [Terrain.PLAINS, "Plains"],
+    [Terrain.HILL, "Hill"],
+    [Terrain.MOUNTAIN, "Mountain"],
+    [Terrain.MARSH, "Marsh"],
+    [Terrain.FOREST, "Forest"],
+    [Terrain.DESERT, "Desert"],
+    [Terrain.AQUATIC, "Aquatic"],
+    [Terrain.UNDERGROUND, "Underground"]
+]);
+
+export const TERRAIN_COLOR = new Map<Terrain, string>([
+    [Terrain.NONE, "#ffffff"],
+    [Terrain.PLAINS, "#A9E44D"],
+    [Terrain.HILL, "#C6E48B"],
+    [Terrain.MOUNTAIN, "#7BC96F"],
+    [Terrain.MARSH, "#196127"],
+    [Terrain.FOREST, "#003D00"],
+    [Terrain.DESERT, "#FFD700"],
+    [Terrain.AQUATIC, "#0000FF"],
+    [Terrain.UNDERGROUND, "#000000"]
+]);

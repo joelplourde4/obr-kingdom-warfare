@@ -193,16 +193,18 @@ import { defineComponent, PropType } from 'vue'
 import { utils } from '../../mixins/utils'
 
 import BaseTab from './BaseTab.ts'
-import OBR, { ContextMenuContext, Player } from '@owlbear-rodeo/sdk';
-import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER } from '../../models/Realm.ts';
+import OBR, { ContextMenuContext, ContextMenuItem, Player } from '@owlbear-rodeo/sdk';
+import { Heritage, Civilization, GoverningStyle, PopulationCenter, Province, Realm, Terrain, TERRAIN_NAME, TERRAIN_ICON, TERRAIN_COLOR, POPULATION_CENTER_UPKEEP, GOVERNING_STYLE_PRODUCTION_MODIFIER, HERITAGE_TERRAIN_MODIFIER, CIVILIZATION_PRODUCTION_MODIFIER, CIVILIZATION_POPULATION_CENTER_UPKEEP_MODIFIER, UNIT_COST_GOVERNING_STYLE_NOBLE_MODIFIER, UNIT_COST_CIVILIZATION_BARBARIC_MODIFIER, UNIT_COST_CIVILIZATION_NOMADIC_MODIFIER } from '../../models/Realm.ts';
 import { Config } from '../../models/Config.ts';
 import { treasuryCalculator } from '../../mixins/treasuryCalculator.ts';
 import { Unit } from '../../models/Unit.ts';
 
-const ID = "com.obr.domain-sheet/treasury"
+const CLAIM_ID = "com.obr.domain-sheet/treasury/claim"
+const ASSIGN_ID = "com.obr.domain-sheet/treasury/assign"
 
-const TREASURY_METADATA_KEY = ID + "/metadata";
-const OWNER_METADATA_KEY = ID + "/owner";
+const TREASURY_METADATA_KEY = CLAIM_ID + "/metadata";
+const OWNER_METADATA_KEY = CLAIM_ID + "/owner";
+const PROVINCE_METADATA_KEY = ASSIGN_ID + "/province";
 
 export default defineComponent({
     // components: { Time },
@@ -271,7 +273,11 @@ export default defineComponent({
     mounted() {
         const obrIntervalId = window.setInterval(async () => {
             if (OBR.isReady) {
-                OBR.contextMenu.create(this.buildContextMenu());
+                OBR.contextMenu.create(this.buildClaimProvinceContextMenu());
+
+                // Iterate over each value in Terrain enum, while keeping the type "Terrain".
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.FOREST) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.MOUNTAIN) as ContextMenuItem);
 
                 this.broadcastCallback = OBR.broadcast.onMessage("com.obr.domain-sheet/treasury/calendar", (event) => {
                     const json = event.data as any;
@@ -494,12 +500,27 @@ export default defineComponent({
                 this.removeProvinceFromRealm(context);
             }
         },
+        onAssignProvinceMenuClick(context: ContextMenuContext, _elementId: string) {
+            console.log(context, _elementId);
+
+            // From the element Id, keep the string after the last "_"
+            const terrain = _elementId.split("_").pop();
+            console.log(terrain);
+
+            // Check if the Terrain is in the enum
+            OBR.scene.items.updateItems(context.items, (items) => {
+                for (let item of items) {
+                    item.metadata[PROVINCE_METADATA_KEY] = terrain;
+                    console.log(item);
+                }
+            });
+        },
         /**
          * Build the context menu to be right-clicked.
          */
-        buildContextMenu() {
+        buildClaimProvinceContextMenu() {
             return {
-                id: ID,
+                id: CLAIM_ID,
                 icons: [
                     {
                         icon: "/pin.svg",
@@ -524,6 +545,27 @@ export default defineComponent({
                     }
                 ],
                 onClick: this.onContextMenuClick
+            }
+        },
+        buildAssignProvinceContextMenu(terrain: Terrain) {
+            const icon = TERRAIN_ICON.get(terrain);
+            const label = TERRAIN_NAME.get(terrain);
+            return {
+                id: ASSIGN_ID + ":" + terrain,
+                icons: [
+                    {
+                        icon: icon,
+                        label: "Mark as " + label,
+                        filter: {
+                            every: [
+                                { key: "visible", value: true, operator: "==" },
+                                { key: "layer", value: "DRAWING", operator: "==" },
+                                { key: ["metadata", PROVINCE_METADATA_KEY], value: terrain, operator: "!=" }
+                            ]
+                        }
+                    },
+                ],
+                onClick: this.onAssignProvinceMenuClick
             }
         },
         openGeneralCollapsible() {
