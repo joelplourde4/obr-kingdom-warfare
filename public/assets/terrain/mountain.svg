@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="500">
+<defs>
+<path d="M351.56 265.63L453.13 437.5L250 437.5L46.88 437.5L148.43 265.63L250 93.75L351.56 265.63Z" id="id1"/>
+<path d="M227.12 194.09L238.28 183.51L250.89 202.68L265.63 199.26L274.01 202.68L301.56 210.9L250.89 125L200.52 213.63L227.12 194.09Z" id="id2"/>
+<path d="M211.69 320.31L282.25 437.5L141.12 437.5L0 437.5L70.56 320.31L141.12 203.12L211.69 320.31Z" id="id3"/>
+<path d="M443.47 343.75L502.75 437.5L384.19 437.5L265.63 437.5L324.9 343.75L384.19 250L443.47 343.75Z" id="id4"/>
+</defs>
+<use xlink:href="#id1" fill="#000"/>
+<use xlink:href="#id2" fill="#FFF" fill-opacity="1"/>
+<use xlink:href="#id2" stroke="#000" fill-opacity="0" stroke-width="1"/>
+<use xlink:href="#id3" fill="#000"/>
+<use xlink:href="#id3" stroke="#000" fill-opacity="0" stroke-width="0"/>
+<use xlink:href="#id4" fill="#000"/>
+</svg>
