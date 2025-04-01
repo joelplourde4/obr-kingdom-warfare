@@ -278,6 +278,13 @@ export default defineComponent({
                 // Iterate over each value in Terrain enum, while keeping the type "Terrain".
                 OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.FOREST) as ContextMenuItem);
                 OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.MOUNTAIN) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.PLAINS) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.DESERT) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.MARSH) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.HILL) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.AQUATIC) as ContextMenuItem);
+                OBR.contextMenu.create(this.buildAssignProvinceContextMenu(Terrain.UNDERGROUND) as ContextMenuItem);
+
 
                 this.broadcastCallback = OBR.broadcast.onMessage("com.obr.domain-sheet/treasury/calendar", (event) => {
                     const json = event.data as any;
@@ -445,9 +452,7 @@ export default defineComponent({
                         item.style.strokeColor = this.currentPlayer.color;
                         item.style.fillOpacity = 0.10;
                         item.style.strokeOpacity = 1;
-                        item.metadata = {
-                            [OWNER_METADATA_KEY]: this.currentPlayer.id
-                        };
+                        item.metadata[OWNER_METADATA_KEY] = this.currentPlayer.id;
                     }
 
                     item.metadata[TREASURY_METADATA_KEY] = {
@@ -470,13 +475,25 @@ export default defineComponent({
                             x.id !== item.id
                         );
 
-                        item.style.fillColor = "#000000";
-                        item.style.strokeColor = "#000000";
-                        item.style.fillOpacity = 0.10;
-                        item.style.strokeOpacity = 1;
-                        item.metadata = {
-                            [OWNER_METADATA_KEY]: undefined
-                        };
+                        // Check if this item has a terrain metadata:
+                        if (item.metadata[PROVINCE_METADATA_KEY] !== undefined) {
+                            // From the element Id, keep the string after the last "_"
+                            const terrain = Terrain[item.metadata[PROVINCE_METADATA_KEY].split("_").pop()?.toUpperCase() as keyof typeof Terrain];
+
+                            // Get the color of the terrain
+                            const color = TERRAIN_COLOR.get(terrain);
+
+                            item.style.fillColor = color;
+                            item.style.strokeColor = color;
+                            item.style.strokeWidth = 1;
+                            item.style.fillOpacity = 0.10;
+                        } else {
+                            item.style.fillColor = "#000000";
+                            item.style.strokeColor = "#000000";
+                            item.style.fillOpacity = 0.10;
+                            item.style.strokeOpacity = 1;
+                        }
+                        item.metadata[OWNER_METADATA_KEY] = undefined;
 
                         delete item.metadata[TREASURY_METADATA_KEY];
                     }
@@ -501,17 +518,21 @@ export default defineComponent({
             }
         },
         onAssignProvinceMenuClick(context: ContextMenuContext, _elementId: string) {
-            console.log(context, _elementId);
-
             // From the element Id, keep the string after the last "_"
-            const terrain = _elementId.split("_").pop();
-            console.log(terrain);
+            const terrain = Terrain[_elementId.split("_").pop()?.toUpperCase() as keyof typeof Terrain];
 
-            // Check if the Terrain is in the enum
+            // Get the color of the terrain
+            const color = TERRAIN_COLOR.get(terrain);
+
+            const terrainAsString = terrain.toString().toLowerCase();
+
             OBR.scene.items.updateItems(context.items, (items) => {
                 for (let item of items) {
-                    item.metadata[PROVINCE_METADATA_KEY] = terrain;
-                    console.log(item);
+                    item.style.fillColor = color;
+                    item.style.strokeColor = color;
+                    item.style.strokeWidth = 1;
+                    item.style.fillOpacity = 0.10;
+                    item.metadata[PROVINCE_METADATA_KEY] = terrainAsString;
                 }
             });
         },
@@ -550,17 +571,20 @@ export default defineComponent({
         buildAssignProvinceContextMenu(terrain: Terrain) {
             const icon = TERRAIN_ICON.get(terrain);
             const label = TERRAIN_NAME.get(terrain);
+            const id = ASSIGN_ID + ":" + terrain;
+            const terrainAsString = terrain.toString().toLowerCase();
             return {
-                id: ASSIGN_ID + ":" + terrain,
+                id: id,
                 icons: [
                     {
                         icon: icon,
                         label: "Mark as " + label,
+                        roles: ["GM"],
                         filter: {
                             every: [
                                 { key: "visible", value: true, operator: "==" },
                                 { key: "layer", value: "DRAWING", operator: "==" },
-                                { key: ["metadata", PROVINCE_METADATA_KEY], value: terrain, operator: "!=" }
+                                { key: ["metadata", PROVINCE_METADATA_KEY], value: terrainAsString, operator: "!=" }
                             ]
                         }
                     },
