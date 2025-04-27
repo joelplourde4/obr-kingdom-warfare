@@ -18,18 +18,29 @@ export class Category {
 export class Activity {
     id: string;
     name: string;
-    currentHours: number;
-    totalHours: number;
+    currentTime: number;
+    totalTime: number;
+    timeUnit: TimeUnit;
 
     constructor(
         id?: string,
         name?: string,
-        currentHours?: number,
-        totalHours?: number
+        currentTime?: number,
+        totalTime?: number,
+        timeUnit: TimeUnit = TimeUnit.HOURS
     ) {
         this.id = id || uuidv4();
         this.name = name || "Activity";
-        this.currentHours = currentHours || 0;
-        this.totalHours = totalHours || 1;
+        this.currentTime = currentTime || 0;
+        this.totalTime = totalTime || 1;
+        this.timeUnit = timeUnit || TimeUnit.HOURS;
     }
+}
+
+export enum TimeUnit {
+    HOURS = 'Hours',
+    DAYS = 'Days',
+    WEEKS = 'Weeks',
+    MONTHS = 'Months',
+    YEARS = 'Years'
 }

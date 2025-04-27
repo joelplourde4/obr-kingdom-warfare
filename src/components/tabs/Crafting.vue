@@ -28,7 +28,9 @@
                         <input 
                             type="number"
                             class="hours"
-                            v-model="activity.currentHours"
+                            :max="activity.totalTime"
+                            min="0"
+                            v-model="activity.currentTime"
                             :disabled="isDisabled"
                             @input="onUpdate"
                         />
@@ -36,10 +38,15 @@
                             type="number"
                             class="hours"
                             min="1"
-                            v-model="activity.totalHours"
+                            v-model="activity.totalTime"
                             :disabled="isDisabled"
                             @input="onUpdate"
                         />
+                        <select class="dropdown" v-model="activity.timeUnit" @change="onUpdate" :disabled="isDisabled">
+                            <option v-for="timeUnit in TimeUnit" :value="timeUnit">
+                                {{ timeUnit }}
+                            </option>
+                        </select>
                         <input v-show="isVisible" type="button" class="icon-button remove-button" @click="onRemoveActivity(category, activity)"/>
                     </div>
                     <div v-else class="row read-only-mode">
@@ -50,7 +57,7 @@
                                 'width': calculateProgress(activity),
                                 'background': getGradientColor(activity)
                             }"></p>
-                            <p class="text">{{ activity.currentHours }} / {{ activity.totalHours}} hours</p>
+                            <p class="text">{{ activity.currentTime }} / {{ activity.totalTime}} {{ activity.timeUnit}}</p>
                         </div>
                     </div>
                 </div>
@@ -78,7 +85,7 @@ import { defineComponent } from 'vue'
 import { utils } from '../../mixins/utils'
 import BaseTab from './BaseTab.ts'
 
-import { Category, Activity } from '../../models/Crafting.ts'
+import { Category, Activity, TimeUnit } from '../../models/Crafting.ts'
 import { craftingUtils } from '../../mixins/craftingUtils.ts'
 
 const PROGRESS_BAR_WIDTH = 150; // px
@@ -93,6 +100,11 @@ export default defineComponent({
     mixins: [utils, craftingUtils],
     extends: BaseTab,
     name: 'Crafting',
+    data() {
+        return {
+            TimeUnit,
+        }
+    },
     computed: {
         getCategories() {
             return this.domain.categories || [];
@@ -182,18 +194,18 @@ export default defineComponent({
         * ---------- Gradient
         */
         calculatePercentage(activity: Activity) {
-            if (activity.totalHours == 0) {
+            if (activity.totalTime == 0) {
                 return 0;
             }
-            return (activity.currentHours / activity.totalHours);
+            return (activity.currentTime / activity.totalTime);
         },
         calculateProgress(activity: Activity) {
             return this.calculatePercentage(activity) * PROGRESS_BAR_WIDTH + 'px';
         },
         getGradientColor(activity: Activity) {
             // Clamp percentage between 0 and 100
-            const percentage = this.calculatePercentage(activity) * 100;
-            
+            const percentage = Math.max(Math.min(this.calculatePercentage(activity) * 100, 100), 0);
+
             // Find the two colors to interpolate between
             const index = (COLORS.length - 1) * percentage / 100;
             const i = Math.floor(index);
@@ -257,7 +269,7 @@ export default defineComponent({
 
         .hours {
             margin: 0.25rem;
-            width: 50px;
+            width: 25px;
             text-align: center;
         }
     }

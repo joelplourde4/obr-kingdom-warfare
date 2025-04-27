@@ -245,7 +245,6 @@ export default defineComponent({
                 this.domain.regiments.push(new Regiment(1));
             }
             this.domain.regiments[0].units.push(unit);
-            // this.domain.regiments..push(unit);
             this.onUpdate();
         },
         onRemoveUnit(regiment: Regiment, unit: Unit) {
