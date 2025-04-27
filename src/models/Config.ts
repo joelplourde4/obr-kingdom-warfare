@@ -7,6 +7,7 @@ export class Config {
     warfare: boolean;
     treasury: boolean;
     inventory: boolean;
+    crafting: boolean;
     multiplier: number;
     sharedMode: boolean;
     time: Time;
@@ -20,6 +21,7 @@ export class Config {
             warfare: boolean = true,
             treasury: boolean = false,
             inventory: boolean = false,
+            crafting: boolean = false,
             multiplier: number = 250,
             sharedMode: boolean = true,
             time: Time = new Time()
@@ -32,6 +34,7 @@ export class Config {
         this.warfare = warfare;
         this.treasury = treasury;
         this.inventory = inventory;
+        this.crafting = crafting;
         this.multiplier = multiplier;
         this.sharedMode = sharedMode;
         this.time = time;
@@ -47,6 +50,7 @@ export class Config {
             config.warfare,
             config.treasury,
             config.inventory,
+            config.crafting,
             config.multiplier,
             config.sharedMode
         )

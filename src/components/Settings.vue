@@ -69,6 +69,12 @@
             @update:model-value="onChanged($event, 'treasury')"
         />
         <Configuration
+            :value="config.crafting"
+            :title="'Toggle Crafting Tab'"
+            :tooltip="'When unchecked, the \'Crafting\' tab of the Domain Sheet will be hidden.'"
+            @update:model-value="onChanged($event, 'crafting')"
+        />
+        <Configuration
             :value="config.multiplier"
             :title="'Resource Multiplier'"
             :tooltip="'Controls how many resources are generated every domain turn. A higher multiplier boosts resource availability without increasing upkeep, while a lower setting makes resource management more challenging, requiring careful planning to maintain profitability.'"
