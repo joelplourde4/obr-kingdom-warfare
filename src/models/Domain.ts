@@ -4,6 +4,7 @@ import { Feature } from './Feature.ts';
 import { Regiment } from './Unit.ts';
 import { Realm } from './Realm.ts';
 import { Item } from './Item.ts';
+import { Category } from './Crafting.ts';
 
 export enum Size {
     TINY = "Tiny",
@@ -30,6 +31,7 @@ export class Domain {
     features: Feature[];
     regiments: Regiment[];
     items: Item[];
+    categories: Category[];
     realm: Realm;
 
     // For versioning purposes.
@@ -44,6 +46,7 @@ export class Domain {
         features: Feature[] = [],
         regiments: Regiment[] = [],
         items: Item[] = [],
+        categories: Category[] = [],
         realm?: Realm,
         // @ts-ignore
         version: number = 0
@@ -56,6 +59,7 @@ export class Domain {
         this.features = features;
         this.regiments = regiments;
         this.items = items;
+        this.categories = categories;
         this.realm = realm || new Realm();
         this.version = 0;
     }
@@ -70,6 +74,7 @@ export class Domain {
             domain.features,
             domain.regiment,
             domain.items,
+            domain.categories,
             domain.realm,
             domain.version
         )

@@ -95,6 +95,15 @@
                     @update:model-value="onUpdate"
                 />
             </tab>
+            <tab v-if="config.crafting" id="crafting" name="Crafting">
+                <Crafting
+                    ref="crafting"
+                    :domain="domain"
+                    :isGM="hasPermission"
+                    :isEditMode="editMode"
+                    @update:model-value="onUpdate"
+                />
+            </tab>
         </tabs>
     </div>
 </template>
@@ -112,13 +121,14 @@ import Military from './tabs/Military.vue';
 import Warfare from './tabs/Warfare.vue';
 import Treasury from './tabs/Treasury.vue';
 import Inventory from './tabs/Inventory.vue';
+import Crafting from './tabs/Crafting.vue';
 
 import { Domain } from '../models/Domain';
 import { Config } from '../models/Config';
 import OBR, { Player } from '@owlbear-rodeo/sdk';
 
 export default defineComponent({
-    components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military, Warfare, Treasury, Inventory },
+    components: { Settings, NavigationBar, Header, Stats, Relations, Features, Military, Warfare, Treasury, Inventory, Crafting },
     name: 'Sheet',
     props: {
         isGM: {
